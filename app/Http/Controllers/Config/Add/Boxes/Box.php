@@ -66,5 +66,7 @@ class Box extends Controller
         }
 
         shell_exec('sudo service nagios restart');
+
+        return redirect()->route('monitoring.boxes');
     }
 }

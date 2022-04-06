@@ -28,7 +28,7 @@ class Equip extends Controller
         ]);
 
         $old_equip_details = DB::table('nagios_services')
-            ->where('service_id', $equip_id)
+            ->where('nagios_services.service_id', $equip_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
@@ -64,7 +64,7 @@ class Equip extends Controller
 
         if($old_equip_details[0]->service_name == $request->equipName)
         {
-            $path = "/usr/local/nagios/etc/objects/boxs/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg";
 
             $file = fopen($path, 'w');
 
@@ -74,7 +74,7 @@ class Equip extends Controller
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/boxs/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg";
 
             $file = fopen($path, 'w');
 
@@ -82,7 +82,7 @@ class Equip extends Controller
 
             fclose($file);
 
-            rename("/usr/local/nagios/etc/objects/boxs/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg", "/usr/local/nagios/etc/objects/boxs/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg");
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
@@ -92,6 +92,6 @@ class Equip extends Controller
 
         shell_exec('sudo service nagios restart');
 
-        return redirect()->route('configEquips');
+        return redirect()->route('config-equips');
     }
 }

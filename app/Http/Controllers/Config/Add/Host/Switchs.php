@@ -12,7 +12,7 @@ class Switchs extends Controller
         $this->middleware(['agent']);
     }
     
-    public function switchs()
+    public function switchs(Request $request)
     {
         // validation
         $this->validate($request,[

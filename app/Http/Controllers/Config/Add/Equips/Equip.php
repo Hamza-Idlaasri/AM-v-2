@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Config\Add\Equips;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class Equip extends Controller
 {
@@ -41,19 +42,19 @@ class Equip extends Controller
 
             $define_service = "define service {\n\tuse\t\t\tbox-service\n\thost_name\t\t".$add_to_box->box_name."\n\tservice_description\t".$equipNames[$i]."\n\tcheck_command\t\tIN".$equiINnbr[$i]."\n}\n\n"; 
 
-            $box_dir = "/usr/local/nagios/etc/objects/box/".$add_to_box->box_name."/".$equipNames[$i].".cfg";
+            $box_dir = "/usr/local/nagios/etc/objects/boxes/".$add_to_box->box_name."/".$equipNames[$i].".cfg";
 
             file_put_contents($box_dir, $define_service);
 
             // Add equip path to nagios.cfg file
-            $cfg_file = "\ncfg_file=/usr/local/nagios/etc/objects/boxs/{$add_to_box->box_name}/{$equipNames[$i]}.cfg";
+            $cfg_file = "\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$add_to_box->box_name}/{$equipNames[$i]}.cfg";
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
 
         }
 
         shell_exec('sudo service nagios restart');
 
-        return redirect()->route('monitoring.equipements');
+        return redirect()->route('monitoring.equips');
         
     }
 }

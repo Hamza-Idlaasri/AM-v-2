@@ -74,27 +74,27 @@ class Box extends Controller
 
         if($old_box_details[0]->display_name == $request->box_name) {
 
-            $path = "/usr/local/nagios/etc/objects/boxs/".$request->box_name."/".$request->box_name.".cfg";  
+            $path = "/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$request->box_name.".cfg";  
             
             file_put_contents($path, $define_host);
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/boxs/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg";
             
             file_put_contents($path, $define_host);
 
-            rename("/usr/local/nagios/etc/objects/boxs/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxs/".$old_box_details[0]->display_name."/".$request->box_name.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$request->box_name.".cfg");
 
-            rename("/usr/local/nagios/etc/objects/boxs/".$old_box_details[0]->display_name, "/usr/local/nagios/etc/objects/boxs/".$request->box_name);
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name, "/usr/local/nagios/etc/objects/boxes/".$request->box_name);
 
             foreach ($equips as $equip) {
             
-                $content = file_get_contents("/usr/local/nagios/etc/objects/boxs/".$request->box_name."/".$equip->equip_name.".cfg");
+                $content = file_get_contents("/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$equip->equip_name.".cfg");
             
                 $content = str_replace($old_box_details[0]->display_name, $request->box_name, $content);
     
-                file_put_contents("/usr/local/nagios/etc/objects/boxs/".$request->box_name."/".$equip->equip_name.".cfg", $content);
+                file_put_contents("/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$equip->equip_name.".cfg", $content);
     
             }
 

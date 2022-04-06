@@ -16,12 +16,12 @@ class Host extends Controller
     public function deleteHost($host_id)
     {
         $host_deleted = DB::table('nagios_hosts')
-            ->where('host_id', $host_id)
+            ->where('host_object_id', $host_id)
             ->select('nagios_hosts.display_name')
             ->get();
 
         $host_services = DB::table('nagios_hosts')
-            ->where('host_id', $host_id)
+            ->where('nagios_hosts.host_object_id', $host_id)
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name')
             ->get();

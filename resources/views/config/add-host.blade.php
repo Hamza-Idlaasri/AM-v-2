@@ -55,7 +55,7 @@
 
             <br>
 
-            <h6 class="text-left" style="color: rgba(128, 128, 128, 0.7)">- </h6>
+            <h6 class="text-left" style="color: rgba(128, 128, 128, 0.7)">- Enable SNMP on your Router</h6>
 
         </div>
     </a>    
