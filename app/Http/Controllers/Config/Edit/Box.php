@@ -18,10 +18,10 @@ class Box extends Controller
         // validation
         $this->validate($request,[
 
-            // 'box_name' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
-            'box_name' => 'required|min:2|max:20|regex:/^[a-zA-Z0-9-_+ ]/',
+            // 'boxName' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'boxName' => 'required|min:2|max:20|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required|min:7|max:15',
-            'normal_interval' => 'required|min:1|max:100',
+            'check_interval' => 'required|min:1|max:100',
             'retry_interval' => 'required|min:1|max:100',
             'max_attempts' => 'required|min:1|max:100',
             'notif_interval' => 'required|min:1|max:1000'
@@ -42,9 +42,9 @@ class Box extends Controller
 
         // Parent relationship
         if($request->input('boxes'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->box_name."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes');
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes');
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->box_name."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP;
 
         // Normal Check Interval
         if($old_box_details[0]->check_interval != $request->normal_interval)
@@ -72,9 +72,9 @@ class Box extends Controller
             
         $define_host = $define_host."\n}\n\n";
 
-        if($old_box_details[0]->display_name == $request->box_name) {
+        if($old_box_details[0]->display_name == $request->boxName) {
 
-            $path = "/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$request->box_name.".cfg";  
+            $path = "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg";  
             
             file_put_contents($path, $define_host);
 
@@ -84,23 +84,23 @@ class Box extends Controller
             
             file_put_contents($path, $define_host);
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$request->box_name.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$request->boxName.".cfg");
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name, "/usr/local/nagios/etc/objects/boxes/".$request->box_name);
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name, "/usr/local/nagios/etc/objects/boxes/".$request->boxName);
 
             foreach ($equips as $equip) {
             
-                $content = file_get_contents("/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$equip->equip_name.".cfg");
+                $content = file_get_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg");
             
-                $content = str_replace($old_box_details[0]->display_name, $request->box_name, $content);
+                $content = str_replace($old_box_details[0]->display_name, $request->boxName, $content);
     
-                file_put_contents("/usr/local/nagios/etc/objects/boxes/".$request->box_name."/".$equip->equip_name.".cfg", $content);
+                file_put_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg", $content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_box_details[0]->display_name, $request->box_name, $nagios_file_content);
+            $nagios_file_content = str_replace($old_box_details[0]->display_name, $request->boxName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
