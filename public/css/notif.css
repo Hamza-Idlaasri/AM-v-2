@@ -1,0 +1,23 @@
+#hosts-notifs {
+    display: block;
+}
+
+#services-notifs {
+    display: none;
+}
+
+#boxes-notifs {
+    display: none;
+}
+
+#equips-notifs {
+    display: none;
+}
+
+.notif-popup {
+    border-radius: 20px;
+    position: absolute;
+    top: 30px;
+    right: -20px;
+    font-size: 10px;
+}

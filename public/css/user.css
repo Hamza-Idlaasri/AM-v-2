@@ -1,0 +1,66 @@
+.check {
+    position: relative;
+    height: 10px;
+}
+
+input#rail[type="checkbox"] {
+    width: 30px;
+    height: 10px;
+    -webkit-appearance: none;
+    background: #c6c6c6;
+    outline: none;
+    border-radius: 30px;
+    box-shadow: inset 0 0 5px rgb(0, 0, 0, 0.2);
+    transition: .5s;
+    cursor: pointer;
+}
+
+input#rail:checked[type="checkbox"] {
+    background: rgb(0, 151, 211);
+}
+
+input#rail[type="checkbox"]:before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 15px;
+    height: 15px;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 30px;
+    background: white;
+    box-shadow: 0 2px 5px rgb(0, 0, 0, 0.2);
+    transition: .5s;
+}
+
+input#rail:checked[type="checkbox"]:before {
+    left: 15px;
+}
+
+input#rail:hover[type="checkbox"]:before {
+    background: rgb(240, 240, 240);
+}
+
+
+/* .pop {
+    display: none;
+    width: 350px;
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%);
+}
+
+.d-btn {
+    border: 0;
+    outline: none;
+}
+
+.d-btn i:hover {
+    color: rgb(192, 0, 0);
+} */
+
+#blankCheckbox {
+    width: 15px;
+    height: 15px;
+}
