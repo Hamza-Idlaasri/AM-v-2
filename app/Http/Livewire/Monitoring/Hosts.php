@@ -4,9 +4,12 @@ namespace App\Http\Livewire\Monitoring;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class Hosts extends Component
 {
+    use WithPagination;
+
     public $search;
  
     protected $queryString = ['search'];
@@ -26,7 +29,7 @@ class Hosts extends Component
         }
 
         return view('livewire.monitoring.hosts')
-            ->with(['hosts' => $hosts])
+            ->with(['hosts' => $hosts,'search' => $this->search])
             ->extends('layouts.app')
             ->section('content');
     }

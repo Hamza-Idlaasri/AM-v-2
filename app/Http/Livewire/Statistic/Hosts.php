@@ -15,11 +15,8 @@ class Hosts extends Component
 
         $datasets = $this->getChartRange();
 
-        $min = date("Y-m-d", strtotime($this->getHostsChecks()->first()->start_time));
-        $max = date("Y-m-d", strtotime($this->getHostsChecks()->orderByDesc('start_time')->first()->end_time.'+ 1 days'));
-
         return view('livewire.statistic.hosts')
-            ->with(['hosts_status' => $hosts_status, 'datasets' => $datasets,'min' => $min, 'max' => $max])
+            ->with(['hosts_status' => $hosts_status, 'datasets' => $datasets])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -30,7 +27,8 @@ class Hosts extends Component
             ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
             ->where('alias','host')
-            ->where('is_raw_check','=', 0);
+            ->where('is_raw_check','=', 0)
+            ->orderBy('start_time');
     }
 
     public function getHostsName()
@@ -199,7 +197,7 @@ class Hosts extends Component
                         else
                         {
                             array_push($range,$host_checks[$i-1]);
-                            array_push($host_checks,$range);
+                            array_push($host_ranges,$range);
                             $range = [];
                             array_push($range,$host_checks[$i]);
                             array_push($range,$host_checks[$i]);

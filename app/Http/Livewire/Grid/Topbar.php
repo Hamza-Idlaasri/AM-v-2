@@ -4,9 +4,11 @@ namespace App\Http\Livewire\Grid;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\Notif;
 
 class Topbar extends Component
 {
+    // For Summary
     public $total_hosts = 0;
     public $hosts_up = 0;
     public $hosts_down = 0;
@@ -29,12 +31,42 @@ class Topbar extends Component
     public $equips_critical = 0;
     public $equips_unknown = 0;
 
+    // For Notifications
+    public $hosts_not_checked = 0;
+    public $boxes_not_checked = 0;
+    public $services_not_checked = 0;
+    public $equips_not_checked = 0;
+    
+    public $checked_hosts = 0;
+    public $checked_boxes = 0;
+    public $checked_services = 0;
+    public $checked_equips = 0;
+    
+    public $total_hosts_notifs = 0;
+    public $total_boxes_notifs = 0;
+    public $total_services_notifs = 0;
+    public $total_equips_notifs = 0;
+
     public function render()
     {
         $this->getHosts();
         $this->getBoxes();
         $this->getServices();
         $this->getEquips();
+
+        $this->getTotal_HostsNotifs();
+        $this->getTotal_ServicesNotifs();
+        $this->getTotal_BoxesNotifs();
+        $this->getTotal_EquipsNotifs();
+
+        $this->ElementsChecked();
+
+        $this->hosts_not_checked = $this->total_hosts_notifs - $this->checked_hosts;
+        $this->boxes_not_checked = $this->total_boxes_notifs - $this->checked_boxes;
+        $this->services_not_checked = $this->total_services_notifs - $this->checked_services;
+        $this->equips_not_checked = $this->total_equips_notifs - $this->checked_equips;
+
+        $total_notifs = $this->hosts_not_checked + $this->services_not_checked + $this->equips_not_checked + $this->boxes_not_checked;
 
         return view('livewire.grid.topbar')
             ->with([
@@ -57,7 +89,9 @@ class Topbar extends Component
                 'equips_ok' => $this->equips_ok,
                 'equips_warning' => $this->equips_warning,
                 'equips_critical' => $this->equips_critical,
-                'equips_unknown' => $this->equips_unknown
+                'equips_unknown' => $this->equips_unknown,
+
+                'total_notifs' => $total_notifs
             ]);
     }
 
@@ -208,5 +242,84 @@ class Topbar extends Component
 
             $this->total_equips++;
         }
+    }
+
+    public function getTotal_HostsNotifs()
+    {
+        $hosts = DB::table('nagios_notifications')
+            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
+            ->where('nagios_hosts.alias','host')
+            ->select('nagios_hosts.display_name as host_name','nagios_notifications.*')
+            ->orderByDesc('start_time')
+            ->get();   
+        
+        $this->total_hosts_notifs = 0;
+
+        foreach ($hosts as $host) {
+            $this->total_hosts_notifs++;
+        }
+    }
+
+    public function getTotal_ServicesNotifs()
+    {
+        $services = DB::table('nagios_notifications')
+            ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
+            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->where('nagios_hosts.alias','host')
+            ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.*')
+            ->orderByDesc('start_time')
+            ->get();
+        
+        $this->total_services_notifs = 0;
+
+        foreach ($services as $service) {
+            $this->total_services_notifs++;
+        }
+    }
+
+    public function getTotal_BoxesNotifs()
+    {
+        $boxes = DB::table('nagios_notifications')
+            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
+            ->where('nagios_hosts.alias','box')
+            ->select('nagios_hosts.display_name as box_name','nagios_notifications.*')
+            ->orderByDesc('start_time')
+            ->get();
+        
+        $this->total_boxes_notifs = 0;
+
+        foreach ($boxes as $box) {
+            $this->total_boxes_notifs++;
+        }
+    }
+
+    public function getTotal_EquipsNotifs()
+    {
+        $equips = DB::table('nagios_notifications')
+            ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
+            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->where('nagios_hosts.alias','box')
+            ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.*')
+            ->orderByDesc('start_time')
+            ->get();
+
+        $this->total_equips_notifs = 0;
+
+        foreach ($equips as $equip) {
+            $this->total_equips_notifs++;
+        }
+    }
+
+    public function ElementsChecked()
+    {
+        $elements_checked = Notif::where('user_id',auth()->user()->id)->get();
+
+        foreach ($elements_checked as $element) {
+            $this->checked_hosts = $element->hosts;
+            $this->checked_services = $element->services;
+            $this->checked_boxes = $element->boxes;
+            $this->checked_equips = $element->equips;
+        }
+        
     }
 }

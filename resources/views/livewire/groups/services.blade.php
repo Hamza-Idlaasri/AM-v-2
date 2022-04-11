@@ -1,4 +1,3 @@
-
 {{-- <style>
     .setting {
         opacity: .2;
@@ -15,13 +14,13 @@
         transform: translate(-50%,-50%);
     }
 </style> --}}
-{{-- 
-<div class="container p-3">
-    <a href="{{ route('addSG') }}" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>
-</div> --}}
 
 <div class="container p-4 d-flex justify-content-center flex-wrap" wire:poll.5000>
     
+    <div class="container px-4 py-2 w-100 d-flex justify-content-between align-items-center">
+        <a href="/config/add-servicegroup" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>
+    </div>
+
     <?php $i=0?>
 
     @forelse ($servicegroups as $group)

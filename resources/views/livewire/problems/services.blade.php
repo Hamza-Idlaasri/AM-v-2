@@ -67,7 +67,7 @@
         @empty
 
             <tr>
-                <td colspan="5">No result found <strong>{{ request()->query('search') }}</strong></td>
+                <td colspan="5">No result found <strong>{{ $search }}</strong></td>
             </tr>
 
         @endforelse
@@ -76,7 +76,7 @@
     </table>
 </div>
     
-    {{$services->appends(['search' => request()->query('search')])->links('vendor.pagination.bootstrap-4')}}
+    {{$services->appends(['search' => $search])->links('vendor.livewire.bootstrap')}}
     
 </div>
 

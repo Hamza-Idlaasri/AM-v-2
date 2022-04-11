@@ -47,8 +47,8 @@ class Box extends Controller
             $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP;
 
         // Normal Check Interval
-        if($old_box_details[0]->check_interval != $request->normal_interval)
-            $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->normal_interval;
+        if($old_box_details[0]->check_interval != $request->check_interval)
+            $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
         if($old_box_details[0]->retry_interval != $request->retry_interval)

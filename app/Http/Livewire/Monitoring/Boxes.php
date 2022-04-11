@@ -4,10 +4,11 @@ namespace App\Http\Livewire\Monitoring;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class Boxes extends Component
 {
-    protected $boxs;
+    use WithPagination;
 
     public $search;
  
@@ -17,18 +18,18 @@ class Boxes extends Component
     {
         if($this->search)
         {
-            $this->boxs = $this->getBoxes()
+            $boxs = $this->getBoxes()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
                 ->paginate(10);
 
         } else {
 
-            $this->boxs = $this->getBoxes()->paginate(10);
+            $boxs = $this->getBoxes()->paginate(10);
 
         }
 
         return view('livewire.monitoring.boxes')
-        ->with(['boxs'=>$this->boxs])
+        ->with(['boxs'=>$boxs,'search' => $this->search])
         ->extends('layouts.app')
         ->section('content');
     }

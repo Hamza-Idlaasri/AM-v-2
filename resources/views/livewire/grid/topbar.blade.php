@@ -157,7 +157,9 @@
         <span class="mx-4 text-secondary position-relative" style="font-size: 16px">
             <a href="{{ route('notifications') }}" class="text-dark">
                 <i class="far fa-bell" id="icon-bell"></i>
-                <span id="notif-sign"></span>
+                @if ($total_notifs > 0)
+                    <span id="notif-sign"></span>
+                @endif
             </a>
         </span>
         <span class="mx-2">{{ auth()->user()->name }}</span>

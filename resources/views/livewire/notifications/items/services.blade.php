@@ -93,3 +93,21 @@
     </table>
 
 </div>
+
+<script>
+
+document.getElementById('services-btn').onclick = () => {
+    document.getElementById('services-btn').classList.remove("btn-light");
+    document.getElementById('services-btn').classList.add("btn-primary");
+
+    document.getElementById('boxes-btn').classList.remove("btn-primary");
+    document.getElementById('hosts-btn').classList.remove("btn-primary");
+    document.getElementById('equips-btn').classList.remove("btn-primary");
+
+    document.getElementById('services-notifs').style.display = 'block';
+    document.getElementById('hosts-notifs').style.display = 'none';
+    document.getElementById('boxes-notifs').style.display = 'none';
+    document.getElementById('equips-notifs').style.display = 'none';
+}
+
+</script>

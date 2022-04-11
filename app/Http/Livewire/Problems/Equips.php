@@ -4,10 +4,11 @@ namespace App\Http\Livewire\Problems;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\WithPagination;
 
 class Equips extends Component
 {
-    protected $equips;
+    use WithPagination;
 
     public $search;
  
@@ -17,18 +18,18 @@ class Equips extends Component
     {
         if($this->search)
         {
-            $this->equips =$this->getEquips()
+            $equips =$this->getEquips()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
                 ->paginate(10);
 
         } else {
 
-            $this->equips = $this->getEquips()->paginate(10);
+            $equips = $this->getEquips()->paginate(10);
 
         }
 
         return view('livewire.problems.equips')
-            ->with(['equips'=>$this->equips])
+            ->with(['equips'=>$equips,'search' => $this->search])
             ->extends('layouts.app')
             ->section('content');
     }

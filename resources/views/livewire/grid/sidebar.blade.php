@@ -78,8 +78,8 @@
                 <a href="/config/services" class="sub-item" id="c-services"><i class="far fa-cog"></i><span class="item-title"> Services</span></a>
                 <a href="/config/boxes" class="sub-item" id="c-boxes"><i class="far fa-microchip"></i><span class="item-title">Boxes</span></a>
                 <a href="/config/equipements" class="sub-item" id="c-equips"><i class="far fa-server"></i><span class="item-title"> Equipemnts</span></a>
-                <a href="/config/hostgroups" class="sub-item" id="c-hg"><i class="far fa-desktop"></i><span class="item-title"> Hostgroups</span></a>
-                <a href="/config/servicegroups" class="sub-item" id="c-sg"><i class="far fa-cog"></i><span class="item-title"> Servicegroups</span></a>
+                <a href="/config/hostgroups" class="sub-item" id="c-hg"><i class="far fa-sitemap"></i></i><span class="item-title"> Hostgroups</span></a>
+                <a href="/config/servicegroups" class="sub-item" id="c-sg"><i class="fas fa-cogs"></i><span class="item-title"> Servicegroups</span></a>
                 <a href="/config/boxgroups" class="sub-item" id="c-bg"><i class="far fa-microchip"></i><span class="item-title">Boxgroups</span></a>
                 <a href="/config/equipgroups" class="sub-item" id="c-eg"><i class="far fa-server"></i><span class="item-title"> Equipgroups</span></a>
                 <a href="/config/users" class="sub-item" id="c-users"><i class="fas fa-users"></i><span class="item-title"> Users</span></a>

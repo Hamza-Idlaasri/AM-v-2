@@ -56,6 +56,22 @@ Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgrou
 
 //------ Config ------------------------------------/
 
+// Add HG
+Route::get('/config/add-hostgroup',[App\Http\Controllers\Config\Add\Groups\Hostgroup::class, 'addHG'])->name('addHG');
+Route::get('/config/add-hostgroup/create',[App\Http\Controllers\Config\Add\Groups\Hostgroup::class, 'createHG'])->name('createHG');
+
+// Add SG
+Route::get('/config/add-servicegroup',[App\Http\Controllers\Config\Add\Groups\Servicegroup::class, 'addSG'])->name('addSG');
+Route::get('/config/add-servicegroup/create',[App\Http\Controllers\Config\Add\Groups\Servicegroup::class, 'createSG'])->name('createSG');
+
+// Add BG
+Route::get('/config/add-boxgroup',[App\Http\Controllers\Config\Add\Groups\Boxgroup::class, 'addBG'])->name('addBG');
+Route::get('/config/add-boxgroup/create',[App\Http\Controllers\Config\Add\Groups\Boxgroup::class, 'createBG'])->name('createBG');
+
+// Add EG
+Route::get('/config/add-equipgroup',[App\Http\Controllers\Config\Add\Groups\Equipgroup::class, 'addEG'])->name('addEG');
+Route::get('/config/add-equipgroup/create',[App\Http\Controllers\Config\Add\Groups\Equipgroup::class, 'createEG'])->name('createEG');
+
 // Edit HG
 Route::get('/config/manage-hostgroup/{id}',[App\Http\Controllers\Config\Groups\ManageHG::class, 'manageHG'])->name('manageHG');
 Route::get('/config/edit-hostgroup/{id}',[App\Http\Controllers\Config\Edit\Groups\Hostgroup::class, 'editHG'])->name('editHG');

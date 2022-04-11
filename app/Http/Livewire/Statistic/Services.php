@@ -30,7 +30,8 @@ class Services extends Component
         ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
         ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
         ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-        ->where('alias','host');
+        ->where('alias','host')
+        ->orderBy('start_time');
     }
 
     public function getServicesName()
@@ -206,7 +207,7 @@ class Services extends Component
                         else
                         {
                             array_push($range,$service_checks[$i-1]);
-                            array_push($service_checks,$range);
+                            array_push($service_ranges,$range);
                             $range = [];
                             array_push($range,$service_checks[$i]);
                             array_push($range,$service_checks[$i]);

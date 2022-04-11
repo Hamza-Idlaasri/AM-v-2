@@ -28,7 +28,9 @@ class Equips extends Component
         ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
         ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
         ->where('alias','box')
-        ->orderByDesc('nagios_services.display_name');
+        ->orderByDesc('nagios_services.display_name')
+        ->orderBy('start_time');
+
     }
 
     public function getEquipsName()
@@ -203,7 +205,7 @@ class Equips extends Component
                         else
                         {
                             array_push($range,$equip_checks[$i-1]);
-                            array_push($equip_checks,$range);
+                            array_push($equip_ranges,$range);
                             $range = [];
                             array_push($range,$equip_checks[$i]);
                             array_push($range,$equip_checks[$i]);

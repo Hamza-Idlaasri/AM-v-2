@@ -1,5 +1,9 @@
 <div class="container p-4 d-flex justify-content-between flex-wrap" wire:poll.5000>
-        
+    
+    <div class="container px-4 py-2 w-100 d-flex justify-content-between align-items-center">
+        <a href="/config/add-boxgroup" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>
+    </div>
+
     @forelse ($boxgroups as $boxgroup)
         
         <div class="container bg-white rounded shadow my-3" style="width: 45%;height: 10%">

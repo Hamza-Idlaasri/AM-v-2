@@ -12,7 +12,7 @@ class Box extends Controller
         $this->middleware(['agent']);
     }
     
-    public function box(Request $request)
+    public function createBox(Request $request)
     {
         $equipNames = $request->input('equipName');
         $equiINnbr = $request->input('inputNbr');
@@ -31,7 +31,7 @@ class Box extends Controller
             'inputNbr.*.required' => 'the input number field is empty',
         ]);
 
-        $box_dir = "/usr/local/nagios/etc/objects/boxs/".$request->boxName;
+        $box_dir = "/usr/local/nagios/etc/objects/boxes/".$request->boxName;
 
         if(!is_dir($box_dir))
             mkdir($box_dir);
@@ -45,7 +45,7 @@ class Box extends Controller
         file_put_contents($box_dir."/".$request->boxName.".cfg", $define_host);
 
         // Add box path to nagios.cfg file
-        $cfg_file = "\n\ncfg_file=/usr/local/nagios/etc/objects/boxs/{$request->boxName}/{$request->boxName}.cfg";
+        $cfg_file = "\n\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$request->boxName}.cfg";
         file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
 
         // Define services
@@ -60,7 +60,7 @@ class Box extends Controller
             fclose($equip_file);
 
             // Add equip path to nagios.cfg file
-            $cfg_file = "\ncfg_file=/usr/local/nagios/etc/objects/boxs/{$request->boxName}/{$equipNames[$i]}.cfg";
+            $cfg_file = "\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$equipNames[$i]}.cfg";
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
 
         }

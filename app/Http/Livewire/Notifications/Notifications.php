@@ -8,37 +8,41 @@ use App\Models\Notif;
 
 class Notifications  extends Component
 {
-    public $total_hosts = 0;
-    public $total_boxes = 0;
-    public $total_services = 0;
-    public $total_equips = 0;
+    public $hosts_not_checked = 0;
+    public $boxes_not_checked = 0;
+    public $services_not_checked = 0;
+    public $equips_not_checked = 0;
     
     public $checked_hosts = 0;
     public $checked_boxes = 0;
     public $checked_services = 0;
     public $checked_equips = 0;
+    
+    public $total_hosts = 0;
+    public $total_boxes = 0;
+    public $total_services = 0;
+    public $total_equips = 0;
 
     public function checkNotif($val)
     {
+        $user = Notif::where('user_id',auth()->user()->id);
+
         switch ($val) {
 
             case 'hosts':
-                $this->total_hosts = 0;
+                $user->update(['hosts' => $this->total_hosts]);
                 break;
 
             case 'services':
-                $this->total_services = 0;
-                
+                $user->update(['services' => $this->total_services]);
                 break;
 
             case 'boxes':
-                $this->total_boxes = 0;
-                
+                $user->update(['boxes' => $this->total_boxes]);
                 break;
 
             case 'equips':
-                $this->total_equips = 0;
-                
+                $user->update(['equips' => $this->total_equips]);
                 break;
         }
     }
@@ -46,20 +50,21 @@ class Notifications  extends Component
     public function render()
     {
         $this->getTotal_HostsNotifs();
-        $this->getTotal_BoxesNotifs();
         $this->getTotal_ServicesNotifs();
+        $this->getTotal_BoxesNotifs();
         $this->getTotal_EquipsNotifs();
-        // $this->ElementsChecked();
 
-        // $this->total_hosts = $this->total_hosts - $this->checked_hosts;
-        // $this->total_services = $this->total_services - $this->checked_services;
-        // $this->total_boxes = $this->total_boxes - $this->checked_boxes;
-        // $this->total_equips = $this->total_equips - $this->checked_equips;
+        $this->ElementsChecked();
 
-        $total = $this->total_hosts + $this->total_services + $this->total_boxes + $this->total_equips;
+        $this->hosts_not_checked = $this->total_hosts - $this->checked_hosts;
+        $this->boxes_not_checked = $this->total_boxes - $this->checked_boxes;
+        $this->services_not_checked = $this->total_services - $this->checked_services;
+        $this->equips_not_checked = $this->total_equips - $this->checked_equips;
+
+        $total = $this->hosts_not_checked + $this->services_not_checked + $this->equips_not_checked + $this->boxes_not_checked;
 
         return view('livewire.notifications.notifications')
-            ->with(['total_hosts' => $this->total_hosts, 'total_services' => $this->total_services, 'total_boxes' => $this->total_boxes, 'total_equips' => $this->total_equips,'total' => $total])
+            ->with(['hosts_not_checked' => $this->hosts_not_checked, 'services_not_checked' => $this->services_not_checked, 'boxes_not_checked' => $this->boxes_not_checked, 'equips_not_checked' => $this->equips_not_checked,'total' => $total])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -90,7 +95,7 @@ class Notifications  extends Component
             ->orderByDesc('start_time')
             ->get();
         
-        $this->total_services;
+        $this->total_services = 0;
 
         foreach ($services as $service) {
             $this->total_services++;

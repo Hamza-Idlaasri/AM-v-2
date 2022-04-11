@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Auth\Config;
 
 use Livewire\Component;
 use App\Models\User;
+use App\Models\Notif;
 use Illuminate\Support\Facades\DB;
 
 class Users extends Component
@@ -37,9 +38,15 @@ class Users extends Component
 
     public function deleteUser($user_id)
     {
+        // Remove notifs checked by this user
+        $notifs_checked = Notif::where('user_id',$user_id)->firstOrFail();
+        $notifs_checked->delete();
+
+        // Delete the user
         $user = User::find($user_id);
         $user->delete();
 
+        // Remove his Role from roles table
         $remove_role = DB::connection('am')->table('role_user')->where('user_id',$user_id)->delete();
 
         session()->flash('message', $user->name.' user is deleted');

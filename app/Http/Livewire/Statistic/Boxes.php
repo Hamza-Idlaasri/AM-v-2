@@ -15,11 +15,8 @@ class Boxes extends Component
 
         $datasets = $this->getChartRange();
 
-        $min = date("Y-m-d", strtotime($this->getBoxesChecks()->first()->start_time));
-        $max = date("Y-m-d", strtotime($this->getBoxesChecks()->orderByDesc('start_time')->first()->end_time.'+ 1 days'));
-
         return view('livewire.statistic.boxes')
-            ->with(['boxes_status' => $boxes_status,'datasets' => $datasets,'min' => $min, 'max' => $max])
+            ->with(['boxes_status' => $boxes_status,'datasets' => $datasets])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -30,7 +27,8 @@ class Boxes extends Component
             ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
             ->where('alias','box')
-            ->where('is_raw_check','=', 0);
+            ->where('is_raw_check','=', 0)
+            ->orderBy('start_time');
     }
 
     public function getBoxesName()
@@ -200,7 +198,7 @@ class Boxes extends Component
                         else
                         {
                             array_push($range,$box_checks[$i-1]);
-                            array_push($box_checks,$range);
+                            array_push($box_ranges,$range);
                             $range = [];
                             array_push($range,$box_checks[$i]);
                             array_push($range,$box_checks[$i]);
