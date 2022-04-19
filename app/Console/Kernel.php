@@ -13,9 +13,31 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+    protected $commands = [
+        'App\Console\Commands\SendHostMail',
+        'App\Console\Commands\SendServiceMail',
+        'App\Console\Commands\SendBoxMail',
+        'App\Console\Commands\SendEquipMail'
+    ];
+
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('notif:box')
+            ->timezone('Africa/Casablanca')
+            ->everyFiveMinutes();
+
+        $schedule->command('notif:host')
+            ->timezone('Africa/Casablanca')
+            ->everyFiveMinutes();
+
+        $schedule->command('notif:service')
+            ->timezone('Africa/Casablanca')
+            ->everyFiveMinutes();
+    
+        $schedule->command('notif:equip')
+            ->timezone('Africa/Casablanca')
+            ->everyFiveMinutes();
     }
 
     /**

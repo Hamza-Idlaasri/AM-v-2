@@ -1,4 +1,4 @@
-<div class="container bg-white shadow rounded w-100 my-4 px-4 py-2">
+<div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
     
     <span class="float-left my-2">
         <a href="{{ route('register') }}" class="btn text-primary"><i class="fas fa-user-plus"></i></a>

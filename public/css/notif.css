@@ -21,3 +21,29 @@
     right: -20px;
     font-size: 10px;
 }
+
+#popup-notif {
+    width: 30%;
+    bottom: 5px;
+    left: 71.5%;
+    transform: translate(-10%, -10%);
+    animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.notif-container {
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.notif-container button:hover {
+    font-weight: bold;
+}
+
+@keyframes slide-left {
+    0% {
+        transform: translateX(160%);
+    }
+    100% {
+        transform: translateX(-10%);
+    }
+}

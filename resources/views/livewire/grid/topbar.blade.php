@@ -154,16 +154,23 @@
 
     {{-- User login--}}
     <div class="d-flex align-items-center mx-3">
+
+        {{-- Notificiation Bell --}}
         <span class="mx-4 text-secondary position-relative" style="font-size: 16px">
             <a href="{{ route('notifications') }}" class="text-dark">
-                <i class="far fa-bell" id="icon-bell"></i>
                 @if ($total_notifs > 0)
+                    <i class="fas fa-bell text-danger" id="icon-bell"></i>
                     <span id="notif-sign"></span>
+                @else
+                    <i class="far fa-bell" id="icon-bell"></i>
                 @endif
             </a>
         </span>
+
+        {{-- User Name --}}
         <span class="mx-2">{{ auth()->user()->name }}</span>
 
+        {{-- User DropDown menu --}}
         <div x-data="{ open: false }" style="position: relative;z-index: 1">
             <button @click.prevent="open = true" class="btn btn-light rounded-circle text-secondary" id="user-items">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</button>
             <div class="sub-menu bg-white shadow-lg p-1 rounded" x-show="open" x-cloak @click.away="open = false" style="position: absolute;left: -80px;top:50px">

@@ -17,5 +17,10 @@ class Notif extends Model
         'services',
         'boxes',
         'equips',
+        'read_hosts_at',
+        'read_services_at',
+        'read_boxes_at',
+        'read_equips_at'
     ];
+
 }

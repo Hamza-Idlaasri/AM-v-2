@@ -1,4 +1,4 @@
-<div class="container bg-white shadow rounded w-100 my-4 px-4 py-2" wire:poll.5000>
+<div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll.5000>
 
     @include('inc.searchbar',['route' => 'problems.equips'])
 
@@ -77,6 +77,7 @@
 
 </div>
 
+    {{-- Pagination --}}
     {{$equips->appends(['search' => $search])->links('vendor.livewire.bootstrap')}}
 
 </div>
