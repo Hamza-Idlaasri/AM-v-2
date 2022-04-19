@@ -50,6 +50,6 @@ class Hostgroup extends Controller
 
         shell_exec('sudo service nagios restart');
 
-        return redirect('/coonfig/boxgroups');   
+        return redirect('/config/hostgroups');   
     }
 }

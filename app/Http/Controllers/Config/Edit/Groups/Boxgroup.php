@@ -50,6 +50,6 @@ class Boxgroup extends Controller
 
         shell_exec('sudo service nagios restart');
 
-        return redirect('/configuration/boxgroups');   
+        return redirect('/config/boxgroups');   
     }
 }
