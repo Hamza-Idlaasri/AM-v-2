@@ -42,7 +42,7 @@ class SendEquipMail extends Command
      */
     public function handle()
     {
-        $last_notif_readed = Notif::orderBy('read_at->equips','DESC')->first()->read_equips_at;
+        $last_notif_readed = Notif::orderBy('read_equips_at','DESC')->first()->read_equips_at;
 
         $equips = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')

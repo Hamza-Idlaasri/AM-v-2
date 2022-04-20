@@ -42,7 +42,7 @@ class SendBoxMail extends Command
      */
     public function handle()
     {
-        $last_notif_readed = Notif::orderBy('read_at->boxes','DESC')->first()->read_boxes_at;
+        $last_notif_readed = Notif::orderBy('read_boxes_at','DESC')->first()->read_boxes_at;
 
         $boxes = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')

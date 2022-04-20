@@ -6,7 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notif;
 use App\Models\User;
-use App\Mail\BoxMail;
+use App\Mail\HostMail;
 use Illuminate\Support\Facades\Mail;
 
 class PopupNotifs extends Component

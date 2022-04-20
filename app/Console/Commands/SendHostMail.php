@@ -43,7 +43,7 @@ class SendHostMail extends Command
      */
     public function handle()
     {
-        $last_notif_readed = Notif::orderBy('read_at->hosts','DESC')->first()->read_hosts_at;
+        $last_notif_readed = Notif::orderBy('read_hosts_at','DESC')->first()->read_hosts_at;
 
         $hosts = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')

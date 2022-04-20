@@ -42,7 +42,7 @@ class SendServiceMail extends Command
      */
     public function handle()
     {
-        $last_notif_readed = Notif::orderBy('read_at->services','DESC')->first()->read_services_at;
+        $last_notif_readed = Notif::orderBy('read_services_at','DESC')->first()->read_services_at;
 
         $services = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
