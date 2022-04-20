@@ -13,7 +13,7 @@ class Service extends Controller
         $this->middleware(['agent']);
     }
     
-    public function editService(Request $request, $service_id)
+    public function editService(Request $request, $service_object_id)
     {
         // validation
         $this->validate($request,[
@@ -27,7 +27,7 @@ class Service extends Controller
         ]);
 
         $old_service_details = DB::table('nagios_services')
-            ->where('service_id', $service_id)
+            ->where('nagios_services.service_object_id', $service_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
@@ -77,8 +77,23 @@ class Service extends Controller
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_service_details[0]->display_name, $request->serviceName, $nagios_file_content);
+            $nagios_file_content = str_replace($old_service_details[0]->service_name, $request->serviceName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
+        }
+
+        $service_group_member_on =  DB::table('nagios_servicegroup_members')
+            ->where('nagios_servicegroup_members.service_object_id',$service_object_id)
+            ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+            ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+            ->first();
+        
+        if($service_group_member_on)
+        {
+            $servicegroup_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg");
+            $servicegroup_content = str_replace($service_group_member_on->host_name.','.$service_group_member_on->service_name, $service_group_member_on->host_name.','.$request->serviceName, $servicegroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg",$servicegroup_content);
         }
 
         shell_exec('sudo service nagios restart');

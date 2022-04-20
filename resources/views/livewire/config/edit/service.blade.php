@@ -20,7 +20,7 @@
 
 <div class="container my-3 w-50">
 
-    <form action="{{ route('save-service-edits', $service[0]->service_id) }}" method="get">
+    <form action="{{ route('save-service-edits', $service[0]->service_object_id) }}" method="get">
 
         <div class="card">
 

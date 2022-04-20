@@ -13,7 +13,7 @@ class Host extends Controller
         $this->middleware(['agent']);
     }
     
-    public function editHost(Request $request, $host_id)
+    public function editHost(Request $request, $host_object_id)
     {
         // validation
         $this->validate($request,[
@@ -30,11 +30,11 @@ class Host extends Controller
         ]);
         
         $old_host_details = DB::table('nagios_hosts')
-            ->where('host_id', $host_id)
+            ->where('nagios_hosts.host_object_id', $host_object_id)
             ->get();
         
         $services = DB::table('nagios_hosts')
-            ->where('host_id', $host_id)
+            ->where('nagios_hosts.host_object_id', $host_object_id)
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->select('nagios_services.display_name as service_name')
             ->get();
@@ -110,6 +110,20 @@ class Host extends Controller
 
         }
 
+        $hostgroup_member_on = DB::table('nagios_hostgroup_members')
+            ->where('nagios_hostgroup_members.host_object_id',$host_object_id)
+            ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
+            ->select('nagios_hostgroups.alias as hostgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as host_name')
+            ->first();
+
+        if($hostgroup_member_on)
+        {
+            $hostgroup_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->hostgroup_name.".cfg");
+            $hostgroup_content = str_replace($hostgroup_member_on->host_name, $request->hostName, $hostgroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->servicegroup_name.".cfg",$hostgroup_content);
+        }
+        
         shell_exec('sudo service nagios restart');
 
         return redirect()->route('config-hosts');

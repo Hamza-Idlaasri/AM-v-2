@@ -13,7 +13,7 @@ class Equip extends Controller
         $this->middleware(['agent']);
     }
     
-    public function editEquip(Request $request, $equip_id)
+    public function editEquip(Request $request, $equip_object_id)
     {
         // validation
         $this->validate($request,[
@@ -28,7 +28,7 @@ class Equip extends Controller
         ]);
 
         $old_equip_details = DB::table('nagios_services')
-            ->where('nagios_services.service_id', $equip_id)
+            ->where('nagios_services.service_id', $equip_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
@@ -86,8 +86,23 @@ class Equip extends Controller
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_equip_details[0]->display_name, $request->equipName, $nagios_file_content);
+            $nagios_file_content = str_replace($old_equip_details[0]->service_name, $request->equipName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
+        }
+
+        $equip_group_member_on =  DB::table('nagios_servicegroup_members')
+            ->where('nagios_servicegroup_members.service_object_id',$equip_object_id)
+            ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+            ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+            ->select('nagios_servicegroups.alias as equipgroup_name','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+            ->first();
+        
+        if($equip_group_member_on)
+        {
+            $equipgroup_content = file_get_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg");
+            $equipgroup_content = str_replace($equip_group_member_on->box_name.','.$equip_group_member_on->equip_name, $equip_group_member_on->box_name.','.$request->serviceName, $equipgroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg",$equipgroup_content);
         }
 
         shell_exec('sudo service nagios restart');

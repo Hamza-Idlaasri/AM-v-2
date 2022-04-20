@@ -18,7 +18,7 @@
 
 <div class="container my-3 w-50">
 
-    <form action="{{ route('save-box-edits', $box[0]->host_id) }}" method="get">
+    <form action="{{ route('save-box-edits', $box[0]->host_object_id) }}" method="get">
 
         <div class="card shadow-sm">
 

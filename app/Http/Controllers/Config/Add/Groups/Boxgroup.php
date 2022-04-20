@@ -34,7 +34,7 @@ class Boxgroup extends Controller
            array_push($members,$member);
         }
 
-        $define_boxgroup = "\ndefine hostgroup {\n\tboxgroup_name\t\t".$request->boxgroup_name."\n\talias\t\t\t".$request->boxgroup_name."\n\tmembers\t\t\t".implode(',',$members)."\n}\n";
+        $define_boxgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$request->boxgroup_name."\n\talias\t\t\t".$request->boxgroup_name."\n\tmembers\t\t\t".implode(',',$members)."\n}\n";
 
         $path = "/usr/local/nagios/etc/objects/boxgroups/".$request->boxgroup_name.".cfg";
 

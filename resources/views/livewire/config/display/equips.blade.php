@@ -67,7 +67,7 @@
                         <a href="{{ route('edit-equip', ['id' => $equip->service_id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
                         
                         {{-- Delete Equip --}}
-                        <a href="{{ route('delete-equip', ['id' => $equip->service_id]) }}" class="btn text-danger">
+                        <a href="{{ route('delete-equip', ['id' => $equip->service_object_id]) }}" class="btn text-danger">
                             <i class="far fa-trash-alt"></i>
                         </a>
 

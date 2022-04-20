@@ -42,9 +42,9 @@ class Servicegroup extends Controller
         $path = "/usr/local/nagios/etc/objects/servicegroups";
 
         $old_servicegroup = DB::table('nagios_servicegroups')
-        ->where('nagios_servicegroups.servicegroup_id', $servicegroup_id)
-        ->select('nagios_servicegroups.alias as servicegroup_name')
-        ->get();
+            ->where('nagios_servicegroups.servicegroup_id', $servicegroup_id)
+            ->select('nagios_servicegroups.alias as servicegroup_name')
+            ->get();
 
         file_put_contents($path."/".$old_servicegroup[0]->servicegroup_name.'.cfg', $define_servicegroup);
 

@@ -13,10 +13,10 @@ class Equip extends Controller
         $this->middleware(['agent']);
     }
     
-    public function deleteEquip($equip_id)
+    public function deleteEquip($equip_object_id)
     {
         $equip_deleted = DB::table('nagios_services')
-            ->where('nagios_services.service_id',$equip_id)
+            ->where('nagios_services.service_object_id',$equip_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name')
             ->get();
@@ -35,6 +35,21 @@ class Equip extends Controller
         } else
             return 'WORNING: No equipment found';
         
+        $equip_group_member_on =  DB::table('nagios_servicegroup_members')
+            ->where('nagios_servicegroup_members.service_object_id',$equip_object_id)
+            ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+            ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+            ->select('nagios_servicegroups.alias as equipgroup_name','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+            ->first();
+        
+        if($equip_group_member_on)
+        {
+            $equipgroup_content = file_get_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg");
+            $equipgroup_content = str_replace($equip_group_member_on->box_name.','.$equip_group_member_on->equip_name, '', $equipgroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg",$equipgroup_content);
+        }
+
         shell_exec('sudo service nagios restart');
 
         return redirect()->route('config-equips');

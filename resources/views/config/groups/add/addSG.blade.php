@@ -25,7 +25,7 @@
 
         <div class="p-2 bg-white" style="overflow: auto;max-height:200px;border:1px solid rgb(216, 215, 215);border-radius:5px">
         @forelse ($services as $service)
-            <input type="checkbox" name="members[]" id="{{$service->service_name}}" value="{{$service->service_object_id}}"> <label for="{{$service->service_name}}">{{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span></label>
+            <input type="checkbox" name="members[]" id="{{$service->service_name}}({{$service->host_name}})" value="{{$service->service_object_id}}"> <label for="{{$service->service_name}}">{{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span></label>
             <br>
         @empty
             <p>No services</p>

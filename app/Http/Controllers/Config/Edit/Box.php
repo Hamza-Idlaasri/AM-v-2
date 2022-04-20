@@ -13,7 +13,7 @@ class Box extends Controller
         $this->middleware(['agent']);
     }
     
-    public function editBox(Request $request, $box_id)
+    public function editBox(Request $request, $box_object_id)
     {
         // validation
         $this->validate($request,[
@@ -31,11 +31,11 @@ class Box extends Controller
         ]);
 
         $old_box_details = DB::table('nagios_hosts')
-            ->where('host_id', $box_id)
+            ->where('nagios_hosts.host_object_id', $box_object_id)
             ->get();
 
         $equips = DB::table('nagios_hosts')
-            ->where('host_id', $box_id)
+            ->where('nagios_hosts.host_object_id', $box_object_id)
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->select('nagios_services.display_name as equip_name')
             ->get();
@@ -102,6 +102,20 @@ class Box extends Controller
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
             $nagios_file_content = str_replace($old_box_details[0]->display_name, $request->boxName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
+        }
+
+        $boxgroup_member_on = DB::table('nagios_hostgroup_members')
+            ->where('nagios_hostgroup_members.host_object_id',$host_object_id)
+            ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
+            ->select('nagios_hostgroups.alias as boxgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as box_name')
+            ->first();
+
+        if($boxgroup_member_on)
+        {
+            $boxgroup_content = file_get_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg");
+            $boxgroup_content = str_replace($boxgroup_member_on->box_name, $request->boxName, $boxgroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg",$boxgroup_content);
         }
 
         shell_exec('sudo service nagios restart');
