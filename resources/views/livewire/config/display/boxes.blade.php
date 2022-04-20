@@ -1,4 +1,4 @@
-<div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
+<div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll.5000>
     
     <div class="container p-0 w-100 d-flex justify-content-between align-items-center">
         

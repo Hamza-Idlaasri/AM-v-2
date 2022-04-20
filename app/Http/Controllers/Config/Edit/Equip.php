@@ -28,7 +28,7 @@ class Equip extends Controller
         ]);
 
         $old_equip_details = DB::table('nagios_services')
-            ->where('nagios_services.service_id', $equip_object_id)
+            ->where('nagios_services.service_object_id', $equip_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
@@ -101,7 +101,7 @@ class Equip extends Controller
         if($equip_group_member_on)
         {
             $equipgroup_content = file_get_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg");
-            $equipgroup_content = str_replace($equip_group_member_on->box_name.','.$equip_group_member_on->equip_name, $equip_group_member_on->box_name.','.$request->serviceName, $equipgroup_content);
+            $equipgroup_content = str_replace($equip_group_member_on->box_name.','.$equip_group_member_on->equip_name, $equip_group_member_on->box_name.','.$request->equipName, $equipgroup_content);
             file_put_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg",$equipgroup_content);
         }
 

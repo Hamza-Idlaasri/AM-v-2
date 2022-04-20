@@ -121,7 +121,7 @@ class Host extends Controller
         {
             $hostgroup_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->hostgroup_name.".cfg");
             $hostgroup_content = str_replace($hostgroup_member_on->host_name, $request->hostName, $hostgroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->servicegroup_name.".cfg",$hostgroup_content);
+            file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->hostgroup_name.".cfg",$hostgroup_content);
         }
         
         shell_exec('sudo service nagios restart');
