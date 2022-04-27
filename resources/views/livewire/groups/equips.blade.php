@@ -30,7 +30,7 @@
         <div class="container bg-white rounded shadow" style="width: 45%;height: 10%;">
             
             <h4 class="my-4 d-flex justify-content-around align-items-center">
-                <a href="{{ route('eg-details', ['id' => $group->servicegroup_id]) }}" class="text-center" style="width: 85%">{{ $group->equipgroup }}</a>
+                <a href="{{ route('eg-details', ['id' => $group->servicegroup_id]) }}" class="text-center" style="width: 85%">{{ $group->equipgroup_name }}</a>
                 <span class="d-flex justify-content-around align-items-center" style="width: 15%">
 
                     {{-- Edit --}}
@@ -66,58 +66,51 @@
                     <th>Equipment</th>
                 </tr>
 
-                @forelse ($members as $member)
-
-                    @if ($member->servicegroup_id == $group->servicegroup_id)
-                        <tr>
-                            <td>{{ $member->box_name }}</td>
-
-                            @switch($member->box_state)
-
-                                @case(0)
-                                    <td><span class="badge badge-success">Up</span></td>
-                                @break
-
-                                @case(1)
-                                    <td><span class="badge badge-danger">Down</span></td>
-                                @break
-
-                                @case(2)
-                                    <td><span class="badge badge-unknown">Ureachable</span></td>
-                                @break
-
-                                @default
-
-                            @endswitch
-
-                            <td>
-
-                                @switch($member->equip_state)
-                                    @case(0)
-                                        <span class="badge badge-success">{{ $member->equip_name }}</span>
-                                        @break
-                                    @case(1)
-                                        <span class="badge badge-warning">{{ $member->equip_name }}</span>
-                                        @break
-                                    @case(2)
-                                        <span class="badge badge-danger">{{ $member->equip_name }}</span>
-                                        @break
-                                    @case(3)
-                                        <span class="badge badge-unknown">{{ $member->equip_name }}</span>
-                                        @break
-                                    @default
-                                        
-                                @endswitch
-            
-                            </td>
-                        </tr>
-                    @endif
-
-                @empty
+                @for ($i = 0; $i < sizeof($group->members); $i++)
+                    
                     <tr>
-                        <td colspan="3">No members found</td>
+                        <td>{{ $group->members[$i]['box_name'] }}</td>
+
+                        @switch($group->members[$i]['box_state'])
+
+                            @case(0)
+                                <td><span class="badge badge-success">Up</span></td>
+                            @break
+
+                            @case(1)
+                                <td><span class="badge badge-danger">Down</span></td>
+                            @break
+
+                            @case(2)
+                                <td><span class="badge badge-unknown">Ureachable</span></td>
+                            @break
+
+                            @default
+
+                        @endswitch
+
+                        <td>
+
+                            @switch($group->members[$i]['equip_state'])
+                                @case(0)
+                                    <span class="badge badge-success">{{ $group->members[$i]['equip_name'] }}</span>
+                                    @break
+                                @case(1)
+                                    <span class="badge badge-warning">{{ $group->members[$i]['equip_name'] }}</span>
+                                    @break
+                                @case(2)
+                                    <span class="badge badge-danger">{{ $group->members[$i]['equip_name'] }}</span>
+                                    @break
+                                @case(3)
+                                    <span class="badge badge-unknown">{{ $group->members[$i]['equip_name'] }}</span>
+                                    @break
+                                @default
+                                    
+                            @endswitch
+        
+                        </td>
                     </tr>
-                @endforelse
+                    @endfor
 
                 </table>
             </div>

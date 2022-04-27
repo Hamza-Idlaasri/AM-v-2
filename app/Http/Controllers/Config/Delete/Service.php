@@ -19,9 +19,9 @@ class Service extends Controller
             ->where('nagios_services.service_object_id',$service_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name')
-            ->get();
+            ->first();
 
-        $path = "/usr/local/nagios/etc/objects/hosts/".$service_deleted[0]->host_name."/".$service_deleted[0]->service_name.".cfg";
+        $path = "/usr/local/nagios/etc/objects/hosts/".$service_deleted->host_name."/".$service_deleted->service_name.".cfg";
 
         if (is_file($path)) 
         {
@@ -29,27 +29,81 @@ class Service extends Controller
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$service_deleted[0]->host_name}/{$service_deleted[0]->service_name}.cfg", '', $nagios_file_content);
+            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$service_deleted->host_name}/{$service_deleted->service_name}.cfg", '', $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
         } else
             return 'WORNING: No service found';
+
         
-        $service_group_member_on =  DB::table('nagios_servicegroup_members')
+        // Remove from service group
+        $servicegroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$service_object_id)
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
-            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
-            ->first();
+            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+            ->get();
         
-        if($service_group_member_on)
-        {
-            $servicegroup_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg");
-            $servicegroup_content = str_replace($service_group_member_on->host_name.','.$service_group_member_on->service_name,'', $servicegroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg",$servicegroup_content);
+        $groups = [];
+
+        foreach ($servicegroup_member_on as $group) {
+            
+            $servicegroup_members =  DB::table('nagios_servicegroup_members')
+                ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+                ->where('nagios_servicegroups.servicegroup_object_id',$group->servicegroup_object_id)
+                ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+                ->get();
+
+            $members = [];
+
+            foreach ($servicegroup_members as $member) {
+                array_push($members,$member->host_name.",".$member->service_name);
+            }
+
+            array_push($groups,['servicegroup_name' => $group->servicegroup_name,'members' => $members]);
+
         }
 
+
+        // Remove hostname from hostgroups members
+        for ($i=0; $i < sizeof($groups); $i++) { 
+            if (($key = array_search($service_deleted->host_name.",".$service_deleted->service_name, $groups[$i]['members'])) !== false) {
+                unset($groups[$i]['members'][$key]);
+                $groups[$i]['members'] = array_values($groups[$i]['members']);
+            }
+
+            if (sizeof($groups[$i]['members'])) {
+             
+                // Editing in servicegroup file
+                $path = "/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg";  
+
+                $define_servicegroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['servicegroup_name']."\n\talias\t\t\t\t".$groups[$i]['servicegroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_servicegroup);
+        
+                fclose($file);
+
+                // $servicegroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg");
+                // $servicegroup_file_content = str_replace("members\t\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t\t".implode(',',$groups[$i]['members']), $servicegroup_file_content);
+                // file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg", $servicegroup_file_content);
+            }
+            else{
+                // Editing in nagios.cfg file
+                $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
+                $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/servicegroups/{$groups[$i]['servicegroup_name']}.cfg", '', $nagios_file_content);
+                file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
+             
+                // Remove servicegroup file
+                unlink("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg");
+            }
+        }        
+
+        // Restart Nagios 
         shell_exec('sudo service nagios restart');
         
         return redirect()->route('config-services');

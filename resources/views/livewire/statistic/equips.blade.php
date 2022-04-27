@@ -1,5 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.0"></script>
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
 <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">

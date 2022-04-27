@@ -12,9 +12,10 @@
     <link rel="stylesheet" href="{{ asset('css/user-info.css') }}">
     <link rel="stylesheet" href="{{ asset('css/notif.css') }}">
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="{{ asset('js/alpine.min.js') }}" defer></script>
+    <script src="{{ asset('js/chart-2.8.0.js') }}"></script>
+    <script src="{{ asset('js/jquery-2.2.4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/g-charts.js') }}"></script>
     <title>Alarm Manager</title>
     @livewireStyles
 </head>

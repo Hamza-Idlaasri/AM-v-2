@@ -19,12 +19,10 @@ class Box extends Component
     {
         $box = $this->getBox($this->box_id);
 
-        $parent_boxes = $this->getParentsBox($this->box_id);
-
-        $all_boxes = $this->getAllBoxes($this->box_id);
+        $parent = $this->Parent_Child();
 
         return view('livewire.config.edit.box')
-            ->with(['box' => $box, 'parent_boxes' => $parent_boxes, 'all_boxes' => $all_boxes])
+            ->with(['box' => $box, 'parent' => $parent])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -34,25 +32,50 @@ class Box extends Component
         return DB::table('nagios_hosts')
             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
             ->where('nagios_hosts.alias','box')
-            ->where('nagios_hosts.host_object_id', $box_id)
+            ->where('nagios_hosts.host_id', $box_id)
+            ->first();
+    }
+
+    public function getParentsHost($box_id)
+    {
+        return DB::table('nagios_host_parenthosts')
+            ->join('nagios_hosts','nagios_host_parenthosts.parent_host_object_id','=','nagios_hosts.host_object_id')
+            ->where('nagios_host_parenthosts.host_id',$box_id)
+            ->select('nagios_hosts.display_name as host_name','nagios_host_parenthosts.parent_host_object_id')
+            ->first();
+    }
+
+    public function getAllHosts()
+    {
+        return DB::table('nagios_hosts')
+            ->where('alias','host')
+            ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
             ->get();
     }
 
-    public function getParentsBox($box_id)
+    public function Parent_Child()
     {
-        return DB::table('nagios_hosts')
-        ->join('nagios_host_parenthosts','nagios_hosts.host_id','=','nagios_host_parenthosts.host_id')
-        ->select('nagios_hosts.display_name as box_name','nagios_host_parenthosts.*')
-        ->where('nagios_host_parenthosts.host_id','=', $box_id)
-        ->get();
-    }
+        $parent_host = $this->getParentsHost($this->box_id);
 
-    public function getAllBoxes($box_id)
-    {
-        return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->where('host_id','!=',$box_id)
-            ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
-            ->get();
+        $all_hosts = $this->getAllHosts();
+
+        $elements = [];
+
+        foreach ($all_hosts as $host) {
+
+            if($parent_host)
+            {
+                if($host->host_object_id == $parent_host->parent_host_object_id)
+                    array_push($elements, ['relation' => 'parent','host_name' => $host->host_name]);
+                else
+                    array_push($elements, ['relation' => 'none','host_name' => $host->host_name]);
+            }
+            else {
+                array_push($elements, ['relation' => 'none','host_name' => $host->host_name]);
+            }
+
+        }
+
+        return $elements;
     }
 }

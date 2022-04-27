@@ -39,10 +39,10 @@ class Servicegroup extends Controller
             ->where('service_object_id', $member)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name')
-            ->get();
+            ->first();
 
-            array_push($members, $element[0]->host_name);
-            array_push($members, $element[0]->service_name);
+            array_push($members, $element->host_name);
+            array_push($members, $element->service_name);
         }
 
         $define_servicegroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$request->servicegroup_name."\n\talias\t\t\t\t".$request->servicegroup_name."\n\tmembers\t\t\t\t".implode(',',$members)."\n}\n";

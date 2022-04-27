@@ -96,16 +96,19 @@ class Host extends Controller
             foreach ($services as $service) {
             
                 $content = file_get_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg");
-            
                 $content = str_replace($old_host_details[0]->display_name, $request->hostName, $content);
-    
                 file_put_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $content);
+
+                // Editing in nagios.cfg file
+                $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
+                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$service->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $nagios_file_content);
+                file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_host_details[0]->display_name, $request->hostName, $nagios_file_content);
+            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$old_host_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
         }
@@ -115,15 +118,64 @@ class Host extends Controller
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
             ->select('nagios_hostgroups.alias as hostgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as host_name')
-            ->first();
+            ->get();
 
-        if($hostgroup_member_on)
+        if(sizeof($hostgroup_member_on))
         {
-            $hostgroup_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->hostgroup_name.".cfg");
-            $hostgroup_content = str_replace($hostgroup_member_on->host_name, $request->hostName, $hostgroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$hostgroup_member_on->hostgroup_name.".cfg",$hostgroup_content);
+            foreach ($hostgroup_member_on as $group) {
+                $hostgroup_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$group->hostgroup_name.".cfg");
+                $hostgroup_content = str_replace("members\t\t\t".$group->host_name, "members\t\t\t".$request->hostName, $hostgroup_content);
+                file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$group->hostgroup_name.".cfg",$hostgroup_content);
+            }
         }
         
+        // Edit hostname on servicegroup files
+        $servicegroups = DB::table('nagios_servicegroups')->get();
+
+        if(sizeof($servicegroups))
+        {
+            foreach ($servicegroups as $servicegroup) {
+
+                $path = "/usr/local/nagios/etc/objects/servicegroups/".$servicegroup->alias.".cfg";
+
+                if(file_exists($path))
+                {
+                    $servicegroup_content = file_get_contents($path);
+                    $servicegroup_content = str_replace($old_host_details[0]->display_name, $request->hostName, $servicegroup_content);
+                    file_put_contents($path,$servicegroup_content);
+                }
+            }
+        }
+
+        // Remove the Host as parrent of another Host
+        $parent_host = DB::table('nagios_host_parenthosts')
+            ->where('nagios_host_parenthosts.parent_host_object_id',$host_object_id)
+            ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')
+            ->select('nagios_hosts.display_name as host_name','nagios_hosts.alias as host_type')
+            ->get();
+
+        foreach ($parent_host as $host) {
+
+            if($host->host_type == 'host')
+            {
+                $directory = "hosts";
+            }
+
+            if ($host->host_type == 'box') {
+                $directory = "boxes";
+            }
+
+            $myFile = "/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg";
+            $lines = file($myFile);
+            $parents_line = $lines[5];
+
+            // Editing in host .cfg file
+            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg");
+            $host_file_content = str_replace($lines[5], "\tparents\t\t\t".$request->hostName."\n", $host_file_content);
+            file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
+        
+        }
+
         shell_exec('sudo service nagios restart');
 
         return redirect()->route('config-hosts');

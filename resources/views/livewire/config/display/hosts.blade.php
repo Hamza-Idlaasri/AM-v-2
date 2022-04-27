@@ -53,7 +53,7 @@
                         <span class="w-100 d-flex justify-content-around align-items-center">
 
                             {{-- Edit Host --}}
-                            <a href="{{ route('edit-host', ['id' => $host->host_object_id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
+                            <a href="{{ route('edit-host', ['id' => $host->host_id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
                             
                             {{-- Delete Host --}}
                             <a href="{{ route('delete-host', ['id' => $host->host_object_id]) }}" class="btn text-danger">

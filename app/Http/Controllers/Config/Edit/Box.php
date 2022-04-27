@@ -91,21 +91,24 @@ class Box extends Controller
             foreach ($equips as $equip) {
             
                 $content = file_get_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg");
-            
                 $content = str_replace($old_box_details[0]->display_name, $request->boxName, $content);
-    
                 file_put_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg", $content);
+
+                // Editing in nagios.cfg file
+                $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
+                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$service->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$service->equip_name.".cfg", $nagios_file_content);
+                file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_box_details[0]->display_name, $request->boxName, $nagios_file_content);
+            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
         $boxgroup_member_on = DB::table('nagios_hostgroup_members')
-            ->where('nagios_hostgroup_members.host_object_id',$host_object_id)
+            ->where('nagios_hostgroup_members.host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
             ->select('nagios_hostgroups.alias as boxgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as box_name')
@@ -114,8 +117,54 @@ class Box extends Controller
         if($boxgroup_member_on)
         {
             $boxgroup_content = file_get_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg");
-            $boxgroup_content = str_replace($boxgroup_member_on->box_name, $request->boxName, $boxgroup_content);
+            $boxgroup_content = str_replace("members\t\t\t".$boxgroup_member_on->box_name, "members\t\t\t".$request->boxName, $boxgroup_content);
             file_put_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg",$boxgroup_content);
+        }
+
+        $equipgroups = DB::table('nagios_servicegroups')->get();
+
+        if(sizeof($equipgroups))
+        {
+            foreach ($equipgroups as $equipgroup) {
+
+                $path = "/usr/local/nagios/etc/objects/equipgroups/".$equipgroup->alias.".cfg";
+
+                if(file_exists($path))
+                {
+                    $equipgroup_content = file_get_contents($path);
+                    $equipgroup_content = str_replace($old_box_details[0]->display_name, $request->boxName, $equipgroup_content);
+                    file_put_contents($path,$equipgroup_content);
+                }
+            }
+        }
+
+        // Remove the Host as parrent of another Host
+        $parent_host = DB::table('nagios_host_parenthosts')
+            ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
+            ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')
+            ->select('nagios_hosts.display_name as box_name','nagios_hosts.alias as host_type')
+            ->get();
+
+        foreach ($parent_host as $host) {
+
+            if($host->host_type == 'host')
+            {
+                $directory = "hosts";
+            }
+
+            if ($host->host_type == 'box') {
+                $directory = "boxes";
+            }
+
+            $myFile = "/usr/local/nagios/etc/objects/".$directory."/".$host->box_name."/".$host->box_name.".cfg";
+            $lines = file($myFile);
+            $parents_line = $lines[5];
+
+            // Editing in host .cfg file
+            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->box_name."/".$host->box_name.".cfg");
+            $host_file_content = str_replace($lines[5], "\tparents\t\t\t".$request->boxName."\n", $host_file_content);
+            file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->box_name."/".$host->box_name.".cfg", $host_file_content);
+        
         }
 
         shell_exec('sudo service nagios restart');
