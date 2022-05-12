@@ -42,17 +42,17 @@ Route::get('/problems/equipements', App\Http\Livewire\Problems\Equips::class)->n
 
 /*********************************** Groups ***********************************************************************/
 
-Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware(['auth','agent']);
-Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware(['auth','agent']);
+Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware(['auth','super_admin']);
+Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware(['auth','super_admin']);
 
-Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware(['auth','agent']);
-Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware(['auth','agent']);
+Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware(['auth','super_admin']);
+Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware(['auth','super_admin']);
 
-Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware(['auth','agent']);
-Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware(['auth','agent']);
+Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware(['auth','super_admin']);
+Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware(['auth','super_admin']);
 
-Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware(['auth','agent']);
-Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware(['auth','agent']);
+Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware(['auth','super_admin']);
+Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware(['auth','super_admin']);
 
 //------ Config ------------------------------------/
 
@@ -109,26 +109,26 @@ Route::get('/config/delete-equipgroup/{id}',[App\Http\Controllers\Config\Delete\
 
 /************************************ Config **********************************************************************/
 
-Route::get('/config/users',App\Http\Livewire\Auth\Config\Users::class)->name('config.users')->middleware(['auth','agent']);
+Route::get('/config/users',App\Http\Livewire\Auth\Config\Users::class)->name('config.users')->middleware(['auth','super_admin']);
 
 /*** Display ***/
-Route::get('/config/hosts',App\Http\Livewire\Config\Display\Hosts::class)->name('config-hosts')->middleware(['auth','agent']);
-Route::get('/config/boxes',App\Http\Livewire\Config\Display\Boxes::class)->name('config-boxes')->middleware(['auth','agent']);
-Route::get('/config/services',App\Http\Livewire\Config\Display\Services::class)->name('config-services')->middleware(['auth','agent']);
-Route::get('/config/equipements',App\Http\Livewire\Config\Display\Equips::class)->name('config-equips')->middleware(['auth','agent']);
+Route::get('/config/hosts',App\Http\Livewire\Config\Display\Hosts::class)->name('config-hosts')->middleware(['auth','super_admin']);
+Route::get('/config/boxes',App\Http\Livewire\Config\Display\Boxes::class)->name('config-boxes')->middleware(['auth','super_admin']);
+Route::get('/config/services',App\Http\Livewire\Config\Display\Services::class)->name('config-services')->middleware(['auth','super_admin']);
+Route::get('/config/equipements',App\Http\Livewire\Config\Display\Equips::class)->name('config-equips')->middleware(['auth','super_admin']);
 /***************/
 
 /*** Add *******************************************/
 
 // Choose Type Of Host
-Route::view('/config/add-host','config.add-host')->middleware(['auth','agent']);
+Route::view('/config/add-host','config.add-host')->middleware(['auth','super_admin']);
 
 // Get the Host Info
-Route::get('/config/add-host/windows', App\Http\Livewire\Config\Add\Host\Windows::class)->middleware(['auth','agent']);
-Route::get('/config/add-host/linux', App\Http\Livewire\Config\Add\Host\Linux::class)->middleware(['auth','agent']);
-Route::get('/config/add-host/router', App\Http\Livewire\Config\Add\Host\Router::class)->middleware(['auth','agent']);
-Route::get('/config/add-host/switch', App\Http\Livewire\Config\Add\Host\Switchs::class)->middleware(['auth','agent']);
-Route::get('/config/add-host/printer', App\Http\Livewire\Config\Add\Host\Printer::class)->middleware(['auth','agent']);
+Route::get('/config/add-host/windows', App\Http\Livewire\Config\Add\Host\Windows::class)->middleware(['auth','super_admin']);
+Route::get('/config/add-host/linux', App\Http\Livewire\Config\Add\Host\Linux::class)->middleware(['auth','super_admin']);
+Route::get('/config/add-host/router', App\Http\Livewire\Config\Add\Host\Router::class)->middleware(['auth','super_admin']);
+Route::get('/config/add-host/switch', App\Http\Livewire\Config\Add\Host\Switchs::class)->middleware(['auth','super_admin']);
+Route::get('/config/add-host/printer', App\Http\Livewire\Config\Add\Host\Printer::class)->middleware(['auth','super_admin']);
 
 // Create the Host
 Route::get('/config/add-host/windows/add', [App\Http\Controllers\Config\Add\Host\Windows::class,'windows'])->name('create-windows-host');
@@ -139,7 +139,7 @@ Route::get('/config/add-host/printer/add', [App\Http\Controllers\Config\Add\Host
 //----------------------------------------------------------------------------------------------------------------------------------------//
 
 // Add Service
-Route::get('/config/add-service', App\Http\Livewire\Config\Add\Services\Service::class)->middleware('agent');
+Route::get('/config/add-service', App\Http\Livewire\Config\Add\Services\Service::class)->middleware('super_admin');
 Route::get('/config/create-service', [App\Http\Controllers\Config\Add\Services\Service::class,'createService'])->name('create-service');
 
 // Add Box
@@ -148,27 +148,27 @@ Route::get('/config/add-box',App\Http\Livewire\Config\Add\Boxes\Box::class);
 Route::get('/config/add-box/create', [App\Http\Controllers\Config\Add\Boxes\Box::class,'createBox'])->name('create-box');
 
 // Add Equipement
-Route::get('/config/select-box', App\Http\Livewire\Config\Add\Boxes\SelectBox::class)->middleware('agent');
-Route::get('/config/add-equipement/{id}', App\Http\Livewire\Config\Add\Equips\Equip::class)->name('add-equip')->middleware('agent');
+Route::get('/config/select-box', App\Http\Livewire\Config\Add\Boxes\SelectBox::class)->middleware('super_admin');
+Route::get('/config/add-equipement/{id}', App\Http\Livewire\Config\Add\Equips\Equip::class)->name('add-equip')->middleware('super_admin');
 Route::get('/config/create-equipement/{id}', [App\Http\Controllers\Config\Add\Equips\Equip::class,'createEquip'])->name('create-equip');
 
 /*****************************************************/
 
 /*** Edit ********************************************/
 // Host :
-Route::get('/config/edit/host/{id}',App\Http\Livewire\Config\Edit\Host::class)->name('edit-host')->middleware('agent');
+Route::get('/config/edit/host/{id}',App\Http\Livewire\Config\Edit\Host::class)->name('edit-host')->middleware('super_admin');
 Route::get('/config/edited-host/{id}',[App\Http\Controllers\Config\Edit\Host::class, 'editHost'])->name('save-host-edits');
 
 // Box :
-Route::get('/config/edit/box/{id}',App\Http\Livewire\Config\Edit\Box::class)->name('edit-box')->middleware('agent');
+Route::get('/config/edit/box/{id}',App\Http\Livewire\Config\Edit\Box::class)->name('edit-box')->middleware('super_admin');
 Route::get('/config/edited-box/{id}',[App\Http\Controllers\Config\Edit\Box::class, 'editBox'])->name('save-box-edits');
 
 // Service :
-Route::get('/config/edit/service/{id}',App\Http\Livewire\Config\Edit\Service::class)->name('edit-service')->middleware('agent');
+Route::get('/config/edit/service/{id}',App\Http\Livewire\Config\Edit\Service::class)->name('edit-service')->middleware('super_admin');
 Route::get('/config/edited-service/{id}',[App\Http\Controllers\Config\Edit\Service::class, 'editService'])->name('save-service-edits');
 
 // Equip :
-Route::get('/config/edit/equip/{id}',App\Http\Livewire\Config\Edit\Equip::class)->name('edit-equip')->middleware('agent');
+Route::get('/config/edit/equip/{id}',App\Http\Livewire\Config\Edit\Equip::class)->name('edit-equip')->middleware('super_admin');
 Route::get('/config/edited-equip/{id}',[App\Http\Controllers\Config\Edit\Equip::class, 'editEquip'])->name('save-equip-edits');
 /*****************************************************/
 
@@ -247,6 +247,10 @@ Route::get('/change-password', App\Http\Livewire\Auth\User\ChangePassword::class
 
 /******************************************************************************************************************/
 
-// Route::get('',[App\Http\Controllers\test::class,'test'])->name('test');
+/************************************** Sites **********************************************************************/
+
+Route::get('/sites', App\Http\Livewire\AllSites::class)->name('sites');
+
+/*******************************************************************************************************************/
 
 Route::view('/welcome', 'welcome');

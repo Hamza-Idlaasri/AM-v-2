@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Config\Edit;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\UsersSite;
 
 class Host extends Component
 {
@@ -47,8 +48,12 @@ class Host extends Component
 
     public function getAllHosts($host_id)
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
             ->where('alias','host')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->where('host_id','!=',$host_id)
             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
             ->get();

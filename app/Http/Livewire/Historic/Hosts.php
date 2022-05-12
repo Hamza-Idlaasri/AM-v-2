@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Historic;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Hosts extends Component
 {
@@ -76,17 +77,25 @@ class Hosts extends Component
 
     public function getHostsChecks()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hostchecks')
-            ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('alias','host')
+            ->where('nagios_customvariables.varvalue',$site_name)
+            ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
             ->where('is_raw_check','=', 0);
     }
 
     public function getHostsName()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
             ->where('alias','host')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
             ->orderBy('display_name');
     }

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Groups;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Hosts extends Component
 {
@@ -23,10 +24,14 @@ class Hosts extends Component
 
     public function getMembers()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hostgroups')
             ->join('nagios_hostgroup_members','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostgroup_members.host_object_id')
             ->join('nagios_hoststatus','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.alias as type','nagios_hostgroups.alias as hostgroup_name','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_hoststatus.current_state','nagios_hostgroups.hostgroup_id')
             ->where('nagios_hosts.alias','host')
             ->get();
@@ -34,9 +39,13 @@ class Hosts extends Component
 
     public function getMemberServices()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_services.display_name as service_name','nagios_servicestatus.current_state','nagios_hosts.host_object_id')
             ->where('nagios_hosts.alias','host')
             ->get();

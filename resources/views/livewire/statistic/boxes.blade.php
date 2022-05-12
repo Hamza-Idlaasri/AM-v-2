@@ -12,11 +12,11 @@
         <canvas id="BarChart"></canvas>
     </div>
 
-    <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
+    {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
         <h6 class="mb-2 text-secondary">Timeline des Boxes</h6>
         <br>
         <div id="floating" style="height: 60vh"></div>
-    </div>
+    </div> --}}
 
 </div>
 

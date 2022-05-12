@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Problems;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
+use App\Models\UsersSite;
 
 class Hosts extends Component
 {
@@ -36,10 +37,14 @@ class Hosts extends Component
 
     public function getHosts()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
-        ->where('alias','host')
-        ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-        ->where('current_state','<>','0')
-        ->orderBy('display_name');
+            ->where('alias','host')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
+            ->where('current_state','<>','0')
+            ->orderBy('display_name');
     }
 }

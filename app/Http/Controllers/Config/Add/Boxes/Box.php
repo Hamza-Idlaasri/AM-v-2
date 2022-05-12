@@ -4,16 +4,19 @@ namespace App\Http\Controllers\Config\Add\Boxes;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\UsersSite;
 
 class Box extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function createBox(Request $request)
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $equipNames = $request->input('equipName');
         $equiINnbr = $request->input('inputNbr');
         
@@ -38,9 +41,9 @@ class Box extends Controller
             
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n}\n\n";
+            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name."\n}\n\n";
         else
-            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n}\n\n";
+            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n}\n\n";
 
         file_put_contents($box_dir."/".$request->boxName.".cfg", $define_host);
 

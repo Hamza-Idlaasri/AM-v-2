@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PDF;
+use App\Models\UsersSite;
 
 class Services extends Controller
 {
@@ -85,18 +86,26 @@ class Services extends Controller
 
     public function getServicesChecks()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_servicechecks')
-        ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
-        ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-        ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-        ->where('alias','host');
+            ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
+            ->where('alias','host')
+            ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*');
     }
 
     public function getServicesName()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
             ->where('alias','host')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name');
     }
 

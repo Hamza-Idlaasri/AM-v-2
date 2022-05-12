@@ -26,7 +26,7 @@
 
             <div class="card-body">
                 {{-- Box Name --}}
-                <label for="box_name"><b>Box Name {{--<span class="text-danger">*</span>--}}</b></label>
+                <label for="box_name"><b>Box Name <span class="text-danger">*</span></b></label>
                 <input type="text" name="boxName" class="form-control @error('boxName') border-danger @enderror" id="box_name" value="{{ $box->display_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Box name must be between 4 & 20 charcarters in length and containes only letters, numbers, and these symbols (-_+)">
                 @error('boxName')
                     <div class="text-danger">
@@ -37,7 +37,7 @@
                 <br>
 
                 {{-- IP Address --}}
-                <label for="ip"><b>IP Address {{--<span class="text-danger">*</span>--}}</b></label>
+                <label for="ip"><b>IP Address <span class="text-danger">*</span></b></label>
                 <input type="text" name="addressIP" class="form-control @error('addressIP') border-danger @enderror" id="ip" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$" value="{{ $box->address }}" title="Please enter the IP address correctly e.g. 192.168.1.1">
                 @error('addressIP')
                     <div class="text-danger">
@@ -68,12 +68,12 @@
                         @for ($i = 0; $i < sizeof($parent); $i++)
                             
                             @if ($parent[$i]['relation'] == 'parent')
-                                <input type="radio" name="boxes" value="{{ $parent[$i]['host_name'] }}" checked> {{ $parent[$i]['host_name'] }}
+                                <input type="radio" name="boxes" id="{{ $parent[$i]['host_name'] }}" value="{{ $parent[$i]['host_name'] }}" checked> <label for="{{ $parent[$i]['host_name'] }}"> {{ $parent[$i]['host_name'] }}</label>
                                 <br>
                             @endif
 
                             @if ($parent[$i]['relation'] == 'none')    
-                                <input type="radio" name="boxes" value="{{ $parent[$i]['host_name'] }}"> {{ $parent[$i]['host_name'] }}
+                                <input type="radio" name="boxes" id="{{ $parent[$i]['host_name'] }}" value="{{ $parent[$i]['host_name'] }}"> <label for="{{ $parent[$i]['host_name'] }}"> {{ $parent[$i]['host_name'] }}</label>
                                 <br>
                             @endif
 

@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class Boxgroup extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['admin','agent']);
+    }
+
     public function addBG()
     {
         $boxes = DB::table('nagios_hosts')

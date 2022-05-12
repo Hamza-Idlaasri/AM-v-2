@@ -10,7 +10,7 @@ class Service extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function editService(Request $request, $service_object_id)

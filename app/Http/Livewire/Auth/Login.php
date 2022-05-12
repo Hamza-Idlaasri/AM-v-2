@@ -32,7 +32,11 @@ class Login extends Component
             return back()->with('status','Invalid login details');
         }
 
+        if (auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('admin')) 
+            return redirect()->route('sites');    
+        
         return redirect()->route('overview');     
+        
     }
 
     public function render()

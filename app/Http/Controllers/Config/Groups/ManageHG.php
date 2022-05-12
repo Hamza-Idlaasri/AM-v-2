@@ -10,7 +10,7 @@ class ManageHG extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function manageHG($hostgroup_id)

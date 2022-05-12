@@ -15,19 +15,19 @@ class Users extends Component
 
         switch ($transitionTo) {
 
-            case 'superviseur':
-                    $user->detachRole('agent');
-                    $user->attachRole('superviseur');
+            case 'user':
+                    $user->detachRole('admin');
+                    $user->attachRole('user');
 
-                    $message = $user->name.' now its superviseur';
+                    $message = $user->name.' now its a normal user';
 
                 break;
 
-            case 'agent':
-                    $user->detachRole('superviseur');
-                    $user->attachRole('agent');
+            case 'admin':
+                    $user->detachRole('user');
+                    $user->attachRole('admin');
 
-                    $message = $user->name.' now its agent';
+                    $message = $user->name.' now its admin';
 
                 break;
 

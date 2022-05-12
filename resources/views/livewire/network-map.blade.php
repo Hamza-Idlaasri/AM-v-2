@@ -36,7 +36,7 @@
 
                 case 2:
                     label = 'Unreachable';
-                    fontColor = 'violet';
+                    fontColor = 'rgb(151, 4, 230)';
                     break;
                 default:
                     break;

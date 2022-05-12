@@ -23,9 +23,9 @@
             </div>
         @enderror
 
-        <div class="p-2 bg-white" style="overflow: auto;max-height:200px;border:1px solid rgb(216, 215, 215);border-radius:5px">
+        <div class="p-2 bg-white" style="overflow: auto;max-height:250px;border:1px solid rgb(216, 215, 215);border-radius:5px">
             @forelse ($hosts as $host)
-                <input type="checkbox" name="members[]" id="{{$host->host_name}}" value="{{$host->host_name}}"> <label for="{{$host->host_name}}">{{$host->host_name}}</label>
+                <input type="checkbox" name="members[]" id="{{$host->host_name}}" value="{{$host->host_name}}"> <label for="{{$host->host_name}}" style="user-select: none">{{$host->host_name}}</label>
                 <br>
             @empty
                 <p>No hosts</p>

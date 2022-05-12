@@ -1,4 +1,4 @@
-<div class="container p-4 d-flex justify-content-between flex-wrap" wire:poll.5000>
+<div class="container p-4 d-flex justify-content-between flex-wrap" wire:poll>
     
     <div class="container px-4 py-2 w-100 d-flex justify-content-between align-items-center">
         <a href="/config/add-boxgroup" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>

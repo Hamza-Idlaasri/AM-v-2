@@ -63,7 +63,7 @@
         </div> --}}
 
         {{-- Configuration --}}
-        @if (auth()->user()->hasRole('agent'))
+        @if (auth()->user()->hasRole('super_admin'))
             
         <div class="item-container" x-data="{ open: false }">
             <button id="config-btn" class="dd-menu item" @click.prevent="open = true"><i class="far fa-tools"></i> <span class="item-title">Configuration <span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="far fa-angle-down"></i></span></span></button>
@@ -126,6 +126,29 @@
                 <a href="/historiques/equipements" class="sub-item" id="h-equips"><i class="far fa-server"></i><span class="item-title"> Equipemnts</span></a>
             </div>
         </div>
+
+        @if (auth()->user()->hasRole('super_admin') || auth()->user()->hasRole('admin'))
+            
+            {{-- Sites --}}
+            <div class="item-container" x-data="{ open: false }">
+                <button id="sites-btn" class="dd-menu item" @click.prevent="open = true"><i class="far fa-map-marked-alt"></i> <span class="item-title">Sites <span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="far fa-angle-down"></i></span></span></button>
+                <div id="sites" class="sub-menu" x-show="open" x-cloak @click.away="open = false"
+                    x-transition:enter-start="opacity-0 scale-90"
+                    x-transition:enter="ease-out transition-medium"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave="ease-in transition-faster"
+                    x-transition:leave-end="opacity-0 scale-90">
+
+                    @foreach ($sites as $site)
+                        <a wire:click="changeSite({{$site->id}})" class="sub-item" style="cursor: pointer"><i class="fas fa-map-marker-alt"></i> <span class="item-title"> {{$site->site_name}}</span></a> 
+                    @endforeach
+
+                </div>
+            </div>
+
+        @endif
+
     </div>
 
 </div>

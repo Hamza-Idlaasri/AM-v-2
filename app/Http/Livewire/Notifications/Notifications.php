@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Notifications;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\Notif;
+use App\Models\UsersSite;
 
 class Notifications  extends Component
 {
@@ -71,9 +72,13 @@ class Notifications  extends Component
 
     public function getTotal_HostsNotifs()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $hosts = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.display_name as host_name','nagios_notifications.*')
             ->orderByDesc('start_time')
             ->get();   
@@ -87,10 +92,14 @@ class Notifications  extends Component
 
     public function getTotal_ServicesNotifs()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $services = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.*')
             ->orderByDesc('start_time')
             ->get();
@@ -104,9 +113,13 @@ class Notifications  extends Component
 
     public function getTotal_BoxesNotifs()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $boxes = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.display_name as box_name','nagios_notifications.*')
             ->orderByDesc('start_time')
             ->get();
@@ -120,10 +133,14 @@ class Notifications  extends Component
 
     public function getTotal_EquipsNotifs()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $equips = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.*')
             ->orderByDesc('start_time')
             ->get();

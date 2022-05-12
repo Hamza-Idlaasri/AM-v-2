@@ -23,9 +23,9 @@
             </div>
         @enderror
 
-        <div class="p-2 bg-white" style="overflow: auto;max-height:200px;border:1px solid rgb(216, 215, 215);border-radius:5px">
+        <div class="p-2 bg-white" style="overflow: auto;max-height:250px;border:1px solid rgb(216, 215, 215);border-radius:5px">
             @forelse ($boxes as $box)
-                <input type="checkbox" name="members[]" id="{{$box->box_name}}" value="{{$box->box_name}}"> <label for="{{$box->box_name}}">{{$box->box_name}}</label>
+                <input type="checkbox" name="members[]" id="{{$box->box_name}}" value="{{$box->box_name}}"> <label for="{{$box->box_name}}" style="user-select: none">{{$box->box_name}}</label>
                 <br>
             @empty
                 <p>No boxes</p>

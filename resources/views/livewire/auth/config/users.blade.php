@@ -28,10 +28,10 @@
                     
                     <td>{{ $user->phone_number }}</td>
 
-                    @if($user->hasRole('agent'))
-                        <td>Agent</td>
+                    @if($user->hasRole('admin'))
+                        <td>Admin</td>
                     @else
-                        <td>Superviseur</td>
+                        <td>User</td>
                     @endif
 
                     <td>
@@ -52,16 +52,16 @@
                         <span class="w-100 d-flex justify-content-around align-items-center">
 
                             {{-- Upgrade User --}}
-                            @if ($user->hasRole('agent'))
+                            @if ($user->hasRole('admin'))
                                 <div>
                                     <div class="check">
-                                        <input wire:click="upgradeUser('superviseur',{{ $user->id }})" type="checkbox" id="rail" name="users[]" form="up" checked>
+                                        <input wire:click="upgradeUser('user',{{ $user->id }})" type="checkbox" id="rail" name="users[]" form="up" checked>
                                     </div>
                                 </div>
                             @else
                                 <div>
                                     <div class="check">
-                                        <input wire:click="upgradeUser('agent',{{ $user->id }})" type="checkbox" id="rail" name="users[]" form="up">
+                                        <input wire:click="upgradeUser('admin',{{ $user->id }})" type="checkbox" id="rail" name="users[]" form="up">
                                     </div>
                                 </div>
                             @endif

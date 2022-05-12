@@ -19,7 +19,7 @@
     <title>Alarm Manager</title>
     @livewireStyles
 </head>
-<body style="overflow: hidden">
+<body style="overflow: hidden;">
 
     <div class="grid-container">
         
@@ -31,11 +31,12 @@
             @livewire('grid.sidebar')
         </div>
 
-        <div class="main" style="overflow-x: hidden">
+        <div class="main" style="overflow-x: hidden;">
             @yield('content')
                 
             {{-- Popup Notifications --}}
             @livewire('popup-notifs')
+
         </div>
 
     </div>

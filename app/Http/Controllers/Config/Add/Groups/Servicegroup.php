@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class Servicegroup extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['admin','agent']);
+    }
+    
     // Add servicegroup
     public function addSG()
     {

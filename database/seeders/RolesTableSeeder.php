@@ -17,16 +17,22 @@ class RolesTableSeeder extends Seeder
     
     public function run()
     {
-        $agent = Role::create([
-            'name' => 'agent',
-            'display_name' => 'agent',
-            'description' => 'it s an admin',
+        $super_admin = Role::create([
+            'name' => 'super_admin',
+            'display_name' => 'super_admin',
+            'description' => 'can do every thing',
+        ]);
+
+        $admin = Role::create([
+            'name' => 'admin',
+            'display_name' => 'admin',
+            'description' => 'can see all sites',
         ]);
         
-        $superviseur = Role::create([
-            'name' => 'superviseur',
-            'display_name' => 'superviseur',
-            'description' => 'just can see',
+        $user = Role::create([
+            'name' => 'user',
+            'display_name' => 'user',
+            'description' => 'just can see specific site',
         ]);
     }
 }

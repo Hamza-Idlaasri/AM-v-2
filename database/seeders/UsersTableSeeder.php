@@ -18,15 +18,26 @@ class UsersTableSeeder extends Seeder
 
     public function run()
     {
-        $agent = User::create([
-            'name' => 'agent',
-            'email' => 'agent@gmail.com',
+        $super_admin = User::create([
+            'name' => 'super_admin',
+            'email' => 'super_admin@gmail.com',
             'notified' => 0,
             'phone_number' => '+212611111111',
-            'password' => Hash::make('agent'),
+            'password' => Hash::make('super_admin'),
 
         ]);
 
-        $agent->attachRole('agent');
+        $super_admin->attachRole('super_admin');
+      
+        $admin = User::create([
+            'name' => 'admin',
+            'email' => 'admin@gmail.com',
+            'notified' => 0,
+            'phone_number' => '+212611111111',
+            'password' => Hash::make('admin'),
+
+        ]);
+
+        $admin->attachRole('admin');
     }
 }

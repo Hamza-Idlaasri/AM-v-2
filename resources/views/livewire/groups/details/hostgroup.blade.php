@@ -1,4 +1,4 @@
-<div class="container p-4 bg-white shadow rounded w-100 my-4 px-4 py-2">
+<div class="container p-4 bg-white shadow rounded w-100 my-4 px-4 py-2" wire:poll>
     <table class="table table-bordered table-hover text-center">
         <thead class="bg-light text-dark">
             <tr>

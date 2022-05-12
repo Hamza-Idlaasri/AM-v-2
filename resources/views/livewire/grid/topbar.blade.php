@@ -1,4 +1,4 @@
-<div class="d-flex justify-content-between align-items-center p-2 bg-white shadow-sm" wire:poll.5000>
+<div class="d-flex justify-content-between align-items-center p-2 bg-white shadow-sm" wire:poll>
 
     {{-- Summary --}}
     <div class="d-flex justify-content-around align-items-center" style="width: 65%;margin-left: 10%;">

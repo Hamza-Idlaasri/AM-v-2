@@ -4,6 +4,8 @@
     </div>
 
     <form wire:submit.prevent="register">
+
+        {{-- Username --}}
         <div class="form-group">
             <input type="text" wire:model="name" class="form-control @error('name') border-danger @enderror" placeholder="Username" value="{{ old('name') }}" pattern="[a-zA-Z][a-zA-Z0-9-_(). ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]{3,15}" title="Username must be between 3 & 15 charcarters in length and containes only letters, numbers, and these symbols -_()">
             @error('name')
@@ -13,6 +15,7 @@
             @enderror
         </div>
 
+        {{-- Email --}}
         <div class="form-group">
             <input type="email" wire:model="email" class="form-control @error('email') border-danger @enderror" placeholder="Email"  value="{{ old('email') }}">
             @error('email')
@@ -22,6 +25,7 @@
             @enderror
         </div>
        
+        {{-- Phone Number --}}
         <div class="form-group">
             <div class="d-flex">
                 <span class="unity">+212</span>
@@ -34,6 +38,7 @@
             @enderror
         </div>
 
+        {{-- Password --}}
         <div class="form-group">
             <input type="password" wire:model="password" class="form-control @error('password') border-danger @enderror" placeholder="Password" pattern="[a-zA-Z0-9-_().@$=%&#+{}*ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]{5,12}" title="Password must be between 6 & 12 charcarters in length and containes only letters, numbers, and these symbols -_().@$=%&#+{}*">
             @error('password')
@@ -43,11 +48,30 @@
             @enderror   
         </div>
         
-
+        {{-- Confirm Password --}}
         <div class="form-group">
             <input type="password" wire:model="password_confirmation" class="form-control" placeholder="Confirme Password">
         </div>
         
+        {{-- Append to a site --}}
+        <div class="p-2 rounded" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
+                
+            @forelse ($all_sites as $site)
+                <input type="radio" wire:model="site" id="{{$site->id}}" value="{{$site->site_name}}"> <label for="{{$site->id}}">{{ $site->site_name }}</label>
+                <br>
+            @empty
+                <p>No site found</p>
+            @endforelse
+
+        </div>
+            @error('site')
+                <div class="text-danger">
+                    {{ $message }}
+                </div>
+            @enderror   
+        <br>
+
+        {{-- Submit Button --}}
         <div>
             <button type="submit" class="btn btn-primary w-100 font-weight-bold">Register</button>
         </div>

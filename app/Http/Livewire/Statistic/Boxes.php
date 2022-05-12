@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Statistic;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Boxes extends Component
 {
@@ -23,18 +24,26 @@ class Boxes extends Component
 
     public function getBoxesChecks()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hostchecks')
             ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('alias','box')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->where('is_raw_check','=', 0)
             ->orderBy('start_time');
     }
 
     public function getBoxesName()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
             ->where('alias','box')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
             ->orderBy('display_name');
     }

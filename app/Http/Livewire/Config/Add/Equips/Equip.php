@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Config\Add\Equips;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\UsersSite;
 
 class Equip extends Component
 {
@@ -17,14 +18,20 @@ class Equip extends Component
 
     public function render()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $box = DB::table('nagios_hosts')
             ->where('alias', 'box')
             ->where('host_object_id', $this->box_id)
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id as box_id')
             ->get();
 
         $inputs_used = DB::table('nagios_hosts')
             ->where('alias','box')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->where('nagios_hosts.host_object_id', $this->box_id)
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')

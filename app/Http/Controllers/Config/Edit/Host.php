@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Config\Edit;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Host extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function editHost(Request $request, $host_object_id)
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         // validation
         $this->validate($request,[
 
@@ -42,9 +45,9 @@ class Host extends Controller
         
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts');
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name;
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name;
 
         // Normal Check Interval
         if($old_host_details[0]->check_interval != $request->check_interval)

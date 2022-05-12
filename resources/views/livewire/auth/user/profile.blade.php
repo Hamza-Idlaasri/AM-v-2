@@ -70,10 +70,14 @@
                 <h5 class="py-2 text-primary" >{{ auth()->user()->email }}</h5>
                 <h5 class="py-2 text-primary" >{{ auth()->user()->phone_number }}</h5>
         
-                @if (auth()->user()->hasRole('agent'))
-                    <h5 class="py-2 text-primary" >Agent</h5>
-                @else
-                    <h5 class="py-2 text-primary" >Superviseur</h5>
+                @if (auth()->user()->hasRole('super_admin'))
+                    <h5 class="py-2 text-primary" >Super Admin</h5>
+                @endif
+                @if (auth()->user()->hasRole('admin'))
+                    <h5 class="py-2 text-primary" >Admin</h5>
+                @endif
+                @if (auth()->user()->hasRole('user'))
+                    <h5 class="py-2 text-primary" >User</h5>
                 @endif
                 
                 @if (auth()->user()->notified)

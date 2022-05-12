@@ -1,4 +1,3 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
 <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
@@ -13,11 +12,11 @@
         <canvas id="BarChart"></canvas>
     </div>
 
-    <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
+    {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
         <h6 class="mb-2 text-secondary">Timeline des Hosts</h6>
         <br>
         <div id="floating" style="height: 60vh"></div>
-    </div>
+    </div> --}}
 
 </div>
 

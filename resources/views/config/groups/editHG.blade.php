@@ -23,13 +23,13 @@
             </div>
         @enderror
 
-        <div class="p-2 bg-white w-100" style="overflow: auto;max-height:200px;border:1px solid rgb(216, 215, 215);border-radius:5px">
+        <div class="p-2 bg-white w-100" style="overflow: auto;max-height:250px;border:1px solid rgb(216, 215, 215);border-radius:5px">
             @foreach ($hosts as $host)
                 @if (in_array($host->host_object_id, $all_members))
-                    <input type="checkbox" name="members[]" id="mbrs" value="{{$host->host_name}}" checked> {{$host->host_name}}
+                    <input type="checkbox" name="members[]" id="{{$host->host_object_id}}" value="{{$host->host_name}}" checked> <label for="{{$host->host_object_id}}" style="user-select: none"> {{$host->host_name}}</label>
                     <br>
                 @else
-                    <input type="checkbox" name="members[]" id="mbrs" value="{{$host->host_name}}"> {{$host->host_name}}
+                    <input type="checkbox" name="members[]" id="{{$host->host_object_id}}" value="{{$host->host_name}}"> <label for="{{$host->host_object_id}}" style="user-select: none"> {{$host->host_name}}</label>
                     <br>
                 @endif
             @endforeach

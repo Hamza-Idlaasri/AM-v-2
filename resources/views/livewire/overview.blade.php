@@ -1,5 +1,5 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.0"></script>
-<script src="https://cdn.jsdelivr.net/gh/emn178/chartjs-plugin-labels/src/chartjs-plugin-labels.js"></script>
+<script src="{{ asset('js/chart-2.8.0.js') }}"></script>
+<script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
 <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
     

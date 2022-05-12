@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Groups;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Equips extends Component
 {
@@ -19,12 +20,16 @@ class Equips extends Component
 
     public function getEquipGroups()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_servicegroups')
             ->join('nagios_servicegroup_members','nagios_servicegroups.servicegroup_id','=','nagios_servicegroup_members.servicegroup_id')
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_servicegroups.servicegroup_id','nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicestatus.current_state as equip_state','nagios_hoststatus.current_state as box_state')
             ->where('nagios_hosts.alias','box')
             ->get();
@@ -32,6 +37,8 @@ class Equips extends Component
 
     public function getMembers()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $equipgroups = $this->getEquipGroups();
 
         $groups = [];
@@ -44,6 +51,8 @@ class Equips extends Component
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
                 ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_servicegroups.servicegroup_id','nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicestatus.current_state as equip_state','nagios_hoststatus.current_state as box_state')
                 ->where('nagios_servicegroups.servicegroup_object_id', $equipgroup->servicegroup_object_id)
                 ->get();

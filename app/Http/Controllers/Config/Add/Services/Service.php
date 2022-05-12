@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class Service extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['super_admin']);
+    }
+
     public function createService(Request $request)
     {
         // validation

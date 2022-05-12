@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class Hostgroup extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['admin','agent']);
+    }
+    
     public function addHG()
     {
         $hosts = DB::table('nagios_hosts')

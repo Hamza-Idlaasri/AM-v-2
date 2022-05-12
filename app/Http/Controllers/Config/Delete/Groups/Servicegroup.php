@@ -10,7 +10,7 @@ class Servicegroup extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function deleteSG($servicegroup_id)

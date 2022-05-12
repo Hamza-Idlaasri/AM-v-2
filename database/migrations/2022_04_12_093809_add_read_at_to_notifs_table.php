@@ -29,7 +29,10 @@ class AddReadAtToNotifsTable extends Migration
     public function down()
     {
         Schema::table('notifs', function (Blueprint $table) {
-            $table->dropColumn('read_at');
+            $table->dropColumn('read_hosts_at');
+            $table->dropColumn('read_services_at');
+            $table->dropColumn('read_boxes_at');
+            $table->dropColumn('read_equips_at');
         });
     }
 }

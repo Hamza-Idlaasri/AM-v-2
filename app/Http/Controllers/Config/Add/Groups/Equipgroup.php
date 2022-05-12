@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\DB;
 
 class Equipgroup extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(['admin','agent']);
+    }
+    
     // Add equipementgroup
     public function addEG()
     {

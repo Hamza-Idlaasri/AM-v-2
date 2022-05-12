@@ -22,12 +22,15 @@
                 {{ $message }}
             </div>
         @enderror
-        @forelse ($equips as $equip)
-            <input type="checkbox" name="members[]" id="{{$equip->equip_name}}" value="{{$equip->service_object_id}}"> <label for="{{$equip->equip_name}}">{{$equip->equip_name}} <span class="text-secondary">({{$equip->box_name}})</span></label>
+
+        <div class="p-2 bg-white" style="overflow: auto;max-height:250px;border:1px solid rgb(216, 215, 215);border-radius:5px">
+            @forelse ($equips as $equip)
+            <input type="checkbox" name="members[]" id="{{$equip->service_object_id}}" value="{{$equip->service_object_id}}"> <label for="{{$equip->service_object_id}}" style="user-select: none">{{$equip->equip_name}} <span class="text-secondary">({{$equip->box_name}})</span></label>
             <br>
-        @empty
+            @empty
             <p>No equipments</p>
-        @endforelse
+            @endforelse
+        </div>
 
         <br>
 

@@ -23,13 +23,13 @@
             </div>
         @enderror
 
-        <div class="p-2 bg-white w-100" style="overflow: auto;max-height:200px;border:1px solid rgb(216, 215, 215);border-radius:5px">
+        <div class="p-2 bg-white w-100" style="overflow: auto;max-height:250px;border:1px solid rgb(216, 215, 215);border-radius:5px">
             @forelse ($services as $service)
                 @if (in_array($service->service_object_id, $all_members))
-                    <input type="checkbox" name="members[]" id="mbrs" value="{{$service->service_object_id}}" checked> {{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span>
+                    <input type="checkbox" name="members[]" id="{{$service->service_object_id}}" value="{{$service->service_object_id}}" checked> <label for="{{$service->service_object_id}}" style="user-select: none"> {{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span></label>
                     <br>
                 @else
-                    <input type="checkbox" name="members[]" id="mbrs" value="{{$service->service_object_id}}"> {{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span>
+                    <input type="checkbox" name="members[]" id="{{$service->service_object_id}}" value="{{$service->service_object_id}}"> <label for="{{$service->service_object_id}}" style="user-select: none"> {{$service->service_name}} <span class="text-secondary">({{$service->host_name}})</span></label>
                     <br>
                 @endif
                 

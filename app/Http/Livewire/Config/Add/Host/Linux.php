@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Config\Add\Host;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Models\UsersSite;
 
 class Linux extends Component
 {
@@ -19,8 +20,12 @@ class Linux extends Component
 
     public function getHosts()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         return DB::table('nagios_hosts')
             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->where('nagios_hosts.alias','host')
             ->get();
     }

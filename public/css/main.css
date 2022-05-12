@@ -41,3 +41,37 @@
 
 
 /**********/
+
+
+/* Loading icon */
+
+
+/* #loading-icon {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+} */
+
+
+/* Element details */
+
+.table-details td {
+    background-color: rgba(240, 240, 240, 0.6);
+    font-size: 14px;
+    /* font-weight: bold; */
+    text-align: left
+}
+
+.table-details {
+    width: 70%;
+    margin: auto
+}
+
+.left-coll {
+    width: 25%;
+}
+
+
+/******************/
