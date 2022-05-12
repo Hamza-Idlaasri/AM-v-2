@@ -42,17 +42,17 @@ Route::get('/problems/equipements', App\Http\Livewire\Problems\Equips::class)->n
 
 /*********************************** Groups ***********************************************************************/
 
-Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware(['auth','super_admin']);
-Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware(['auth','super_admin']);
+Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware(['super_admin']);
+Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware(['super_admin']);
 
-Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware(['auth','super_admin']);
-Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware(['auth','super_admin']);
+Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware(['super_admin']);
+Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware(['super_admin']);
 
-Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware(['auth','super_admin']);
-Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware(['auth','super_admin']);
+Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware(['super_admin']);
+Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware(['super_admin']);
 
-Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware(['auth','super_admin']);
-Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware(['auth','super_admin']);
+Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware(['super_admin']);
+Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware(['super_admin']);
 
 //------ Config ------------------------------------/
 
