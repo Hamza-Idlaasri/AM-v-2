@@ -201,7 +201,7 @@ class Box extends Controller
 
         // Remove the Host as parrent of another Host
         $parent_host = DB::table('nagios_host_parenthosts')
-            ->where('nagios_host_parenthosts.parent_host_object_id',$host_object_id)
+            ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')
             ->select('nagios_hosts.display_name as host_name','nagios_hosts.alias as host_type')
             ->get();

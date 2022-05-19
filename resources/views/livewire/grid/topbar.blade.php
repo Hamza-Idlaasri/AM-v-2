@@ -4,7 +4,7 @@
     <div class="d-flex justify-content-around align-items-center" style="width: 65%;margin-left: 10%;">
         {{-- Hosts --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_hosts">
-            <span class="m-1 badge"><i class="far fa-desktop"></i></span>
+            <span class="m-1 badge" title="Hosts"><i class="fa-solid fa-display fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" sstyle="cursor: default" title="total des hosts : {{ $total_hosts }}">
                 @if ($total_hosts >= 1000)
                     {{floor($total_hosts/1000).'k'}}
@@ -40,7 +40,7 @@
 
         {{-- Services --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_services">
-            <span class="m-1 badge"><i class="far fa-cog"></i></span>
+            <span class="m-1 badge" title="Services"><i class="fa-solid fa-gear fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des services : {{ $total_services }}">
                 @if ($total_services >= 1000)
                     {{floor($total_services/1000).'k'}}
@@ -80,7 +80,7 @@
         <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>
         {{-- Boxes --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_boxs">
-            <span class="m-1 badge"><i class="far fa-microchip"></i></span>
+            <span class="m-1 badge" title="Boxes"><i class="fa-solid fa-microchip fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des boxes : {{ $total_boxes }}">
                 @if ($total_boxes >= 1000)
                     {{floor($total_boxes/1000).'k'}}
@@ -113,7 +113,7 @@
         <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>
         {{-- Equips --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_equips">
-            <span class="m-1 badge"><i class="far fa-server"></i></span>
+            <span class="m-1 badge" title="Equipements"><i class="fa-solid fa-server fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des equipements : {{ $total_equips }}">
                 @if ($total_equips >= 1000)
                     {{floor($total_equips/1000).'k'}}
@@ -174,8 +174,8 @@
         <div x-data="{ open: false }" style="position: relative;z-index: 1">
             <button @click.prevent="open = true" class="btn btn-light rounded-circle text-secondary" id="user-items">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</button>
             <div class="sub-menu bg-white shadow-lg p-1 rounded" x-show="open" x-cloak @click.away="open = false" style="position: absolute;left: -80px;top:50px">
-                <a href="{{ route('profile') }}" class="sub-item" style="margin:5px;width:100px"><i class="fas fa-user"></i><span class="item-title"> Profile</span></a>
-                <a href="{{ route('edit-user-info') }}" class="sub-item" style="margin:5px;width:100px"><i class="far fa-cog"></i><span class="item-title"> Setting</span></a>
+                <a href="{{ route('profile') }}" class="sub-item" style="margin:5px;width:100px"><i class="fa-solid fa-user"></i><span class="item-title"> Profile</span></a>
+                <a href="{{ route('edit-user-info') }}" class="sub-item" style="margin:5px;width:100px"><i class="fa-solid fa-gear"></i><span class="item-title"> Setting</span></a>
                 <form action="{{ route('logout') }}" method="post">
                     @csrf
                     <button type="submit" class="sub-item" style="margin:5px;width:100px;"><i class="fas fa-sign-out fa-flip-horizontal"></i><span class="item-title"> Logout</span></button>

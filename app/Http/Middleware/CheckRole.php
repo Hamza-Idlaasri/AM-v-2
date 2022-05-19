@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class Admin
+class CheckRole
 {
     /**
      * Handle an incoming request.
@@ -19,7 +19,7 @@ class Admin
         if(!auth()->check())
             return redirect()->route('overview');
     
-        if(auth()->user()->hasRole('admin'))
+        if(auth()->user()->hasRole('admin') || auth()->user()->hasRole('super_admin'))
             return $next($request);
         else
             return redirect()->route('overview');

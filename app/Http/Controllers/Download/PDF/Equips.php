@@ -54,23 +54,6 @@ class Equips extends Controller
 
                     $equip_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-                    switch ($equip_checks[0]->state) {
-                
-                        case 0:
-                            $equip_checks[0]->state = 'Ok';
-                            break;
-                        case 1:
-                            $equip_checks[0]->state = 'Warning';
-                            break;
-                        case 2:
-                            $equip_checks[0]->state = 'Critical';
-                            break;
-                        case 3:
-                            $equip_checks[0]->state = 'Unknown';
-                            break;
-        
-                    }
-
                     array_push($equips_histories,$equip_checks[0]);
                 }
 

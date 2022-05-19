@@ -19,9 +19,7 @@ class SuperAdmin
         if(!auth()->check())
             return redirect()->route('overview');
     
-        $user = auth()->user();
-
-        if($user->hasRole('super_admin'))
+        if(auth()->user()->hasRole('super_admin'))
             return $next($request);
         else
             return redirect()->route('overview');

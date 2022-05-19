@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'super_admin' => \App\Http\Middleware\SuperAdmin::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'agent' => \App\Http\Middleware\Agent::class,
+        'check_role' => \App\Http\Middleware\CheckRole::class,
     ];
 }

@@ -11,7 +11,9 @@
     <link rel="stylesheet" href="{{ asset('css/chart.css') }}">
     <link rel="stylesheet" href="{{ asset('css/user-info.css') }}">
     <link rel="stylesheet" href="{{ asset('css/notif.css') }}">
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="{{ asset('css/all.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/fontawesome.css') }}">
+    {{-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/> --}}
     <script src="{{ asset('js/alpine.min.js') }}" defer></script>
     <script src="{{ asset('js/chart-2.8.0.js') }}"></script>
     <script src="{{ asset('js/jquery-2.2.4.min.js') }}"></script>

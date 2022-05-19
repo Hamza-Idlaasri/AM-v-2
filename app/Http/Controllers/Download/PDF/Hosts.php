@@ -54,20 +54,6 @@ class Hosts extends Controller
 
                     $host_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-                    switch ($host_checks[0]->state) {
-                
-                        case 0:
-                            $host_checks[0]->state = 'Up';
-                            break;
-                        case 1:
-                            $host_checks[0]->state = 'Down';
-                            break;
-                        case 2:
-                            $host_checks[0]->state = 'Unreachable';
-                            break;
-        
-                    }
-
                     array_push($hosts_histories,$host_checks[0]);
                 }
 

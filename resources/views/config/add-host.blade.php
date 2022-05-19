@@ -46,7 +46,7 @@
     <a href="/config/add-host/switch" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="switch">   
         <div>
             <span>
-                <i class="far fa-router"></i>
+                <i class="fa-solid fa-router"></i>
             </span>
             
             <br>
@@ -74,7 +74,7 @@
     <a href="/config/add-host/printer" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="printer">
         <div>
             <span class="bg-white rounde-circle p-2">
-                <i class="far fa-print fa-3x"></i>
+                <i class="fa-solid fa-print fa-3x"></i>
             </span>
             
             <br>

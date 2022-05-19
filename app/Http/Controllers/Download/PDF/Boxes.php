@@ -54,20 +54,6 @@ class Boxes extends Controller
 
                     $box_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-                    switch ($box_checks[0]->state) {
-                
-                        case 0:
-                            $box_checks[0]->state = 'Up';
-                            break;
-                        case 1:
-                            $box_checks[0]->state = 'Down';
-                            break;
-                        case 2:
-                            $box_checks[0]->state = 'Unreachable';
-                            break;
-        
-                    }
-
                     array_push($boxes_histories,$box_checks[0]);
                 }
 

@@ -10,7 +10,7 @@ class Hostgroup extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['admin','agent']);
+        $this->middleware(['super_admin']);
     }
     
     public function addHG()

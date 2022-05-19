@@ -10,7 +10,7 @@ class Servicegroup extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['admin','agent']);
+        $this->middleware(['super_admin']);
     }
     
     // Add servicegroup

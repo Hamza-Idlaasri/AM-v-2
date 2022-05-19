@@ -42,17 +42,17 @@ Route::get('/problems/equipements', App\Http\Livewire\Problems\Equips::class)->n
 
 /*********************************** Groups ***********************************************************************/
 
-Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware(['super_admin']);
-Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware(['super_admin']);
+Route::get('/config/hostgroups',App\Http\Livewire\Groups\Hosts::class)->middleware('super_admin');
+Route::get('/config/hostgroup',App\Http\Livewire\Groups\Details\Hostgroup::class)->name('hg-details')->middleware('super_admin');
 
-Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware(['super_admin']);
-Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware(['super_admin']);
+Route::get('/config/servicegroups',App\Http\Livewire\Groups\Services::class)->middleware('super_admin');
+Route::get('/config/servicegroups/{id}',App\Http\Livewire\Groups\Details\Servicegroup::class)->name('sg-details')->middleware('super_admin');
 
-Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware(['super_admin']);
-Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware(['super_admin']);
+Route::get('/config/boxgroups',App\Http\Livewire\Groups\Boxes::class)->middleware('super_admin');
+Route::get('/config/boxgroups/{id}',App\Http\Livewire\Groups\Details\Boxgroup::class)->name('bg-details')->middleware('super_admin');
 
-Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware(['super_admin']);
-Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware(['super_admin']);
+Route::get('/config/equipgroups',App\Http\Livewire\Groups\Equips::class)->middleware('super_admin');
+Route::get('/config/equipgroups/{id}',App\Http\Livewire\Groups\Details\Equipgroup::class)->name('eg-details')->middleware('super_admin');
 
 //------ Config ------------------------------------/
 
@@ -109,26 +109,26 @@ Route::get('/config/delete-equipgroup/{id}',[App\Http\Controllers\Config\Delete\
 
 /************************************ Config **********************************************************************/
 
-Route::get('/config/users',App\Http\Livewire\Auth\Config\Users::class)->name('config.users')->middleware(['auth','super_admin']);
+Route::get('/config/users',App\Http\Livewire\Auth\Config\Users::class)->name('config.users')->middleware('super_admin');
 
 /*** Display ***/
-Route::get('/config/hosts',App\Http\Livewire\Config\Display\Hosts::class)->name('config-hosts')->middleware(['auth','super_admin']);
-Route::get('/config/boxes',App\Http\Livewire\Config\Display\Boxes::class)->name('config-boxes')->middleware(['auth','super_admin']);
-Route::get('/config/services',App\Http\Livewire\Config\Display\Services::class)->name('config-services')->middleware(['auth','super_admin']);
-Route::get('/config/equipements',App\Http\Livewire\Config\Display\Equips::class)->name('config-equips')->middleware(['auth','super_admin']);
+Route::get('/config/hosts',App\Http\Livewire\Config\Display\Hosts::class)->name('config-hosts')->middleware('super_admin');
+Route::get('/config/boxes',App\Http\Livewire\Config\Display\Boxes::class)->name('config-boxes')->middleware('super_admin');
+Route::get('/config/services',App\Http\Livewire\Config\Display\Services::class)->name('config-services')->middleware('super_admin');
+Route::get('/config/equipements',App\Http\Livewire\Config\Display\Equips::class)->name('config-equips')->middleware('super_admin');
 /***************/
 
 /*** Add *******************************************/
 
 // Choose Type Of Host
-Route::view('/config/add-host','config.add-host')->middleware(['auth','super_admin']);
+Route::view('/config/add-host','config.add-host')->middleware('super_admin');
 
 // Get the Host Info
-Route::get('/config/add-host/windows', App\Http\Livewire\Config\Add\Host\Windows::class)->middleware(['auth','super_admin']);
-Route::get('/config/add-host/linux', App\Http\Livewire\Config\Add\Host\Linux::class)->middleware(['auth','super_admin']);
-Route::get('/config/add-host/router', App\Http\Livewire\Config\Add\Host\Router::class)->middleware(['auth','super_admin']);
-Route::get('/config/add-host/switch', App\Http\Livewire\Config\Add\Host\Switchs::class)->middleware(['auth','super_admin']);
-Route::get('/config/add-host/printer', App\Http\Livewire\Config\Add\Host\Printer::class)->middleware(['auth','super_admin']);
+Route::get('/config/add-host/windows', App\Http\Livewire\Config\Add\Host\Windows::class)->middleware('super_admin');
+Route::get('/config/add-host/linux', App\Http\Livewire\Config\Add\Host\Linux::class)->middleware('super_admin');
+Route::get('/config/add-host/router', App\Http\Livewire\Config\Add\Host\Router::class)->middleware('super_admin');
+Route::get('/config/add-host/switch', App\Http\Livewire\Config\Add\Host\Switchs::class)->middleware('super_admin');
+Route::get('/config/add-host/printer', App\Http\Livewire\Config\Add\Host\Printer::class)->middleware('super_admin');
 
 // Create the Host
 Route::get('/config/add-host/windows/add', [App\Http\Controllers\Config\Add\Host\Windows::class,'windows'])->name('create-windows-host');
@@ -143,7 +143,7 @@ Route::get('/config/add-service', App\Http\Livewire\Config\Add\Services\Service:
 Route::get('/config/create-service', [App\Http\Controllers\Config\Add\Services\Service::class,'createService'])->name('create-service');
 
 // Add Box
-Route::get('/config/add-box',App\Http\Livewire\Config\Add\Boxes\Box::class);
+Route::get('/config/add-box',App\Http\Livewire\Config\Add\Boxes\Box::class)->middleware('super_admin');
 // Create Box
 Route::get('/config/add-box/create', [App\Http\Controllers\Config\Add\Boxes\Box::class,'createBox'])->name('create-box');
 
@@ -190,7 +190,7 @@ Route::get('/historiques/equipements', App\Http\Livewire\Historic\Equips::class)
 
 /******************************************************************************************************************/
 
-/********************************** Historic **********************************************************************/
+/********************************** Statistics **********************************************************************/
 
 Route::get('/statistiques/hosts', App\Http\Livewire\Statistic\Hosts::class)->name('statistic.hosts')->middleware('auth');
 Route::get('/statistiques/services', App\Http\Livewire\Statistic\Services::class)->name('statistic.services')->middleware('auth');
@@ -226,14 +226,14 @@ Route::get('/notifications', App\Http\Livewire\Notifications\Notifications::clas
 /*********************************** Authentication ****************************************************************/
 
 // Registration
-Route::get('/register', App\Http\Livewire\Auth\Registration::class)->name('register')->middleware('auth');
+Route::get('/register', App\Http\Livewire\Auth\Registration::class)->name('register')->middleware('super_admin');
 
 // Login
 Route::get('/login', App\Http\Livewire\Auth\Login::class)->name('login')->middleware('guest');
 Route::get('/', App\Http\Livewire\Auth\Login::class)->name('login')->middleware('guest');
 
 // Logout
-Route::post('/logout', [App\Http\Controllers\Auth\Logout::class,'logout'])->name('logout')->middleware('auth');
+Route::post('/logout', [App\Http\Controllers\Auth\Logout::class,'logout'])->name('logout');
 
 /******************************************************************************************************************/
 
@@ -249,7 +249,7 @@ Route::get('/change-password', App\Http\Livewire\Auth\User\ChangePassword::class
 
 /************************************** Sites **********************************************************************/
 
-Route::get('/sites', App\Http\Livewire\AllSites::class)->name('sites');
+Route::get('/sites', App\Http\Livewire\AllSites::class)->name('sites')->middleware('check_role');
 
 /*******************************************************************************************************************/
 

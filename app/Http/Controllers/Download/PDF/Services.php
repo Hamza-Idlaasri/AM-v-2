@@ -54,23 +54,6 @@ class Services extends Controller
 
                     $service_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-                    switch ($service_checks[0]->state) {
-                
-                        case 0:
-                            $service_checks[0]->state = 'Ok';
-                            break;
-                        case 1:
-                            $service_checks[0]->state = 'Warning';
-                            break;
-                        case 2:
-                            $service_checks[0]->state = 'Critical';
-                            break;
-                        case 3:
-                            $service_checks[0]->state = 'Unknown';
-                            break;
-        
-                    }
-
                     array_push($services_histories,$service_checks[0]);
                 }
 
