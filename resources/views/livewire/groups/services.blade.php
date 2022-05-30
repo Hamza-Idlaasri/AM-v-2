@@ -113,7 +113,7 @@
             </div>
             
     @empty
-        <h6>No result found</h6>
+        <h6>No servicegroups found</h6>
     @endforelse
 
 </div>

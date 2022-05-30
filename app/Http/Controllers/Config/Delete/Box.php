@@ -56,7 +56,7 @@ class Box extends Controller
             return 'WORNING: No box found';
         }
 
-        // Remove the Box as member in boxgroups
+        //-------------------------------------- Remove the Box as member in boxgroups ----------------------------//
         $boxgroup_member_on = DB::table('nagios_hostgroup_members')
             ->where('nagios_hostgroup_members.host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
@@ -86,7 +86,6 @@ class Box extends Controller
 
         $old_groups = $groups;
 
-        // Remove boxname from boxgroups members
         for ($i=0; $i < sizeof($groups); $i++) { 
 
             if (($key = array_search($box_deleted->box_name, $groups[$i]['members'])) !== false) {
@@ -99,7 +98,7 @@ class Box extends Controller
                 // Editing in equipgroup file
                 $path = "/usr/local/nagios/etc/objects/boxgroups/".$groups[$i]['boxgroup_name'].".cfg";  
 
-                $define_boxgroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['boxgroup_name']."\n\talias\t\t\t\t".$groups[$i]['boxgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+                $define_boxgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$groups[$i]['boxgroup_name']."\n\talias\t\t\t\t".$groups[$i]['boxgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
             
                 $file = fopen($path, 'w');
 
@@ -107,10 +106,6 @@ class Box extends Controller
         
                 fclose($file);
 
-                // Editing in boxgroup file
-                // $boxgroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/boxgroups/".$groups[$i]['boxgroup_name'].".cfg");
-                // $boxgroup_file_content = str_replace("members\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t".implode(',',$groups[$i]['members']), $boxgroup_file_content);
-                // file_put_contents("/usr/local/nagios/etc/objects/boxgroups/".$groups[$i]['boxgroup_name'].".cfg", $boxgroup_file_content);
             }
             else{
                 // Editing in nagios.cfg file
@@ -124,7 +119,7 @@ class Box extends Controller
         }
 
 
-        // Remove the Host from servicegroups
+        //-------------------------------- Remove the box from equipgroups ---------------------------------------//
         $equipgroups = DB::table('nagios_servicegroup_members')
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
@@ -159,8 +154,6 @@ class Box extends Controller
 
         $old_groups = $groups;
 
-
-        // Remove hostname from hostgroups members
         for ($i=0; $i < sizeof($groups); $i++) {
 
             foreach ($equipgroups as $servicegroup) {
@@ -183,10 +176,6 @@ class Box extends Controller
         
                 fclose($file);
 
-                // Editing in servicegroup file
-                // $servicegroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/equipgroups/".$groups[$i]['equipgroup_name'].".cfg");
-                // $servicegroup_file_content = str_replace("members\t\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t\t".implode(',',$groups[$i]['members']), $servicegroup_file_content);
-                // file_put_contents("/usr/local/nagios/etc/objects/equipgroups/".$groups[$i]['equipgroup_name'].".cfg", $servicegroup_file_content);
             }
             else{
                 // Editing in nagios.cfg file
@@ -199,7 +188,7 @@ class Box extends Controller
             }
         }
 
-        // Remove the Host as parrent of another Host
+        //--------------------------------- Remove the Host as parrent of another Host ------------------------------//
         $parent_host = DB::table('nagios_host_parenthosts')
             ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')

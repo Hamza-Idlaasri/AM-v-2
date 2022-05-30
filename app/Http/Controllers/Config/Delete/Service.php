@@ -34,9 +34,8 @@ class Service extends Controller
 
         } else
             return 'WORNING: No service found';
-
         
-        // Remove from service group
+        //------------------------------------------------ Remove from servicegroup -----------------------------------------------------//
         $servicegroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$service_object_id)
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
@@ -67,7 +66,6 @@ class Service extends Controller
 
         }
 
-
         // Remove hostname from hostgroups members
         for ($i=0; $i < sizeof($groups); $i++) { 
             if (($key = array_search($service_deleted->host_name.",".$service_deleted->service_name, $groups[$i]['members'])) !== false) {
@@ -88,9 +86,6 @@ class Service extends Controller
         
                 fclose($file);
 
-                // $servicegroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg");
-                // $servicegroup_file_content = str_replace("members\t\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t\t".implode(',',$groups[$i]['members']), $servicegroup_file_content);
-                // file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg", $servicegroup_file_content);
             }
             else{
                 // Editing in nagios.cfg file

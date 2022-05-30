@@ -34,7 +34,7 @@ class Host extends Controller
         
         $old_host_details = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $host_object_id)
-            ->get();
+            ->first();
         
         $services = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $host_object_id)
@@ -42,7 +42,6 @@ class Host extends Controller
             ->select('nagios_services.display_name as service_name')
             ->get();
 
-        
         // Parent relationship
         if($request->input('hosts'))
             $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name;
@@ -50,19 +49,19 @@ class Host extends Controller
             $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name;
 
         // Normal Check Interval
-        if($old_host_details[0]->check_interval != $request->check_interval)
+        if($old_host_details->check_interval != $request->check_interval)
             $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-        if($old_host_details[0]->retry_interval != $request->retry_interval)
+        if($old_host_details->retry_interval != $request->retry_interval)
             $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_host_details[0]->max_check_attempts != $request->max_attempts)
+        if($old_host_details->max_check_attempts != $request->max_attempts)
             $define_host = $define_host."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_host_details[0]->notification_interval != $request->notif_interval)
+        if($old_host_details->notification_interval != $request->notif_interval)
             $define_host = $define_host."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
@@ -76,7 +75,7 @@ class Host extends Controller
 
         $define_host = $define_host."\n}\n\n";
 
-        if($old_host_details[0]->display_name == $request->hostName) {
+        if($old_host_details->display_name == $request->hostName) {
 
             $path = "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg";  
             
@@ -88,33 +87,35 @@ class Host extends Controller
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$old_host_details[0]->display_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg";
             
             file_put_contents($path, $define_host);
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$old_host_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$request->hostName.".cfg");
+            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$request->hostName.".cfg");
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name, "/usr/local/nagios/etc/objects/hosts/".$request->hostName);
+            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name, "/usr/local/nagios/etc/objects/hosts/".$request->hostName);
           
             foreach ($services as $service) {
             
                 $content = file_get_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg");
-                $content = str_replace($old_host_details[0]->display_name, $request->hostName, $content);
+                $content = str_replace($old_host_details->display_name, $request->hostName, $content);
                 file_put_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $content);
 
                 // Editing in nagios.cfg file
                 $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$service->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $nagios_file_content);
+                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$service->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $nagios_file_content);
                 file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details[0]->display_name."/".$old_host_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg", $nagios_file_content);
+            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
         }
+
+        //---------------------------------------- Edit host_name on hostgroups -----------------------------//
 
         $hostgroup_member_on = DB::table('nagios_hostgroup_members')
             ->where('nagios_hostgroup_members.host_object_id',$host_object_id)
@@ -123,34 +124,107 @@ class Host extends Controller
             ->select('nagios_hostgroups.alias as hostgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as host_name')
             ->get();
 
-        if(sizeof($hostgroup_member_on))
-        {
-            foreach ($hostgroup_member_on as $group) {
-                $hostgroup_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$group->hostgroup_name.".cfg");
-                $hostgroup_content = str_replace("members\t\t\t".$group->host_name, "members\t\t\t".$request->hostName, $hostgroup_content);
-                file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$group->hostgroup_name.".cfg",$hostgroup_content);
+        $groups = [];
+
+        foreach ($hostgroup_member_on as $hostgroup) {
+               
+            $hostgroup_members = DB::table('nagios_hostgroup_members')
+                ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
+                ->select('nagios_hostgroups.alias as hostgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as host_name')
+                ->where('nagios_hostgroups.hostgroup_object_id', $hostgroup->hostgroup_object_id)
+                ->get();
+
+            $members = [];
+
+            foreach ($hostgroup_members as $member) {
+                array_push($members, $member->host_name);
             }
+
+            array_push($groups,['hostgroup_name' => $hostgroup->hostgroup_name,'members' => $members]);
+        }
+
+        $old_groups = $groups;
+
+        for ($i=0; $i < sizeof($groups); $i++) { 
+
+            $groups[$i]['members'] = str_replace($old_host_details->display_name,$request->hostName,$groups[$i]['members']);
+
+            if (sizeof($groups[$i]['members'])) {
+                
+                // Editing in hostgroups file
+                $path = "/usr/local/nagios/etc/objects/hostgroups/".$groups[$i]['hostgroup_name'].".cfg";  
+
+                $define_hostgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$groups[$i]['hostgroup_name']."\n\talias\t\t\t\t".$groups[$i]['hostgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_hostgroup);
+        
+                fclose($file);
+
+            }
+            
         }
         
-        // Edit hostname on servicegroup files
-        $servicegroups = DB::table('nagios_servicegroups')->get();
+        //--------------------------------------- Edit hostname on servicegroup files --------------------------------//
+        $servicegroups = DB::table('nagios_servicegroup_members')
+            ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+            ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+            ->where('nagios_hosts.host_object_id',$host_object_id)
+            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+            ->get();
 
-        if(sizeof($servicegroups))
-        {
-            foreach ($servicegroups as $servicegroup) {
+        $groups = [];
 
-                $path = "/usr/local/nagios/etc/objects/servicegroups/".$servicegroup->alias.".cfg";
+        foreach ($servicegroups as $group) {
 
-                if(file_exists($path))
-                {
-                    $servicegroup_content = file_get_contents($path);
-                    $servicegroup_content = str_replace($old_host_details[0]->display_name, $request->hostName, $servicegroup_content);
-                    file_put_contents($path,$servicegroup_content);
-                }
+            $servicegroup_members = DB::table('nagios_servicegroup_members')
+                ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+                ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+                ->where('nagios_servicegroups.servicegroup_object_id',$group->servicegroup_object_id)
+                ->get();
+                    
+            $members = [];
+
+            foreach ($servicegroup_members as $member) {
+                array_push($members, $member->host_name.','.$member->service_name);
             }
+
+            array_push($groups,['servicegroup_name' => $group->servicegroup_name,'members' => $members]);
+
+        }
+        
+        $groups = array_values(array_unique($groups, SORT_REGULAR));
+
+        // Remove hostname from hostgroups members
+        for ($i=0; $i < sizeof($groups); $i++) {
+
+            foreach ($servicegroups as $servicegroup) {
+                $groups[$i]['members'] = str_replace($old_host_details->display_name.',',$request->hostName.',', $groups[$i]['members']);
+            }
+
+            if (sizeof($groups[$i]['members'])) {
+
+                // Editing in equipgroup file
+                $path = "/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg";  
+
+                $define_servicegroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['servicegroup_name']."\n\talias\t\t\t\t".$groups[$i]['servicegroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_servicegroup);
+        
+                fclose($file);
+
+            }
+
         }
 
-        // Remove the Host as parrent of another Host
+        //--------------------------------- Remove the Host as parrent of another Host -------------------------------//
         $parent_host = DB::table('nagios_host_parenthosts')
             ->where('nagios_host_parenthosts.parent_host_object_id',$host_object_id)
             ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')

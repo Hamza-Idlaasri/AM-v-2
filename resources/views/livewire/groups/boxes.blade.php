@@ -67,10 +67,11 @@
                 @endforeach
                 
             </table>
+            
         </div>
 
     @empty
-        <p>No result found</p>
+        <p>No boxgroups found</p>
     @endforelse
 
 </div>

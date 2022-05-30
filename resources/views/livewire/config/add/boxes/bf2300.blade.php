@@ -1,6 +1,6 @@
 <div class="container w-50 my-auto">
     
-    <form action="{{ route('create-box') }}" method="get">
+    <form action="{{ route('create-box-BF2300') }}" method="get">
         
             <div class="card my-2 rounded bg-white shadow-sm">
                 
@@ -136,7 +136,7 @@ addEquip.onclick = () => {
 
     i++;
     
-    if(i > 10)
+    if(i > 12)
         addEquip.style.display = 'none';
         
     if (i > 2) {

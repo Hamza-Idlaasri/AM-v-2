@@ -98,9 +98,13 @@ class Topbar extends Component
 
     public function getHosts()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $hosts_summary = DB::table('nagios_hoststatus')
             ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->get();
 
         $this->hosts_up = 0;
@@ -135,10 +139,14 @@ class Topbar extends Component
 
     public function getServices()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $services_summary = DB::table('nagios_hosts')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->where('nagios_hosts.alias','host')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->get();
 
         $this->services_ok = 0;
@@ -175,9 +183,13 @@ class Topbar extends Component
 
     public function getBoxes()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $boxes_summary = DB::table('nagios_hoststatus')
             ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->get();
 
         $this->boxes_up = 0;
@@ -208,10 +220,14 @@ class Topbar extends Component
 
     public function getEquips()
     {
+        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $equips_summary = DB::table('nagios_hosts')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->where('nagios_hosts.alias','box')
+            ->where('nagios_customvariables.varvalue',$site_name)
             ->get();
         
         $this->equips_ok = 0;

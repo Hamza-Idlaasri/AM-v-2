@@ -116,7 +116,7 @@
             </div>
             
     @empty
-        <h6>No hostgroups existe</h6>
+        <h6>No equipgroups existe</h6>
     @endforelse
 
 </div>

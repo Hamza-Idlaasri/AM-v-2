@@ -142,10 +142,16 @@ Route::get('/config/add-host/printer/add', [App\Http\Controllers\Config\Add\Host
 Route::get('/config/add-service', App\Http\Livewire\Config\Add\Services\Service::class)->middleware('super_admin');
 Route::get('/config/create-service', [App\Http\Controllers\Config\Add\Services\Service::class,'createService'])->name('create-service');
 
+// Choose Type Of Box
+Route::view('/config/add-box','config.add-box')->middleware('super_admin');
+
 // Add Box
-Route::get('/config/add-box',App\Http\Livewire\Config\Add\Boxes\Box::class)->middleware('super_admin');
+Route::get('/config/add-box-type-bf-1010',App\Http\Livewire\Config\Add\Boxes\BF1010::class)->middleware('super_admin');
+Route::get('/config/add-box-type-bf-2300',App\Http\Livewire\Config\Add\Boxes\BF2300::class)->middleware('super_admin');
+
 // Create Box
-Route::get('/config/add-box/create', [App\Http\Controllers\Config\Add\Boxes\Box::class,'createBox'])->name('create-box');
+Route::get('/config/add-box-type-bf-1010/create', [App\Http\Controllers\Config\Add\Boxes\BF1010::class,'createBox'])->name('create-box-BF1010');
+Route::get('/config/add-box-type-bf-2300/create', [App\Http\Controllers\Config\Add\Boxes\BF2300::class,'createBox'])->name('create-box-BF2300');
 
 // Add Equipement
 Route::get('/config/select-box', App\Http\Livewire\Config\Add\Boxes\SelectBox::class)->middleware('super_admin');

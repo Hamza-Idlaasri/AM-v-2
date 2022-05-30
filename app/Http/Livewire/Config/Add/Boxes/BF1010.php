@@ -6,13 +6,13 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\UsersSite;
 
-class Box extends Component
+class BF1010 extends Component
 {
     public function render()
     {
         $hosts = $this->getHosts();
 
-        return view('livewire.config.add.boxes.box')
+        return view('livewire.config.add.boxes.bf1010')
         ->with(['hosts' => $hosts])
         ->extends('layouts.app')
         ->section('content');

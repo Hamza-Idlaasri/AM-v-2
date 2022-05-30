@@ -71,7 +71,7 @@
         </div>
 
     @empty
-        <p>No result found</p>
+        <p>No hostgroups found</p>
     @endforelse
 
 </div>

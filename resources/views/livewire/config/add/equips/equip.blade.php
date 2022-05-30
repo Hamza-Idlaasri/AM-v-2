@@ -1,9 +1,9 @@
 <div class="container">
 
-    <h4 class="text-center m-3"><b>Box Name : </b>{{ $box[0]->box_name }}</h4>
+    <h4 class="text-center m-3"><b>Box Name : </b>{{ $box->box_name }}</h4>
 
     @if (sizeof($inputs_not_used) > 0)
-        <form action="{{ route('create-equip', $box[0]->box_id) }}" method="get">
+        <form action="{{ route('create-equip', $box->box_id) }}" method="get">
 
         <div class="card rounded bg-white m-3 shadow-sm">
             <div class="card-header">Define Equipements :</div>

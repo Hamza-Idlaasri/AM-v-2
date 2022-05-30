@@ -35,7 +35,10 @@ class Box extends Controller
 
         $old_box_details = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $box_object_id)
-            ->get();
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varname','BOXTYPE')
+            ->select('nagios_hosts.*','nagios_customvariables.varvalue as box_type')
+            ->first();
 
         $equips = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $box_object_id)
@@ -45,24 +48,24 @@ class Box extends Controller
 
         // Parent relationship
         if($request->input('boxes'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes')."\n\t_site\t\t\t".$site_name;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
 
         // Normal Check Interval
-        if($old_box_details[0]->check_interval != $request->check_interval)
+        if($old_box_details->check_interval != $request->check_interval)
             $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-        if($old_box_details[0]->retry_interval != $request->retry_interval)
+        if($old_box_details->retry_interval != $request->retry_interval)
             $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_box_details[0]->max_check_attempts != $request->max_attempts)
+        if($old_box_details->max_check_attempts != $request->max_attempts)
             $define_host = $define_host."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_box_details[0]->notification_interval != $request->notif_interval)
+        if($old_box_details->notification_interval != $request->notif_interval)
             $define_host = $define_host."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
@@ -75,7 +78,7 @@ class Box extends Controller
             
         $define_host = $define_host."\n}\n\n";
 
-        if($old_box_details[0]->display_name == $request->boxName) {
+        if($old_box_details->display_name == $request->boxName) {
 
             $path = "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg";  
             
@@ -83,65 +86,142 @@ class Box extends Controller
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$old_box_details->display_name.".cfg";
             
             file_put_contents($path, $define_host);
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$request->boxName.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$old_box_details->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$request->boxName.".cfg");
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name, "/usr/local/nagios/etc/objects/boxes/".$request->boxName);
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name, "/usr/local/nagios/etc/objects/boxes/".$request->boxName);
 
             foreach ($equips as $equip) {
             
                 $content = file_get_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg");
-                $content = str_replace($old_box_details[0]->display_name, $request->boxName, $content);
+                $content = str_replace($old_box_details->display_name, $request->boxName, $content);
                 file_put_contents("/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg", $content);
 
                 // Editing in nagios.cfg file
                 $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$service->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$service->equip_name.".cfg", $nagios_file_content);
+                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$equip->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$equip->equip_name.".cfg", $nagios_file_content);
                 file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details[0]->display_name."/".$old_box_details[0]->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg", $nagios_file_content);
+            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$old_box_details->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
+        //-------------------------------- Edit box_name on boxgroups ----------------------------------------------//
         $boxgroup_member_on = DB::table('nagios_hostgroup_members')
             ->where('nagios_hostgroup_members.host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
             ->select('nagios_hostgroups.alias as boxgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as box_name')
-            ->first();
+            ->get();
 
-        if($boxgroup_member_on)
-        {
-            $boxgroup_content = file_get_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg");
-            $boxgroup_content = str_replace("members\t\t\t".$boxgroup_member_on->box_name, "members\t\t\t".$request->boxName, $boxgroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/boxgroups/".$boxgroup_member_on->boxgroup_name.".cfg",$boxgroup_content);
+        $groups = [];
+
+        foreach ($boxgroup_member_on as $boxgroup) {
+               
+            $boxgroup_members = DB::table('nagios_hostgroup_members')
+                ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
+                ->select('nagios_hostgroups.alias as boxgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as box_name')
+                ->where('nagios_hostgroups.hostgroup_object_id', $boxgroup->hostgroup_object_id)
+                ->get();
+
+            $members = [];
+
+            foreach ($boxgroup_members as $member) {
+                array_push($members, $member->box_name);
+            }
+
+            array_push($groups,['boxgroup_name' => $boxgroup->boxgroup_name,'members' => $members]);
         }
 
-        $equipgroups = DB::table('nagios_servicegroups')->get();
+        $old_groups = $groups;
 
-        if(sizeof($equipgroups))
-        {
+        for ($i=0; $i < sizeof($groups); $i++) { 
+
+            $groups[$i]['members'] = str_replace($old_box_details->display_name,$request->boxName,$groups[$i]['members']);
+
+            if (sizeof($groups[$i]['members'])) {
+                
+                // Editing in boxgroups file
+                $path = "/usr/local/nagios/etc/objects/boxgroups/".$groups[$i]['boxgroup_name'].".cfg";  
+
+                $define_boxgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$groups[$i]['boxgroup_name']."\n\talias\t\t\t\t".$groups[$i]['boxgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_boxgroup);
+        
+                fclose($file);
+
+            }
+            
+        }
+
+        //--------------------------------- Edit box_name on equipgroups -----------------------------------------//
+        
+        $equipgroups = DB::table('nagios_servicegroup_members')
+            ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+            ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+            ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+            ->where('nagios_hosts.host_object_id',$box_object_id)
+            ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+            ->get();
+
+        $groups = [];
+
+        foreach ($equipgroups as $group) {
+
+            $equipgroup_members = DB::table('nagios_servicegroup_members')
+                ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+                ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+                ->where('nagios_servicegroups.servicegroup_object_id',$group->servicegroup_object_id)
+                ->get();
+                
+            $members = [];
+
+            foreach ($equipgroup_members as $member) {
+                array_push($members, $member->box_name.','.$member->equip_name);
+            }
+
+            array_push($groups,['equipgroup_name' => $group->equipgroup_name,'members' => $members]);
+
+        }
+        
+        $groups = array_values(array_unique($groups, SORT_REGULAR));
+
+        for ($i=0; $i < sizeof($groups); $i++) {
+
             foreach ($equipgroups as $equipgroup) {
+                $groups[$i]['members'] = str_replace($old_box_details->display_name.',',$request->boxName.',', $groups[$i]['members']);
+            }
 
-                $path = "/usr/local/nagios/etc/objects/equipgroups/".$equipgroup->alias.".cfg";
+            if (sizeof($groups[$i]['members'])) {
 
-                if(file_exists($path))
-                {
-                    $equipgroup_content = file_get_contents($path);
-                    $equipgroup_content = str_replace($old_box_details[0]->display_name, $request->boxName, $equipgroup_content);
-                    file_put_contents($path,$equipgroup_content);
-                }
+                // Editing in equipgroup file
+                $path = "/usr/local/nagios/etc/objects/equipgroups/".$groups[$i]['equipgroup_name'].".cfg";  
+
+                $define_equipgroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['equipgroup_name']."\n\talias\t\t\t\t".$groups[$i]['equipgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+        
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_equipgroup);
+        
+                fclose($file);
+
             }
         }
 
-        // Remove the Host as parrent of another Host
+        //---------------------------------- Remove the Host as parrent of another Host ------------------------------//
+
         $parent_host = DB::table('nagios_host_parenthosts')
             ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')

@@ -31,25 +31,25 @@ class Equip extends Controller
             ->where('nagios_services.service_object_id', $equip_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
-            ->get();
+            ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_services.*','nagios_servicestatus.check_command')
+            ->first();
 
-        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\thost_name\t\t\t\t".$old_equip_details[0]->host_name."\n\tservice_description\t\t\t".$request->equipName."\n\tcheck_command\t\t\t\t".$old_equip_details[0]->check_command;
+        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\tbox_name\t\t\t\t".$old_equip_details->box_name."\n\tservice_description\t\t\t".$request->equipName."\n\tcheck_command\t\t\t\t".$old_equip_details->check_command;
 
         // Normal Check Interval
-        if($old_equip_details[0]->check_interval != $request->check_interval)
+        if($old_equip_details->check_interval != $request->check_interval)
             $define_service = $define_service."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-        if($old_equip_details[0]->retry_interval != $request->retry_interval)
+        if($old_equip_details->retry_interval != $request->retry_interval)
             $define_service = $define_service."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_equip_details[0]->max_check_attempts != $request->max_attempts)
+        if($old_equip_details->max_check_attempts != $request->max_attempts)
             $define_service = $define_service."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_equip_details[0]->notification_interval != $request->notif_interval)
+        if($old_equip_details->notification_interval != $request->notif_interval)
             $define_service = $define_service."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
@@ -62,9 +62,9 @@ class Equip extends Controller
 
         $define_service = $define_service."\n}\n\n";
 
-        if($old_equip_details[0]->service_name == $request->equipName)
+        if($old_equip_details->equip_name == $request->equipName)
         {
-            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->equipName.".cfg";
 
             $file = fopen($path, 'w');
 
@@ -74,7 +74,7 @@ class Equip extends Controller
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$old_equip_details->equip_name.".cfg";
 
             $file = fopen($path, 'w');
 
@@ -82,27 +82,64 @@ class Equip extends Controller
 
             fclose($file);
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$old_equip_details[0]->service_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_equip_details[0]->host_name."/".$request->equipName.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$old_equip_details->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->equipName.".cfg");
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_equip_details[0]->service_name, $request->equipName, $nagios_file_content);
+            $nagios_file_content = str_replace($old_equip_details->equip_name, $request->equipName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
-        $equip_group_member_on =  DB::table('nagios_servicegroup_members')
+        //-------------------------------- Edit equip name on equipgroups --------------------------------------------// 
+        $equipgroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$equip_object_id)
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
-            ->select('nagios_servicegroups.alias as equipgroup_name','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
-            ->first();
+            ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+            ->get();
         
-        if($equip_group_member_on)
-        {
-            $equipgroup_content = file_get_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg");
-            $equipgroup_content = str_replace($equip_group_member_on->box_name.','.$equip_group_member_on->equip_name, $equip_group_member_on->box_name.','.$request->equipName, $equipgroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/equipgroups/".$equip_group_member_on->equipgroup_name.".cfg",$equipgroup_content);
+        $groups = [];
+
+        foreach ($equipgroup_member_on as $group) {
+            
+            $equipgroup_members =  DB::table('nagios_servicegroup_members')
+                ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+                ->where('nagios_servicegroups.servicegroup_object_id',$group->servicegroup_object_id)
+                ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
+                ->get();
+
+            $members = [];
+
+            foreach ($equipgroup_members as $member) {
+                array_push($members,$member->box_name.",".$member->equip_name);
+            }
+
+            array_push($groups,['equipgroup_name' => $group->equipgroup_name,'members' => $members]);
+
+        }
+
+        for ($i=0; $i < sizeof($groups); $i++) {
+
+            $groups[$i]['members'] = str_replace($old_equip_details->box_name.",".$old_equip_details->equip_name,$old_equip_details->box_name.",".$request->equipName, $groups[$i]['members']);
+
+            if (sizeof($groups[$i]['members'])) {
+            
+                // Editing in servicegroup file
+                $path = "/usr/local/nagios/etc/objects/equipgroups/".$groups[$i]['equipgroup_name'].".cfg";  
+
+                $define_equipgroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['equipgroup_name']."\n\talias\t\t\t\t".$groups[$i]['equipgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_equipgroup);
+        
+                fclose($file);
+
+            }
+            
         }
 
         shell_exec('sudo service nagios restart');

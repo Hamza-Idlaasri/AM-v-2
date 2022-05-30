@@ -56,7 +56,7 @@ class Host extends Controller
             return 'WORNING: No host found';
         }
 
-        // Remove the Host as member in hostgroups
+        //------------------------------------------- Remove the Host as member in hostgroups ----------------------------------------------//
         $hostgroup_member_on = DB::table('nagios_hostgroup_members')
             ->where('nagios_hostgroup_members.host_object_id',$host_object_id)
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
@@ -94,21 +94,17 @@ class Host extends Controller
 
             if (sizeof($groups[$i]['members'])) {
 
-                // Editing in servicegroup file
-                $path = "/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg";  
+                // Editing in hostgroup file
+                $path = "/usr/local/nagios/etc/objects/hostgroups/".$groups[$i]['hostgroup_name'].".cfg";  
 
-                $define_servicegroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['servicegroup_name']."\n\talias\t\t\t\t".$groups[$i]['servicegroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+                $define_hostgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$groups[$i]['hostgroup_name']."\n\talias\t\t\t\t".$groups[$i]['hostgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
             
                 $file = fopen($path, 'w');
 
-                fwrite($file, $define_servicegroup);
+                fwrite($file, $define_hostgroup);
         
                 fclose($file);
 
-                // Editing in hostgroup file
-                // $hostgroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/hostgroups/".$groups[$i]['hostgroup_name'].".cfg");
-                // $hostgroup_file_content = str_replace("members\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t".implode(',',$groups[$i]['members']), $hostgroup_file_content);
-                // file_put_contents("/usr/local/nagios/etc/objects/hostgroups/".$groups[$i]['hostgroup_name'].".cfg", $hostgroup_file_content);
             }
             else {
                 // Editing in nagios.cfg file
@@ -121,7 +117,7 @@ class Host extends Controller
             }
         }
 
-        // Remove the Host from servicegroups
+        //---------------------------------------------- Remove the Host from servicegroups ------------------------------------------------//
         $servicegroups = DB::table('nagios_servicegroup_members')
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
@@ -166,10 +162,10 @@ class Host extends Controller
 
             if (sizeof($groups[$i]['members'])) {
 
-                // Editing in equipgroup file
-                $path = "/usr/local/nagios/etc/objects/hostgroups/".$groups[$i]['hostgroup_name'].".cfg";  
+                // Editing in servicegroup file
+                $path = "/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg";  
 
-                $define_hostgroup = "\ndefine hostgroup {\n\thostgroup_name\t\t".$groups[$i]['hostgroup_name']."\n\talias\t\t\t\t".$groups[$i]['hostgroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+                $define_hostgroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['servicegroup_name']."\n\talias\t\t\t\t".$groups[$i]['servicegroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
             
                 $file = fopen($path, 'w');
 
@@ -177,12 +173,8 @@ class Host extends Controller
         
                 fclose($file);
 
-                // Editing in servicegroup file
-                // $servicegroup_file_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg");
-                // $servicegroup_file_content = str_replace("members\t\t\t\t".implode(',',$old_groups[$i]['members']),"members\t\t\t\t".implode(',',$groups[$i]['members']), $servicegroup_file_content);
-                // file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg", $servicegroup_file_content);
             }
-            else{
+            else {
                 // Editing in nagios.cfg file
                 $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
                 $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/servicegroups/{$groups[$i]['servicegroup_name']}.cfg", '', $nagios_file_content);

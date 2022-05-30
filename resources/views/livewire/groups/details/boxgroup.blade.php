@@ -2,7 +2,7 @@
     <table class="table table-bordered table-hover text-center">
         <thead class="bg-light text-dark">
             <tr>
-                <th>Box</th>
+                <th>Box </th>
                 <th>Equipement</th>
                 <th>Status</th>
                 <th>Dernier verification</th>

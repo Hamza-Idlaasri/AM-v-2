@@ -4,7 +4,7 @@
         
         <a href="{{ route('add-equip', $box->host_object_id) }}" class="m-2 pt-4 pb-2 px-1 bg-white shadow text-center" style="text-decoration: none;width:150px;border-radius: 12px">
             <h1>
-                <i class="far fa-microchip"></i>
+                <i class="fa-solid fa-microchip"></i>
             </h1>
             
             <br>

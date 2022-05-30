@@ -31,24 +31,24 @@ class Service extends Controller
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
-            ->get();
+            ->first();
 
-        $define_service = "define service {\n\tuse\t\t\t\t\tgeneric-service\n\thost_name\t\t\t\t".$old_service_details[0]->host_name."\n\tservice_description\t\t\t".$request->serviceName."\n\tcheck_command\t\t\t\t".$old_service_details[0]->check_command;
+        $define_service = "define service {\n\tuse\t\t\t\t\tgeneric-service\n\thost_name\t\t\t\t".$old_service_details->host_name."\n\tservice_description\t\t\t".$request->serviceName."\n\tcheck_command\t\t\t\t".$old_service_details->check_command;
 
         // Normal Check Interval
-        if($old_service_details[0]->check_interval != $request->check_interval)
+        if($old_service_details->check_interval != $request->check_interval)
             $define_service = $define_service."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-        if($old_service_details[0]->retry_interval != $request->retry_interval)
+        if($old_service_details->retry_interval != $request->retry_interval)
             $define_service = $define_service."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_service_details[0]->max_check_attempts != $request->max_attempts)
+        if($old_service_details->max_check_attempts != $request->max_attempts)
             $define_service = $define_service."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_service_details[0]->notification_interval != $request->notif_interval)
+        if($old_service_details->notification_interval != $request->notif_interval)
             $define_service = $define_service."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
@@ -61,40 +61,78 @@ class Service extends Controller
 
         $define_service = $define_service."\n}\n\n";
 
-        if($old_service_details[0]->service_name == $request->serviceName)
+        if($old_service_details->service_name == $request->serviceName)
         {
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details[0]->host_name."/".$request->serviceName.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$request->serviceName.".cfg";
 
             file_put_contents($path, $define_service);
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details[0]->host_name."/".$old_service_details[0]->service_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg";
 
             file_put_contents($path, $define_service);
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_service_details[0]->host_name."/".$old_service_details[0]->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_service_details[0]->host_name."/".$request->serviceName.".cfg");
+            rename("/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$request->serviceName.".cfg");
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_service_details[0]->service_name, $request->serviceName, $nagios_file_content);
+            $nagios_file_content = str_replace($old_service_details->service_name, $request->serviceName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
-        $service_group_member_on =  DB::table('nagios_servicegroup_members')
+        //------------------------------------ Edit on servicegroups belong to --------------------------------------//
+        $servicegroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$service_object_id)
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
-            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
-            ->first();
+            ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+            ->get();
         
-        if($service_group_member_on)
-        {
-            $servicegroup_content = file_get_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg");
-            $servicegroup_content = str_replace($service_group_member_on->host_name.','.$service_group_member_on->service_name, $service_group_member_on->host_name.','.$request->serviceName, $servicegroup_content);
-            file_put_contents("/usr/local/nagios/etc/objects/servicegroups/".$service_group_member_on->servicegroup_name.".cfg",$servicegroup_content);
+        $groups = [];
+
+        foreach ($servicegroup_member_on as $group) {
+            
+            $servicegroup_members =  DB::table('nagios_servicegroup_members')
+                ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
+                ->where('nagios_servicegroups.servicegroup_object_id',$group->servicegroup_object_id)
+                ->select('nagios_servicegroups.alias as servicegroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as service_name','nagios_hosts.display_name as host_name')
+                ->get();
+
+            $members = [];
+
+            foreach ($servicegroup_members as $member) {
+                array_push($members,$member->host_name.",".$member->service_name);
+            }
+
+            array_push($groups,['servicegroup_name' => $group->servicegroup_name,'members' => $members]);
+
         }
+
+        // Remove hostname from hostgroups members
+        for ($i=0; $i < sizeof($groups); $i++) {
+
+            $groups[$i]['members'] = str_replace($old_service_details->host_name.",".$old_service_details->service_name,$old_service_details->host_name.",".$request->serviceName, $groups[$i]['members']);
+
+            if (sizeof($groups[$i]['members'])) {
+             
+                // Editing in servicegroup file
+                $path = "/usr/local/nagios/etc/objects/servicegroups/".$groups[$i]['servicegroup_name'].".cfg";  
+
+                $define_servicegroup = "\ndefine servicegroup {\n\tservicegroup_name\t\t".$groups[$i]['servicegroup_name']."\n\talias\t\t\t\t".$groups[$i]['servicegroup_name']."\n\tmembers\t\t\t\t".implode(',',$groups[$i]['members'])."\n}\n";
+            
+                $file = fopen($path, 'w');
+
+                fwrite($file, $define_servicegroup);
+        
+                fclose($file);
+
+            }
+            
+        }   
 
         shell_exec('sudo service nagios restart');
 
