@@ -34,7 +34,7 @@ class Equip extends Controller
             ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_services.*','nagios_servicestatus.check_command')
             ->first();
 
-        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\tbox_name\t\t\t\t".$old_equip_details->box_name."\n\tservice_description\t\t\t".$request->equipName."\n\tcheck_command\t\t\t\t".$old_equip_details->check_command;
+        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\thost_name\t\t\t\t".$old_equip_details->box_name."\n\tservice_description\t\t\t".$request->equipName."\n\tcheck_command\t\t\t\t".$old_equip_details->check_command;
 
         // Normal Check Interval
         if($old_equip_details->check_interval != $request->check_interval)

@@ -5,6 +5,11 @@
         <img src="{{ asset('image/am-logo.png') }}" alt="am-logo">
     </div>
 
+    {{-- Site Name --}}
+    <div style="width: 100%;margin-top: -20px;font-size: 12px;font-style: italic;color: rgb(185, 185, 185)" class="text-center mx-auto mb-3">{{$current_site_name}}</div>
+
+    
+
     <div id="menu" class="">
 
         {{-- Overview --}}

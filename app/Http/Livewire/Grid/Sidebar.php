@@ -28,6 +28,9 @@ class Sidebar extends Component
 
     public function render()
     {
-        return view('livewire.grid.sidebar')->with(['sites' => Sites::all()]);
+        $current_site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
+        return view('livewire.grid.sidebar')->with(['sites' => Sites::all(),'current_site_name' => $current_site_name]);
     }
+
 }

@@ -1,0 +1,94 @@
+/****** Redesign Scrollbar ******/
+
+::-webkit-scrollbar {
+    width: 5px;
+    background: white;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(194, 194, 194, 0.808);
+    border-radius: 0px;
+    /* display: none; */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(187, 187, 187);
+    /* display: block; */
+}
+
+.sub-menu-opend {
+    transition-duration: .4s;
+    transform: rotate(180deg);
+}
+
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+.transition-slow {
+    transition-duration: 300ms;
+}
+
+.transition-medium {
+    transition-duration: 200ms;
+}
+
+.transition-faster {
+    transition-duration: 100ms;
+}
+
+.scale-90 {
+    transform: scale(0.9);
+}
+
+.scale-100 {
+    transform: scale(1);
+}
+
+.ease-in {
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+.ease-out {
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+#display-details:focus {
+    outline: none;
+    border: none;
+}
+
+
+/************ map ****************/
+
+#mapdiv {
+    width: 100%;
+    margin-top: -25px;
+}
+
+#mapdiv path {
+    fill: rgb(25, 143, 253);
+    stroke: white;
+    stroke-width: 1px;
+    transition: fill 0.3s;
+    transform: scale(0.55);
+}
+
+#mapdiv path:hover {
+    fill: rgb(18, 103, 182);
+}
+
+svg {
+    width: 100%;
+    height: 70vh;
+    padding: 0;
+    margin: 0;
+}

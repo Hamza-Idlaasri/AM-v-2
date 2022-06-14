@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Config\Add\Boxes;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\UsersSite;
 
 class BF2300 extends Controller
 {

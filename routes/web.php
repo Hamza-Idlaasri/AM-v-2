@@ -256,6 +256,7 @@ Route::get('/change-password', App\Http\Livewire\Auth\User\ChangePassword::class
 /************************************** Sites **********************************************************************/
 
 Route::get('/sites', App\Http\Livewire\AllSites::class)->name('sites')->middleware('check_role');
+Route::get('/addSite', [App\Http\Controllers\Config\AddSite::class,'addSite'])->name('new-site');
 
 /*******************************************************************************************************************/
 
