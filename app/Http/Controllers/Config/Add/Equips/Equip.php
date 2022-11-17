@@ -18,7 +18,7 @@ class Equip extends Controller
         // validation
         $this->validate($request,[
 
-            'equipName.*' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'equipName.*' => 'required|min:2|max:200|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'inputNbr.*' => 'required|min:1|max:10',
          
         ],[

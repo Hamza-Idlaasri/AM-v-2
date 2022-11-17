@@ -12,7 +12,7 @@ class AllSites extends Component
     public $site;
 
     protected $rules = [
-        'site' => 'required|min:3|max:15|unique:am.all_sites,site_name|regex:/^[a-zA-Z][a-zA-Z0-9-_(). ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]/',
+        'site' => 'required|min:3|max:100|unique:am.all_sites,site_name|regex:/^[a-zA-Z][a-zA-Z0-9-_(). ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]/',
     ];
 
     public function addSite()
@@ -35,7 +35,7 @@ class AllSites extends Component
         // Get the current user id
         $user_id = auth()->user()->id;
 
-        // Get the current site the user wnat to see
+        // Get the current site the user want to see
         $current_site = UsersSite::where('user_id', $user_id)->first();
 
         // Update current site
@@ -63,7 +63,7 @@ class AllSites extends Component
 
     public function detailsOfSites()
     {
-        $all_sites = Sites::all();
+        $all_sites = Sites::all()->except(1);
 
         $sites_details = [];
 
@@ -176,7 +176,7 @@ class AllSites extends Component
             //----------------------------------------- Equips -------------------------------------------------//
 
             $site_equips = DB::table('nagios_hosts')
-                ->where('alias','host')
+                ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
@@ -344,24 +344,6 @@ class AllSites extends Component
 
             $total_equips++;
         }
-
-        // $hosts_up = round(($hosts_up/$total_hosts)*100, 2).'%';
-        // $hosts_down = round(($hosts_down/$total_hosts)*100, 2).'%';
-        // $hosts_unreach = round(($hosts_unreach/$total_hosts)*100, 2).'%';
-
-        // $boxes_up = round(($boxes_up/$total_boxes)*100, 2).'%';
-        // $boxes_down = round(($boxes_down/$total_boxes)*100, 2).'%';
-        // $boxes_unreach = round(($boxes_unreach/$total_boxes)*100, 2).'%';
-
-        // $services_ok = round(($services_ok/$total_services)*100, 2).'%';
-        // $services_warning = round(($services_warning/$total_services)*100, 2).'%';
-        // $services_critical = round(($services_critical/$total_services)*100, 2).'%';
-        // $services_unknown = round(($services_unknown/$total_services)*100, 2).'%';
-        
-        // $equips_ok = round(($equips_ok/$total_equips)*100, 2).'%';
-        // $equips_warning = round(($equips_warning/$total_equips)*100, 2).'%';
-        // $equips_critical = round(($equips_critical/$total_equips)*100, 2).'%';
-        // $equips_unknown = round(($equips_unknown/$total_equips)*100, 2).'%';
 
         return (object)[
             "hosts_up" => $hosts_up, "hosts_down" => $hosts_down, "hosts_unreach" => $hosts_unreach,

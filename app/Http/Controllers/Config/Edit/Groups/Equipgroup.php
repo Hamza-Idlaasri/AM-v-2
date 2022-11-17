@@ -17,7 +17,7 @@ class Equipgroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'equipgroup_name' => 'required',
+            'equipgroup_name' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check hosts members for your equipgroup',

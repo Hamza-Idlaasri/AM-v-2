@@ -48,28 +48,28 @@
                     {{ $total_services }}
                 @endif
             </span>
-            <span class="badge badge-success m-1" style="cursor: default" title="{{ $services_ok }} {{ Str::plural('service',$services_ok)}} ok">
+            <span class="badge badge-success m-1" style="cursor: default" title="{{ $services_ok }} {{ Str::plural('service',$services_ok)}} Ok">
                 @if ($services_ok >= 1000)
                     {{floor($services_ok/1000).'k'}}
                 @else
                     {{ $services_ok }}
                 @endif
             </span>
-            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $services_warning }} {{ Str::plural('service',$services_warning)}} warning">
+            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $services_warning }} {{ Str::plural('service',$services_warning)}} Warning">
                 @if ($services_warning >= 1000)
                     {{floor($services_warning/1000).'k'}}
                 @else
                     {{ $services_warning }}
                 @endif
             </span>
-            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $services_critical }} {{ Str::plural('service',$services_critical)}} critical">
+            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $services_critical }} {{ Str::plural('service',$services_critical)}} Critical">
                 @if ($services_critical >= 1000)
                     {{floor($services_critical/1000).'k'}}
                 @else
                     {{ $services_critical }}
                 @endif
             </span>
-            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $services_unknown }} {{ Str::plural('service',$services_unknown)}} unknown">
+            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $services_unknown }} {{ Str::plural('service',$services_unknown)}} Unknown">
                 @if ($services_unknown >= 1000)
                     {{floor($services_unknown/1000).'k'}}
                 @else
@@ -121,28 +121,28 @@
                     {{ $total_equips }}
                 @endif
             </span>
-            <span class="badge badge-success m-1" style="cursor: default" title="{{ $equips_ok }} {{ Str::plural('equipement',$equips_ok)}} ok">
+            <span class="badge badge-success m-1" style="cursor: default" title="{{ $equips_ok }} {{ Str::plural('equipement',$equips_ok)}} Ok">
                 @if ($equips_ok >= 1000)
                     {{floor($equips_ok/1000).'k'}}
                 @else
                     {{ $equips_ok }}
                 @endif
             </span>
-            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $equips_warning }} {{ Str::plural('equipement',$equips_warning)}} ok">
+            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $equips_warning }} {{ Str::plural('equipement',$equips_warning)}} Warning">
                 @if ($equips_warning >= 1000)
                     {{floor($equips_warning/1000).'k'}}
                 @else
                     {{ $equips_warning }}
                 @endif
             </span>
-            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $equips_critical }} {{ Str::plural('equipement',$equips_critical)}} ok">
+            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $equips_critical }} {{ Str::plural('equipement',$equips_critical)}} Critical">
                 @if ($equips_critical >= 1000)
                     {{floor($equips_critical/1000).'k'}}
                 @else
                     {{ $equips_critical }}
                 @endif
             </span>
-            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $equips_unknown }} {{ Str::plural('equipement',$equips_unknown)}} ok">
+            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $equips_unknown }} {{ Str::plural('equipement',$equips_unknown)}} Unknown">
                 @if ($equips_unknown >= 1000)
                     {{floor($equips_unknown/1000).'k'}}
                 @else
@@ -156,7 +156,7 @@
     <div class="d-flex align-items-center mx-3">
 
         {{-- Notificiation Bell --}}
-        <span class="mx-4 text-secondary position-relative" style="font-size: 16px">
+        <span class="mx-4 text-secondary position-relative rounded-circle d-flex justify-content-center align-items-center" style="font-size: 16px;width:30px;height: 30px;background: rgb(240, 240, 240)">
             <a href="{{ route('notifications') }}" class="text-dark">
                 @if ($total_notifs > 0)
                     <i class="fas fa-bell text-danger" id="icon-bell"></i>

@@ -11,7 +11,7 @@
                 <div class="card-body">
                     
                     <label for="box_name"><b>Box name <span class="text-danger">*</span></b> </label>
-                    <input type="text" name="boxName" class="form-control @error('boxName') border-danger @enderror" id="box_name" value="{{ old('boxName') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Box name must be between 2 & 20 charcarters in length and containes only letters, numbers, and these symbols -_+">
+                    <input type="text" name="boxName" class="form-control @error('boxName') border-danger @enderror" id="box_name" value="{{ old('boxName') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Box name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
                     @error('boxName')
                         <div class="text-danger">
                             {{ $message }}

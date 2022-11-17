@@ -27,7 +27,7 @@
             <div class="card-body">
                 {{-- Host Name --}}
                 <label for="host_name"><b>Host Name <span class="text-danger">*</span></b></label>
-                <input type="text" name="hostName" class="form-control @error('hostName') border-danger @enderror" id="host_name" value="{{ $host->display_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Host name must be between 4 & 20 charcarters in length and containes only letters, numbers, and these symbols (-_+)">
+                <input type="text" name="hostName" class="form-control @error('hostName') border-danger @enderror" id="host_name" value="{{ $host->display_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Host name must be between 4 & 200 charcarters in length and containes only letters, numbers, and these symbols (-_+)">
                 @error('hostName')
                     <div class="text-danger">
                         {{ $message }}
@@ -109,8 +109,8 @@
                 {{-- Retry Interval --}}
                 <label for="retryInterval"><b>Retry Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="100" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $host->retry_interval }}">
-                    <span class="unity">min</span>
+                    <input  type="number" min="4" max="100" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $host->retry_interval }}">
+                    <span class="unity">sec</span>
                 </div>
                 @error('retry_interval')
                     <div class="text-danger">

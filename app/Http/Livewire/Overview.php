@@ -28,12 +28,25 @@ class Overview extends Component
 
     public function hosts($site_name)
     {
-        $hosts_summary = DB::table('nagios_hoststatus')
-            ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if ($site_name == 'All') {
+            
+            $hosts_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->where('alias','host')
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $hosts_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('alias','host')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
+        
 
         foreach ($hosts_summary as $host) {
             
@@ -60,12 +73,24 @@ class Overview extends Component
     }
     public function boxes($site_name)
     {
-        $boxes_summary = DB::table('nagios_hoststatus')
+        if ($site_name == 'All') {
+            
+            $boxes_summary = DB::table('nagios_hoststatus')
             ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
             ->where('alias','box')
+            ->select('nagios_hoststatus.current_state')
             ->get();
+        }
+        else
+        {
+            $boxes_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->where('alias','box')
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
 
         foreach ($boxes_summary as $box) {
             
@@ -93,14 +118,27 @@ class Overview extends Component
 
     public function services($site_name)
     {
-        $services_summary = DB::table('nagios_hosts')
-            ->where('alias','host')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
-
+        if ($site_name == 'All') {
+            
+            $services_summary = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $services_summary = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
+        
         foreach ($services_summary as $service) {
 
             switch ($service->current_state) {
@@ -128,13 +166,26 @@ class Overview extends Component
 
     public function equips($site_name)
     {
-        $equips_summary = DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if ($site_name == 'All') {
+            
+            $equips_summary = DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $equips_summary = DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
 
         foreach ($equips_summary as $equip) {
 

@@ -19,7 +19,7 @@ class Linux extends Controller
 
         // validation
         $this->validate($request,[
-            'hostName' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'hostName' => 'required|min:2|max:200|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required|min:7|max:15',
         ],[
             'addressIP.required' => 'the IP address field is empty',

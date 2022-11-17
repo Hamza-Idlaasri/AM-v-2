@@ -27,7 +27,7 @@ class Hostgroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'hostgroup_name' => 'required|min:2|max:20|unique:nagios_hostgroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
+            'hostgroup_name' => 'required|min:2|max:200|unique:nagios_hostgroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check group members for your hostgroup',

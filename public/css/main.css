@@ -3,7 +3,7 @@
 .grid-container {
     display: grid;
     grid-template-columns: 14% 1fr;
-    grid-template-rows: 10vh repeat(4, 1fr);
+    grid-template-rows: 8vh repeat(4, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
 }
@@ -21,7 +21,7 @@
 
 .main {
     grid-area: 2 / 2 / 6 / 6;
-    height: 90vh;
+    height: 92vh;
     overflow: auto;
 }
 

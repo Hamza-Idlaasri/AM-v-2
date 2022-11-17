@@ -9,7 +9,7 @@
             <div class="card-body">
             
                 <label for="host_name"><b>Host Name <span class="text-danger font-weight-bolder">*</span></b></label>
-                <input type="text" name="hostName" class="form-control @error('hostName') border-danger @enderror" id="host_name" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Host name must be between 2 & 20 charcarters in length and containes only letters, numbers, and these symbols -_+">
+                <input type="text" name="hostName" class="form-control @error('hostName') border-danger @enderror" id="host_name" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Host name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
                 @error('hostName')
                     <div class="text-danger">
                         {{ $message }}

@@ -35,6 +35,11 @@
         </tr>
 
         <tr>
+            <td class="left-coll font-weight-bolder ">Input Number</td>
+            <td>{{ $equip->check_command }}</td>
+        </tr>
+
+        <tr>
             <td class="left-coll font-weight-bolder ">Current Attempt</td>
             <td>{{ $equip->current_check_attempt }} / {{$equip->max_check_attempts}} 
 
@@ -59,7 +64,7 @@
         
         <tr>
             <td class="left-coll font-weight-bolder">Retry Check every </td>
-            <td>{{  $equip->retry_interval }} min</td>
+            <td>{{  $equip->retry_interval }} sec</td>
         </tr>
         
         <tr>

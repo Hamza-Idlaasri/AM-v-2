@@ -59,7 +59,7 @@
         
         <tr>
             <td class="left-coll font-weight-bolder">Retry Check every</td>
-            <td>{{  $service->retry_interval }} min</td>
+            <td>{{  $service->retry_interval }} sec</td>
         </tr>
         
         <tr>

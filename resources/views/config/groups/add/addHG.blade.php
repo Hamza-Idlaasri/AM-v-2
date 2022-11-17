@@ -6,7 +6,7 @@
 
     <form action="{{ route('createHG') }}" method="get">
         <label for="hg_name"><b>Hostgroup Name <span class="text-danger">*</span></b></label>
-        <input type="text" name="hostgroup_name" class="form-control @error('hostgroup_name') border-danger @enderror" id="hg_name" value="{{ old('hostgroup_name') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{4,20}" title="HostGroup name must be between 4 & 20 charcarters in length and containes only letters, numbers, and these symbols -_+">
+        <input type="text" name="hostgroup_name" class="form-control @error('hostgroup_name') border-danger @enderror" id="hg_name" value="{{ old('hostgroup_name') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{4,200}" title="HostGroup name must be between 4 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
         @error('hostgroup_name')
             <div class="text-danger">
                 {{ $message }}

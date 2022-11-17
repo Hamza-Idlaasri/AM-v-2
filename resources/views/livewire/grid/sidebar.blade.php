@@ -145,7 +145,7 @@
                     x-transition:leave="ease-in transition-faster"
                     x-transition:leave-end="opacity-0 scale-90">
 
-                    <a href="/sites" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> <span class="item-title"> All</span></a> 
+                    <a href="/sites" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> <span class="item-title"> Overview</span></a> 
 
                     @foreach ($sites as $site)
                         <a wire:click="changeSite({{$site->id}})" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> <span class="item-title"> {{$site->site_name}}</span></a> 

@@ -25,9 +25,26 @@ class Equip extends Component
             ->where('nagios_services.service_object_id',$this->equip_id)
             ->first();
 
+        if(!empty($equip))
+        {
+            $this->convertRetryTime($equip);
+            $this->fixInputNbr($equip);
+        }
+
         return view('livewire.monitoring.details.equip')
             ->with(['equip' => $equip])
             ->extends('layouts.app')
             ->section('content');
     }
+
+    public function convertRetryTime($equip)
+    {
+        $equip->retry_interval = round($equip->retry_interval * 60,2);
+    }
+
+    public function fixInputNbr($equip)
+    {
+        $equip->check_command = substr($equip->check_command,7,-2);
+    }
+    
 }

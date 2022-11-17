@@ -16,7 +16,7 @@ class AddSite extends Controller
     public function addSite(Request $request)
     {
         $this->validate($request,[
-            'site_name' => 'required|min:2|max:20|unique:am.all_sites,site_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'site_name' => 'required|min:2|max:100|unique:am.all_sites,site_name|regex:/^[a-zA-Z0-9-_+ ]/',
         ]);
 
         $add_site = Sites::create([

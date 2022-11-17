@@ -26,26 +26,54 @@ class Boxes extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hostchecks')
-            ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
-            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->where('is_raw_check','=', 0)
-            ->orderBy('start_time');
+        $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
+
+        if ($site_name == 'All') {
+            
+            return DB::table('nagios_hostchecks')
+                ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+                ->where('alias','box')
+                ->where('is_raw_check','=', 0)
+                ->orderBy('start_time')
+                ->where('nagios_hostchecks.end_time','>=',$date);
+        }
+        else
+        {
+            return DB::table('nagios_hostchecks')
+                ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('alias','box')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->where('is_raw_check','=', 0)
+                ->orderBy('start_time')
+                ->where('nagios_hostchecks.end_time','>=',$date);
+        }
+        
     }
 
     public function getBoxesName()
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
-            ->orderBy('display_name');
+        if ($site_name == 'All') {
+            
+            return DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name');
+        }
+        else
+        {
+            return DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name');
+        }
+        
     }
 
     public function getBoxesStatus($boxes_name)
@@ -164,6 +192,13 @@ class Boxes extends Component
         $datasets = [];
 
         $boxes = $this->getBoxesName()->get();
+
+        $data = [
+            'host_name' => '',
+            'Up' => '',
+            'Down' => '',
+            'Unreachable' => '',
+        ];
 
         foreach ($boxes as $box) {
 

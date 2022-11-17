@@ -20,7 +20,7 @@
 
 <div class="container my-3 w-50">
 
-    <form action="{{ route('save-service-edits', $service[0]->service_object_id) }}" method="get">
+    <form action="{{ route('save-service-edits', $service->service_object_id) }}" method="get">
 
         <div class="card">
 
@@ -29,7 +29,7 @@
             <div class="card-body">
                 {{-- service Name --}}
                 <label for="service_name"><b>Service name {{--<span class="text-danger">*</span>--}}</b></label>
-                <input type="text" name="serviceName" class="form-control @error('serviceName') border-danger @enderror" id="service_name" value="{{ $service[0]->display_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Service name must be between 2 & 20 charcarters in length and containes only letters, numbers, and these symbols -_+">
+                <input type="text" name="serviceName" class="form-control @error('serviceName') border-danger @enderror" id="service_name" value="{{ $service->display_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Service name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
                 @error('serviceName')
                     <div class="text-danger">
                         {{ $message }}
@@ -61,7 +61,7 @@
                 {{-- Check Interval --}}
                 <label for="CheckInterval"><b>Check Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="100" name="check_interval" class="form-control p-unity @error('check_interval') border-danger @enderror" id="CheckInterval" value="{{ $service[0]->check_interval }}">
+                    <input  type="number" min="1" max="100" name="check_interval" class="form-control p-unity @error('check_interval') border-danger @enderror" id="CheckInterval" value="{{ $service->check_interval }}">
                     <span class="unity">min</span>
                 </div>
                 @error('check_interval')
@@ -75,8 +75,8 @@
                 {{-- Retry Interval --}}
                 <label for="retryInterval"><b>Retry Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="100" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $service[0]->retry_interval }}">
-                    <span class="unity">min</span>
+                    <input  type="number" min="4" max="100" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $service->retry_interval }}">
+                    <span class="unity">sec</span>
                 </div>
                 @error('retry_interval')
                     <div class="text-danger">
@@ -89,7 +89,7 @@
                 {{-- Max Check --}}
                 <label for="maxInterval"><b>Max Check Attempts<!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="100" name="max_attempts" class="form-control p-unity @error('max_attempts') border-danger @enderror" id="maxInterval" value="{{ $service[0]->max_check_attempts }}">
+                    <input  type="number" min="1" max="100" name="max_attempts" class="form-control p-unity @error('max_attempts') border-danger @enderror" id="maxInterval" value="{{ $service->max_check_attempts }}">
                     <span class="unity">attempts</span>
                 </div>
                 @error('max_attempts')
@@ -103,7 +103,7 @@
                 {{-- Notification Interval --}}
                 <label for="notifInterval"><b>Notification Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="1000" name="notif_interval" class="form-control p-unity @error('notif_interval') border-danger @enderror" id="notifInterval" value="{{ $service[0]->notification_interval }}">
+                    <input  type="number" min="1" max="1000" name="notif_interval" class="form-control p-unity @error('notif_interval') border-danger @enderror" id="notifInterval" value="{{ $service->notification_interval }}">
                     <span class="unity">min</span>
                 </div>
                 @error('notif_interval')
@@ -118,7 +118,7 @@
                 <label for="check"><b>Check this service</b></label>
                 <select name="check" id="check">
 
-                    @if ($service[0]->active_checks_enabled)
+                    @if ($service->active_checks_enabled)
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     @else
@@ -134,7 +134,7 @@
                 <label for="activeNotif"><b>Active Notification</b></label>
                 <select name="active_notif" id="activeNotif">
 
-                    @if ($service[0]->notifications_enabled)
+                    @if ($service->notifications_enabled)
                         <option value="1">Yes</option>
                         <option value="0">No</option>
                     @else

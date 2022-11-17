@@ -14,7 +14,7 @@
             <tr>
                 <th>Box</th>
                 <th>Equipement</th>
-                <th>Description</th>
+                <th>Input Nbr</th>
                 <th>Check Interval</th>
                 <th>Retry Interval</th>
                 <th>Max Check Attempts</th>
@@ -37,14 +37,14 @@
                 </td>
 
                 <td>
-                    <a href="{{ route('me-details', ['id' => $equip->host_object_id]) }}">{{ $equip->equip_name }}</a>
+                    <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{ $equip->equip_name }}</a>
                 </td>
 
-                <td>{{ $equip->output }}</td>
+                <td>{{ $equip->check_command }}</td>
 
                 <td>{{ $equip->normal_check_interval }}</td>
                 
-                <td>{{ $equip->retry_check_interval }}</td>
+                <td>{{ $equip->retry_check_interval }}s</td>
                 
                 <td>{{ $equip->max_check_attempts }}</td>
 

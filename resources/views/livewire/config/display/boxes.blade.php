@@ -33,7 +33,7 @@
                     
                     <td>{{ $box->output }}</td>
                     
-                    <td>{{ $box->retry_interval }}</td>
+                    <td>{{ $box->retry_interval }}s</td>
                     
                     <td>{{ $box->max_check_attempts }}</td>
                     

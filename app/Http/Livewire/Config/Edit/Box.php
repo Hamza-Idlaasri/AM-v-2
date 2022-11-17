@@ -20,6 +20,8 @@ class Box extends Component
     {
         $box = $this->getBox($this->box_id);
 
+        $box->retry_interval = round($box->retry_interval * 60);
+
         $parent = $this->Parent_Child();
 
         return view('livewire.config.edit.box')

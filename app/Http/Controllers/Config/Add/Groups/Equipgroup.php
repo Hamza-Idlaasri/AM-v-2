@@ -30,7 +30,7 @@ class Equipgroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'equipgroup_name' => 'required|min:2|max:20|unique:nagios_servicegroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
+            'equipgroup_name' => 'required|min:2|max:200|unique:nagios_servicegroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check hosts members for your equipgroup',

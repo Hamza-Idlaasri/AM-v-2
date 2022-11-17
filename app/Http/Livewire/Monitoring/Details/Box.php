@@ -22,9 +22,17 @@ class Box extends Component
             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
             ->first();
 
+        if(!empty($box))
+            $this->convertRetryTime($box);
+
         return view('livewire.monitoring.details.box')
             ->with(['box' => $box])
             ->extends('layouts.app')
             ->section('content');
+    }
+
+    public function convertRetryTime($box)
+    {
+        $box->retry_interval = round($box->retry_interval * 60,2);
     }
 }

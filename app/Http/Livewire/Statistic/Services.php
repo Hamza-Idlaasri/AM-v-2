@@ -16,11 +16,8 @@ class Services extends Component
         
         $datasets = $this->getChartRange();
 
-        $min = date("Y-m-d", strtotime($this->getServicesChecks()->first()->start_time));
-        $max = date("Y-m-d", strtotime($this->getServicesChecks()->orderByDesc('start_time')->first()->end_time.'+ 1 days'));
-
         return view('livewire.statistic.services')
-            ->with(['services_status' => $services_status, 'datasets' => $datasets,'min' => $min, 'max' => $max])
+            ->with(['services_status' => $services_status, 'datasets' => $datasets])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -29,27 +26,55 @@ class Services extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_servicechecks')
+        $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
+
+        if ($site_name == 'All') {
+            
+            return DB::table('nagios_servicechecks')
+                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->where('alias','host')
+                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
+                ->orderBy('start_time')
+                ->where('nagios_servicechecks.end_time','>=',$date);
+        }
+        else
+        {
+            return DB::table('nagios_servicechecks')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('alias','host')
             ->where('nagios_customvariables.varvalue',$site_name)
             ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
-            ->orderBy('start_time');
+            ->orderBy('start_time')
+            ->where('nagios_servicechecks.end_time','>=',$date);
+        }
+       
     }
 
     public function getServicesName()
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hosts')
-            ->where('alias','host')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name')
-            ->orderBy('nagios_services.display_name');
+        if ($site_name == 'All') {
+            
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name')
+                ->orderBy('nagios_services.display_name');
+        }
+        else
+        {
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name')
+                ->orderBy('nagios_services.display_name');
+        }
     }
 
     public function getServicesStatus($services_name)
@@ -173,6 +198,14 @@ class Services extends Component
         $datasets = [];
 
         $services = $this->getServicesName()->get();
+
+        $data = [
+            'equip_name' => '',
+            'Ok' => '',
+            'Warning' => '',
+            'Critical' => '',
+            'Unknown' => '',
+        ];
 
         foreach ($services as $service) {
 

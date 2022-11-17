@@ -25,9 +25,17 @@ class Service extends Component
             ->where('nagios_services.service_object_id',$this->service_id)
             ->first();
 
+        if(!empty($service))
+            $this->convertRetryTime($service);
+
         return view('livewire.monitoring.details.service')
             ->with(['service' => $service])
             ->extends('layouts.app')
             ->section('content');
+    }
+
+    public function convertRetryTime($service)
+    {
+        $service->retry_interval = round($service->retry_interval * 60,2);
     }
 }

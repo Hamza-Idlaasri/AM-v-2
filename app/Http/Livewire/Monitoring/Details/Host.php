@@ -22,9 +22,17 @@ class Host extends Component
             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
             ->first();
 
+        if(!empty($host))
+            $this->convertRetryTime($host);
+            
         return view('livewire.monitoring.details.host')
             ->with(['host' => $host])
             ->extends('layouts.app')
             ->section('content');
+    }
+
+    public function convertRetryTime($host)
+    {
+        $host->retry_interval = round($host->retry_interval * 60,2);
     }
 }

@@ -12,7 +12,8 @@
                 <th>Equipements</th>
                 <th>Status</th>
                 <th>Dernier verification</th>
-                <th style="width: 45%">Description</th>
+                <th>Input Nbr</th>
+                <th style="width: 30%">Description</th>
             </tr>
         </thead>
 
@@ -21,7 +22,7 @@
         @forelse ($equips as $equip)        
         
         <tr>
-
+            {{-- Boxe Name --}}
             @if ($check == 0 || $equip->host_object_id != $check)       
                 
                 <td>
@@ -34,7 +35,7 @@
                 <td></td>
             @endif
             
-
+            {{-- Equip Name --}}
             <td>
                 <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->equip_name}}</a>
 
@@ -45,6 +46,7 @@
                 @endif
             </td>
             
+            {{-- Status --}}
             @switch($equip->current_state)
             
                 @case(1)
@@ -59,7 +61,13 @@
                     
             @endswitch
             
+            {{-- Dernier Verification --}}
             <td>{{$equip->last_check}}</td>
+
+            {{-- Input Nbr --}}
+            <td>{{$equip->check_command}}</td>
+
+            {{-- Description --}}
             <td class="description">{{$equip->output}}</td>
         </tr>
             

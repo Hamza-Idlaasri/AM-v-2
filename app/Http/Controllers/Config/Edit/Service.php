@@ -18,7 +18,7 @@ class Service extends Controller
         // validation
         $this->validate($request,[
          
-            'serviceName' => 'required',
+            'serviceName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'check_interval' => 'required|min:1|max:100',
             'retry_interval' => 'required|min:1|max:100',
             'max_attempts' => 'required|min:1|max:100',
@@ -40,6 +40,9 @@ class Service extends Controller
             $define_service = $define_service."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
+            // Convert Time
+        $request->retry_interval = floatval(round($request->retry_interval/60,2));
+            // Check Time
         if($old_service_details->retry_interval != $request->retry_interval)
             $define_service = $define_service."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 

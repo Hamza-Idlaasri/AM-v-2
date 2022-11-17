@@ -21,7 +21,7 @@ class Host extends Controller
         // validation
         $this->validate($request,[
 
-            'hostName' => 'required|min:2|max:20|regex:/^[a-zA-Z0-9-_+ ]/',
+            'hostName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required|min:7|max:15|regex:/^[0-9.]/',
             'check_interval' => 'required|min:1|max:100',
             'retry_interval' => 'required|min:1|max:100',
@@ -53,6 +53,9 @@ class Host extends Controller
             $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
+            // Convert Time
+        $request->retry_interval = floatval(round($request->retry_interval/60.2));
+            // Check Time
         if($old_host_details->retry_interval != $request->retry_interval)
             $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 

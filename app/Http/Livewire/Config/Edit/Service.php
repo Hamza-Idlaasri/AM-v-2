@@ -19,8 +19,10 @@ class Service extends Component
     {
         $service = DB::table('nagios_services')
             ->where('service_id', $this->service_id)
-            ->get();
+            ->first();
 
+        $service->retry_interval = round($service->retry_interval * 60);
+        
         return view('livewire.config.edit.service')
             ->with('service', $service)
             ->extends('layouts.app')

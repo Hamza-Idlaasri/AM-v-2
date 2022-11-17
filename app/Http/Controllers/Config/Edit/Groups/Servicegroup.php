@@ -17,7 +17,7 @@ class Servicegroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'servicegroup_name' => 'required|min:2|max:20|regex:/^[a-zA-Z0-9-_+ ]/',
+            'servicegroup_name' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check services members for your servicegroup',

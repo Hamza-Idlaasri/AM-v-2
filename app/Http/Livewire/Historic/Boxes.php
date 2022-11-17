@@ -57,15 +57,15 @@ class Boxes extends Component
             $boxes_histories = $this->filterByName($boxes_histories,$this->box_name);
         }
 
-        if($this->date_from)
-        {
-            $boxes_histories = $this->filterByDateFrom($boxes_histories,$this->date_from);
-        }
+        // if($this->date_from)
+        // {
+        //     $boxes_histories = $this->filterByDateFrom($boxes_histories,$this->date_from);
+        // }
         
-        if($this->date_to)
-        {
-            $boxes_histories = $this->filterByDateTo($boxes_histories,$this->date_to);
-        }
+        // if($this->date_to)
+        // {
+        //     $boxes_histories = $this->filterByDateTo($boxes_histories,$this->date_to);
+        // }
         
         return view('livewire.historic.boxes')
             ->with(['boxes_histories' => $boxes_histories,'boxes_names' => $boxes_names])
@@ -77,25 +77,85 @@ class Boxes extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hostchecks')
-            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
-            ->where('is_raw_check','=', 0);
+        $from_date = $this->date_from;
+        $to_date = $this->date_to;
+        
+        // Check from date
+        if(empty($this->date_from))
+        {
+            $from_date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
+
+        } else {
+            $from_date = date('Y-m-d H:i:s', strtotime($from_date));
+        }
+        
+        // Check to date
+        if(empty($to_date))
+        {
+            if(empty($this->date_from))
+            {
+                $to_date = date('Y-m-d H:i:s');
+                
+            } else {
+                $to_date = date('Y-m-d H:i:s', strtotime($from_date.'+24 hours'));
+            }
+
+        } else {
+            if(empty($this->date_from))
+            {
+                $to_date = date('Y-m-d H:i:s', strtotime($to_date.'+22 hours'));
+                $from_date = date('Y-m-d H:i:s', strtotime($to_date.'-24 hours'));
+            } else {
+                // TEMPRORY SOLUTION
+                $to_date = date('Y-m-d H:i:s', strtotime($to_date.'+22 hours'));
+                $from_date = date('Y-m-d H:i:s', strtotime($to_date.'-24 hours'));
+            }
+        }
+        
+        if ($site_name == 'All') {
+
+            return DB::table('nagios_hostchecks')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+                ->where('alias','box')
+                ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
+                ->where('is_raw_check','=', 0)
+                ->where('nagios_hostchecks.end_time','>=',$from_date)
+                ->where('nagios_hostchecks.end_time','<=',$to_date);
+        } else {
+
+            return DB::table('nagios_hostchecks')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('alias','box')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
+                ->where('is_raw_check','=', 0)
+                ->where('nagios_hostchecks.end_time','>=',$from_date)
+                ->where('nagios_hostchecks.end_time','<=',$to_date);
+        }
+        
     }
 
     public function getBoxesName()
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
-            ->orderBy('display_name');
+        if ($site_name == 'All') {
+            
+            return DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name');
+        }
+        else
+        {
+            return DB::table('nagios_hosts')
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name');
+        }
     }
 
     public function getStatus($box)
@@ -200,35 +260,35 @@ class Boxes extends Component
         return $hosts_filtred;
     }
 
-    public function filterByDateFrom($boxes_histories,$date_from)
-    {
-        $hosts_filtred = [];
+    // public function filterByDateFrom($boxes_histories,$date_from)
+    // {
+    //     $hosts_filtred = [];
 
-        foreach ($boxes_histories as $box) {
+    //     foreach ($boxes_histories as $box) {
             
-            if($box->start_time >= $this->date_from)
-            {
-                array_push($boxes_filtred,$box);
-            }
+    //         if($box->start_time >= $this->date_from)
+    //         {
+    //             array_push($boxes_filtred,$box);
+    //         }
 
-        }
+    //     }
     
-        return $boxes_filtred;
-    }
+    //     return $boxes_filtred;
+    // }
 
-    public function filterByDateTo($boxes_histories,$date_to)
-    {
-        $boxes_filtred = [];
+    // public function filterByDateTo($boxes_histories,$date_to)
+    // {
+    //     $boxes_filtred = [];
 
-        foreach ($boxes_histories as $box) {
+    //     foreach ($boxes_histories as $box) {
             
-            if($box->end_time <= $this->date_to)
-            {
-                array_push($boxes_filtred,$box);
-            }
+    //         if($box->end_time <= $this->date_to)
+    //         {
+    //             array_push($boxes_filtred,$box);
+    //         }
 
-        }
+    //     }
     
-        return $boxes_filtred;
-    }
+    //     return $boxes_filtred;
+    // }
 }

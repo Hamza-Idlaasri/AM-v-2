@@ -19,8 +19,10 @@ class Equip extends Component
     {
         $equip = DB::table('nagios_services')
             ->where('service_id', $this->equip_id)
-            ->get();
+            ->first();
 
+        $equip->retry_interval = round($equip->retry_interval * 60);
+        
         return view('livewire.config.edit.equip')
             ->with('equip', $equip)
             ->extends('layouts.app')

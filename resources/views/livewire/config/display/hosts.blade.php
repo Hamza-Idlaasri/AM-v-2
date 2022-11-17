@@ -33,7 +33,7 @@
                     
                     <td>{{ $host->output }}</td>
                     
-                    <td>{{ $host->retry_interval }}</td>
+                    <td>{{ $host->retry_interval }}s</td>
                     
                     <td>{{ $host->max_check_attempts }}</td>
                     

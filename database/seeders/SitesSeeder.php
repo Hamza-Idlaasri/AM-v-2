@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\UsersSite;
+use App\Models\Sites;
 use App\Models\User;
 
 class SitesSeeder extends Seeder
@@ -29,5 +30,9 @@ class SitesSeeder extends Seeder
             ]);
 
         }
+
+        $create_all_sites = Sites::create([
+            'site_name' => 'All'
+        ]);
     }
 }

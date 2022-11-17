@@ -55,7 +55,7 @@
         
         <tr>
             <td class="left-coll font-weight-bolder">Retry Check every</td>
-            <td>{{  $box->retry_interval }} min</td>
+            <td>{{  $box->retry_interval }} sec</td>
         </tr>
         
         <tr>

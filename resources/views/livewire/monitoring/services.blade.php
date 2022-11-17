@@ -12,17 +12,16 @@
                 <th>Service</th>
                 <th>Status</th>
                 <th>Dernier verification</th>
-                <th style="width: 45%">Description</th>
+                <th style="width: 40%">Description</th>
             </tr>
         </thead>
 
         <?php $check = 0 ?>
 
-        
         @forelse ($services as $service)        
         
         <tr>
-
+            {{-- Host Name --}}
             @if ($check == 0 || $service->host_object_id != $check)       
                 
                     <td>
@@ -35,7 +34,7 @@
                 <td></td>
             @endif
             
-
+            {{-- Service Name --}}
             <td>
                 <a href="{{ route('ms-details', ['id' => $service->service_object_id]) }}">{{$service->service_name}}</a>
                 
@@ -46,6 +45,7 @@
                 @endif
             </td>
             
+            {{-- Status --}}
             @switch($service->current_state)
             
                 @case(0)
@@ -63,7 +63,10 @@
                     
             @endswitch
             
+            {{-- Dernier verification --}}
             <td>{{$service->last_check}}</td>
+
+            {{-- Description --}}
             <td class="description">{{$service->output}}</td>
         </tr>
             

@@ -17,7 +17,7 @@ class Boxgroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'boxgroup_name' => 'required',
+            'boxgroup_name' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check boxes members for your boxgroup',

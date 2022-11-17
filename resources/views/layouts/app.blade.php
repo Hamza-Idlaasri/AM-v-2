@@ -25,7 +25,7 @@
 
     <div class="grid-container">
         
-        <div class="topbar">
+        <div class="topbar bg-danger">
             @livewire('grid.topbar')
         </div>
 
@@ -33,11 +33,11 @@
             @livewire('grid.sidebar')
         </div>
 
-        <div class="main" style="overflow-x: hidden;">
+        <div class="main d-flex justify-content-center align-items-start" style="overflow-x: hidden;">
             @yield('content')
                 
             {{-- Popup Notifications --}}
-            @livewire('popup-notifs')
+            {{-- @livewire('popup-notifs') --}}
 
         </div>
 

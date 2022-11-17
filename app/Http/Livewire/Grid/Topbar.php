@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Notif;
 use App\Models\UsersSite;
 
+define('SITE_NAME',UsersSite::where('user_id',auth()->user()->id)->first()->current_site);
+
 class Topbar extends Component
 {
     // For Summary
@@ -98,14 +100,25 @@ class Topbar extends Component
 
     public function getHosts()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $hosts_summary = DB::table('nagios_hoststatus')
-            ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if (SITE_NAME == 'All') {
+            
+            $hosts_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->where('nagios_hosts.alias','host')
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $hosts_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_hosts.alias','host')
+                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
 
         $this->hosts_up = 0;
         $this->hosts_down = 0;
@@ -139,15 +152,27 @@ class Topbar extends Component
 
     public function getServices()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $services_summary = DB::table('nagios_hosts')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if (SITE_NAME == 'All') {
+            
+            $services_summary = DB::table('nagios_hosts')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_hosts.alias','host')
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $services_summary = DB::table('nagios_hosts')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_hosts.alias','host')
+                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
 
         $this->services_ok = 0;
         $this->services_warning = 0;
@@ -183,14 +208,25 @@ class Topbar extends Component
 
     public function getBoxes()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $boxes_summary = DB::table('nagios_hoststatus')
-            ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if (SITE_NAME == 'All') {
+            
+            $boxes_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->where('nagios_hosts.alias','box')
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $boxes_summary = DB::table('nagios_hoststatus')
+                ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_hosts.alias','box')
+                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->select('nagios_hoststatus.current_state')
+                ->get();
+        }
 
         $this->boxes_up = 0;
         $this->boxes_down = 0;
@@ -220,15 +256,27 @@ class Topbar extends Component
 
     public function getEquips()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $equips_summary = DB::table('nagios_hosts')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->get();
+        if (SITE_NAME == 'All') {
+            
+            $equips_summary = DB::table('nagios_hosts')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_hosts.alias','box')
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
+        else
+        {
+            $equips_summary = DB::table('nagios_hosts')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->where('nagios_hosts.alias','box')
+                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->select('nagios_servicestatus.current_state')
+                ->get();
+        }
         
         $this->equips_ok = 0;
         $this->equips_warning = 0;
@@ -263,14 +311,13 @@ class Topbar extends Component
 
     public function getTotal_HostsNotifs()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         $hosts = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as host_name','nagios_notifications.*')
+            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->select('nagios_hosts.display_name as host_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();   
         
@@ -283,15 +330,14 @@ class Topbar extends Component
 
     public function getTotal_ServicesNotifs()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         $services = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.*')
+            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();
         
@@ -304,14 +350,13 @@ class Topbar extends Component
 
     public function getTotal_BoxesNotifs()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         $boxes = DB::table('nagios_notifications')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as box_name','nagios_notifications.*')
+            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->select('nagios_hosts.display_name as box_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();
         
@@ -324,15 +369,14 @@ class Topbar extends Component
 
     public function getTotal_EquipsNotifs()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         $equips = DB::table('nagios_notifications')
             ->join('nagios_services','nagios_services.service_object_id','=','nagios_notifications.object_id')
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.*')
+            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();
 

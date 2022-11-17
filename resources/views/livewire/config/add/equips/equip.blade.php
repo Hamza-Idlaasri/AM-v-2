@@ -11,7 +11,7 @@
                 <div class="equip1 d-flex w-100 my-3">
                     <div class="w-50">
                         <label for="equip_name"><b>Equipement name <span class="text-danger">*</span></b></label>
-                        <input type="text" name="equipName[]" class="eqName1 form-control w-75 @error('equipName.*') border-danger @enderror" id="equip_name" value="{{ old('equipName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="Equip. name must be between 2 & 20 charcarters in length and containes only letters, numbers, and the symbols -_+">
+                        <input type="text" name="equipName[]" class="eqName1 form-control w-75 @error('equipName.*') border-danger @enderror" id="equip_name" value="{{ old('equipName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Equip. name must be between 2 & 200 charcarters in length and containes only letters, numbers, and the symbols -_+">
                         @error('equipName.*')
                             <div class="text-danger">
                                 {{ $message }}

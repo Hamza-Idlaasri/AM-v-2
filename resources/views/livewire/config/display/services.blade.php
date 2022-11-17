@@ -37,14 +37,14 @@
                 </td>
 
                 <td>
-                    <a href="{{ route('ms-details', ['id' => $service->host_object_id]) }}">{{ $service->service_name }}</a>
+                    <a href="{{ route('ms-details', ['id' => $service->service_object_id]) }}">{{ $service->service_name }}</a>
                 </td>
 
                 <td>{{ $service->output }}</td>
 
                 <td>{{ $service->normal_check_interval }}</td>
                 
-                <td>{{ $service->retry_check_interval }}</td>
+                <td>{{ $service->retry_check_interval }}s</td>
                 
                 <td>{{ $service->max_check_attempts }}</td>
 

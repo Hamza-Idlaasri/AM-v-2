@@ -20,6 +20,8 @@ class Host extends Component
     {
         $host = $this->getHost($this->host_id);
 
+        $host->retry_interval = round($host->retry_interval * 60);
+        
         $parent = $this->Parent_Child();
 
         return view('livewire.config.edit.host')

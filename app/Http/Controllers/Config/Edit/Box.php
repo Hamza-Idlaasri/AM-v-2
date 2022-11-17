@@ -22,7 +22,7 @@ class Box extends Controller
         $this->validate($request,[
 
             // 'boxName' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
-            'boxName' => 'required|min:2|max:20|regex:/^[a-zA-Z0-9-_+ ]/',
+            'boxName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required|min:7|max:15',
             'check_interval' => 'required|min:1|max:100',
             'retry_interval' => 'required|min:1|max:100',
@@ -57,6 +57,9 @@ class Box extends Controller
             $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
+            // Convert Time
+        $request->retry_interval = floatval(round($request->retry_interval/60,2));
+            // Check Time
         if($old_box_details->retry_interval != $request->retry_interval)
             $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 

@@ -1,6 +1,7 @@
 <div class="container w-100 my-4 p-2 bg-white shadow rounded">
 
     <div id="back">
+    <a wire:click="site(1)" class="px-4 py-3 h5" style="cursor: pointer">Overview</a>
     {{-- Summary --}}
     <div class="container d-flex justify-content-around align-items-center w-100 bg-white mt-2">
         {{-- Hosts --}}
@@ -236,48 +237,48 @@
                             <tr>
                                 <td>
                                     <span class="badge">{{ $site->total_hosts }}</span>
-                                    <span class="badge"><i class="fa-solid fa-display fa-lg"></i></span>
+                                    <span class="badge" title="Hosts"><i class="fa-solid fa-display fa-lg"></i></span>
                                 </td>
                                 <td>
                                     <span class="badge">{{ $site->total_services }}</span>
-                                    <span class="badge"><i class="fa-solid fa-gear fa-lg"></i></span>
+                                    <span class="badge" title="Services"><i class="fa-solid fa-gear fa-lg"></i></span>
                                 </td>
                                 <td>
                                     <span class="badge">{{ $site->total_boxes }}</span>
-                                    <span class="badge"><i class="fa-solid fa-microchip fa-lg"></i></span>
+                                    <span class="badge" title="Boxes"><i class="fa-solid fa-microchip fa-lg"></i></span>
                                 </td>
                                 <td>
                                     <span class="badge">{{ $site->total_equips }}</span>
-                                    <span class="badge"><i class="fa-solid fa-server fa-lg"></i></span>
+                                    <span class="badge" title="Equipements"><i class="fa-solid fa-server fa-lg"></i></span>
                                 </td>
                             </tr>
 
                             <tr x-show+="open" x-cloak>
                                 {{-- Hosts --}}
                                 <td>
-                                    <span class="badge badge-success">{{ $site->hosts_up }}</span>
-                                    <span class="badge badge-danger">{{ $site->hosts_down }}</span>
-                                    <span class="badge badge-unknown">{{ $site->hosts_unreach }}</span>
+                                    <span class="badge badge-success" title="{{ $site->hosts_up }} {{ Str::plural('host',$site->hosts_up)}} Up">{{ $site->hosts_up }}</span>
+                                    <span class="badge badge-danger" title="{{ $site->hosts_down }} {{ Str::plural('host',$site->hosts_down)}} Down">{{ $site->hosts_down }}</span>
+                                    <span class="badge badge-unknown" title="{{ $site->hosts_unreach }} {{ Str::plural('host',$site->hosts_unreach)}} Unreachable">{{ $site->hosts_unreach }}</span>
                                 </td>
                                 {{-- Services --}}
                                 <td>
-                                    <span class="badge badge-success">{{ $site->services_ok }}</span>
-                                    <span class="badge badge-warning">{{ $site->services_warning }}</span>
-                                    <span class="badge badge-danger">{{ $site->services_critical }}</span>
-                                    <span class="badge badge-unknown">{{ $site->services_unknown }}</span>
+                                    <span class="badge badge-success" title="{{ $site->services_ok }} {{ Str::plural('service',$site->services_ok)}} Ok">{{ $site->services_ok }}</span>
+                                    <span class="badge badge-warning" title="{{ $site->services_warning }} {{ Str::plural('service',$site->services_warning)}} Warning">{{ $site->services_warning }}</span>
+                                    <span class="badge badge-danger" title="{{ $site->services_critical }} {{ Str::plural('service',$site->services_critical)}} Critical">{{ $site->services_critical }}</span>
+                                    <span class="badge badge-unknown" title="{{ $site->services_unknown }} {{ Str::plural('service',$site->services_unknown)}} Unknown">{{ $site->services_unknown }}</span>
                                 </td>
                                 {{-- Boxes --}}
                                 <td>
-                                    <span class="badge badge-success">{{ $site->boxes_up }}</span>
-                                    <span class="badge badge-danger">{{ $site->boxes_down }}</span>
-                                    <span class="badge badge-unknown">{{ $site->boxes_unreach }}</span>
+                                    <span class="badge badge-success" title="{{ $site->boxes_up }} {{ Str::plural('box',$site->boxes_up)}} Up">{{ $site->boxes_up }}</span>
+                                    <span class="badge badge-danger" title="{{ $site->boxes_down }} {{ Str::plural('box',$site->boxes_down)}} Down">{{ $site->boxes_down }}</span>
+                                    <span class="badge badge-unknown" title="{{ $site->boxes_unreach }} {{ Str::plural('box',$site->boxes_unreach)}} Unreachable">{{ $site->boxes_unreach }}</span>
                                 </td>
                                 {{-- Equips --}}
                                 <td>
-                                    <span class="badge badge-success">{{ $site->equips_ok }}</span>
-                                    <span class="badge badge-warning">{{ $site->equips_warning }}</span>
-                                    <span class="badge badge-danger">{{ $site->equips_critical }}</span>
-                                    <span class="badge badge-unknown">{{ $site->equips_unknown }}</span>
+                                    <span class="badge badge-success" title="{{ $site->equips_ok }} {{ Str::plural('equipement',$site->equips_ok)}} Ok">{{ $site->equips_ok }}</span>
+                                    <span class="badge badge-warning" title="{{ $site->equips_warning }} {{ Str::plural('equipement',$site->equips_warning)}} Warning">{{ $site->equips_warning }}</span>
+                                    <span class="badge badge-danger" title="{{ $site->equips_critical }} {{ Str::plural('equipement',$site->equips_critical)}} Critical">{{ $site->equips_critical }}</span>
+                                    <span class="badge badge-unknown" title="{{ $site->equips_unknown }} {{ Str::plural('equipement',$site->equips_unknown)}} Unknown">{{ $site->equips_unknown }}</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -294,8 +295,10 @@
     </div>
 
     <div class="w-25 p-4 bg-white rounded shadow border" id="addSite-popup" style="display:none;position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+        <h5>Add New Site :</h5>
+        <br>
         <form action="{{ route('new-site') }}" method="get" id="addSite">
-            <input type="text" class="form-control @error('site_name') border-danger @enderror" placeholder="Site Name" name="site_name">
+            <input type="text" class="form-control @error('site_name') border-danger @enderror" placeholder="Site Name" name="site_name" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Host name must be between 4 & 200 charcarters in length and containes only letters, numbers, and these symbols (-_+)">
             @error('site_name')
                 <div class="text-danger">
                         {{ $message }}
@@ -326,63 +329,4 @@ document.getElementById('cancel').onclick = () => {
 
 </script>
 
-{{-- <div class="mt-4">
-
-<div class="card w-50 container p-0 shadow">
-
-    <div class="card-header">
-        <h4 class="float-left">Sites</h4>
-        <div class="float-right" style="width: 40%">
-            <form wire:submit.prevent="addSite" class="d-flex justify-content-around">
-                <div class="input-group-prepend">
-                    <div class="input-group-text bg-light" style="color:rgb(189, 189, 189);border-radius: 0;border:none;border-bottom: 1px solid rgb(189, 189, 189);"><i class="fas fa-map-marker-alt"></i></div>
-                </div>
-                <input wire:model="site" type="text" class="form-control bg-light shadow-none" style="border-radius: 0;border:none;border-bottom: 1px solid rgb(189, 189, 189);outline: none;" placeholder="Add New Site">
-                <button class="btn text-primary"><i class="fas fa-plus"></i></button>
-            </form>
-        </div>
-    </div>
-
-    <div class="card-body d-flex justify-content-around flex-wrap">
-        @forelse ($all_sites as $site)
-            <a wire:click="site({{$site->id}})" class="w-25 p-4 my-4 h4 bg-white rounded shadow text-center" style="cursor: pointer">
-                {{ $site->site_name }}
-            </a>
-        @empty
-            <h6>No sites found</h6>
-        @endforelse
-    </div>
-
-</div> --}}
-
-{{-- <div class="container p-3 rounded shadow-lg bg-white w-25" id="add-form" style="display:none;position: absolute;top:50%;left:50%;transform: translate(-50%,-50%)">
-    <h5 class="text-secondary text-center">Add new site</h5>
-    <form wire:submit="addSite">
-        
-        @error('site')
-            <div class="text-danger">
-                    {{ $message }}
-            </div>
-        @enderror
-        <br>
-        <button type="submit" class="btn btn-primary d-inline float-right mx-1">Add</button>
-        <span class="btn btn-light d-inline float-right mx-1" id="cancel">Cancel</span>
-
-    </form>
-</div> --}}
-
 </div>
-
-{{-- <script>
-
-document.getElementById('addSite').onclick = () => {
-    document.getElementById('back').style.opacity = '0.2';
-    document.getElementById('add-form').style.display = 'block';
-}
-
-document.getElementById('cancel').onclick = () => {
-    document.getElementById('back').style.opacity = '1';
-    document.getElementById('add-form').style.display = 'none';
-}
-
-</script> --}}

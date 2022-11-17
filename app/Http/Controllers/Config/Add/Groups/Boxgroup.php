@@ -27,7 +27,7 @@ class Boxgroup extends Controller
     {
         // validation
         $this->validate($request,[
-            'boxgroup_name' => 'required|min:2|max:20|unique:nagios_hostgroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
+            'boxgroup_name' => 'required|min:2|max:200|unique:nagios_hostgroups,alias|regex:/^[a-zA-Z0-9-_+ ]/',
             'members' => 'required',
         ],[
             'members.required' => 'Please check group members for your boxgroup',

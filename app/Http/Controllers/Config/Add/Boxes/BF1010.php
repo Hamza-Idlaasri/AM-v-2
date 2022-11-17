@@ -23,7 +23,7 @@ class BF1010 extends Controller
         // validation
         $this->validate($request,[
 
-            'boxName' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'boxName' => 'required|min:2|max:200|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required',
             'equipName.*' => 'required|min:2|max:20|unique:nagios_services,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'inputNbr.*' => 'required',

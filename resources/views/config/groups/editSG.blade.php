@@ -6,7 +6,7 @@
 
     <form action="{{ route('editSG', $servicegroup->servicegroup_id) }}" method="get">
         <label for="hg_name"><b>Servicegroup Name <span class="text-danger">*</span></b></label>
-        <input type="text" name="servicegroup_name" class="form-control w-100 @error('servicegroup_name') border-danger @enderror" id="hg_name" value="{{ $servicegroup->servicegroup_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,20}" title="ServiceGroup name must be between 2 & 20 charcarters in length and containes only letters, numbers, and these symbols -_+">
+        <input type="text" name="servicegroup_name" class="form-control w-100 @error('servicegroup_name') border-danger @enderror" id="hg_name" value="{{ $servicegroup->servicegroup_name }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="ServiceGroup name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
         @error('servicegroup_name')
             <div class="text-danger">
                 {{ $message }}
