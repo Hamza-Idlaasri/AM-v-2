@@ -59,15 +59,28 @@ class Services extends Component
             $services_histories = $this->filterByName($services_histories,$this->service_name);
         }
 
-        // if($this->date_from)
-        // {
-        //     $services_histories = $this->filterByDateFrom($services_histories,$this->date_from);
-        // }
-        
-        // if($this->date_to)
-        // {
-        //     $services_histories = $this->filterByDateTo($services_histories,$this->date_to);
-        // }
+        foreach ($services_histories as $services) {
+
+            unset($services->alias);
+            unset($services->host_object_id);
+            unset($services->service_object_id);
+            unset($services->servicecheck_id);
+
+            switch ($services->state) {
+                case 0:
+                    $services->state = 'Ok';
+                    break;
+                case 1:
+                    $services->state = 'Warning';
+                    break;
+                case 2:
+                    $services->state = 'Critical';
+                    break;
+                case 3:
+                    $services->state = 'Unknown';
+                    break;
+            }
+        }
 
         return view('livewire.historic.services')
             ->with(['services_histories' => $services_histories,'services_names' => $this->getServicesGroups($services_names)])

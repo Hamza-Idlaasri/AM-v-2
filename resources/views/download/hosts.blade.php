@@ -32,16 +32,16 @@ body{
                 
                 @switch($host_history->state)
                 
-                    @case(0)
+                    @case('Up')
                         <td><span class="badge badge-success">Up</span></td>
                         @break
 
-                    @case(1)
+                    @case('Down')
                         <td><span class="badge badge-danger">Down</span></td>
                         @break
                         
-                    @case(2)
-                        <td><span class="badge badge-unknown">Ureachable</span></td>
+                    @case('Unreachable')
+                        <td><span class="badge badge-unknown">Unreachable</span></td>
                         @break
                     
                     @default

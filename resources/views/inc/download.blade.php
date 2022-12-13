@@ -7,7 +7,7 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave="ease-in transition-faster"
         x-transition:leave-end="opacity-0 scale-90">
-        <a href="{{ route($pdf_path) }}" class="btn btn-outline-danger font-weight-bold mb-1"><i class="fas fa-file-pdf fa-lg"></i> PDF</a>
-        <a href="{{ route($csv_path) }}" class="btn btn-outline-success font-weight-bold mt-1"><i class="fas fa-file-csv fa-lg"></i> CSV</a>
+        <a href="{{ route($pdf_path, $data) }}" class="btn btn-outline-danger font-weight-bold mb-1"><i class="fas fa-file-pdf fa-lg"></i> PDF</a>
+        <a href="{{ route($csv_path, $data) }}" class="btn btn-outline-success font-weight-bold mt-1"><i class="fas fa-file-csv fa-lg"></i> CSV</a>
     </div>
 </div>

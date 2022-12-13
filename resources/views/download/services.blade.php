@@ -38,17 +38,17 @@ body{
             
             @switch($service_history->state)
 
-                @case(0)
+                @case('Ok')
                     <td><span class="badge badge-success">Ok</span></td>
                     @break
-                @case(1)
+                @case('Warning')
                     <td><span class="badge badge-warning">Warning</span></td>
                     @break
-                @case(2)
+                @case('Critical')
                     <td><span class="badge badge-danger">Critical</span></td>
                     @break
-                @case(3)
-                    <td><span class="badge badge-unknown">Ureachable</span></td>
+                @case('Unknown')
+                    <td><span class="badge badge-unknown">Unknown</span></td>
                     @break
                     
             @endswitch

@@ -77,6 +77,8 @@ class Services extends Component
         }
     }
 
+    
+
     public function getServicesStatus($services_name)
     {
         $services_ok = 0;

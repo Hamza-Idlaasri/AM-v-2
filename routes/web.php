@@ -205,15 +205,15 @@ Route::get('/statistiques/equipements', App\Http\Livewire\Statistic\Equips::clas
 
 /******* Download  *******/
 /** PDF */
-Route::get('/hosts/pdf',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf');
-Route::get('/services/pdf',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf');
-Route::get('/boxes/pdf',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf');
-Route::get('/equipements/pdf',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf');
+Route::get('/hosts/pdf/{data?}',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf')->where('data','(.*)');;
+Route::get('/services/pdf/{data?}',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf')->where('data','(.*)');;
+Route::get('/boxes/pdf/{data?}',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf')->where('data','(.*)');;
+Route::get('/equipements/pdf/{data?}',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf')->where('data','(.*)');;
 /** CSV */
-Route::get('/hosts/csv',[App\Http\Controllers\Download\Excel\Hosts::class,'csv'])->name('hosts.csv');
-Route::get('/services/csv',[App\Http\Controllers\Download\Excel\Services::class,'csv'])->name('services.csv');
-Route::get('/boxes/csv',[App\Http\Controllers\Download\Excel\Boxes::class,'csv'])->name('boxes.csv');
-Route::get('/equipements/csv',[App\Http\Controllers\Download\Excel\Equips::class,'csv'])->name('equips.csv');
+Route::get('/hosts/csv/{data?}',[App\Http\Controllers\Download\Excel\Hosts::class,'csv'])->name('hosts.csv')->where('data','(.*)');
+Route::get('/services/csv/{data?}',[App\Http\Controllers\Download\Excel\Services::class,'csv'])->name('services.csv')->where('data','(.*)');
+Route::get('/boxes/csv/{data?}',[App\Http\Controllers\Download\Excel\Boxes::class,'csv'])->name('boxes.csv')->where('data','(.*)');
+Route::get('/equipements/csv/{data?}',[App\Http\Controllers\Download\Excel\Equips::class,'csv'])->name('equips.csv')->where('data','(.*)');
 
 /******************************************************************************************************************/
 

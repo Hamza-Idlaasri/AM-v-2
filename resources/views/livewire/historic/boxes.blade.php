@@ -1,8 +1,17 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
 
+    @php
+        $query = http_build_query(array('data' => $boxes_histories));
+
+        if (empty($query)) {
+            $query = 'null';
+        }
+    @endphp
+
+    {{-- Filter --}}
     <div class="container w-100 p-0 d-flex justify-content-between align-items-center">
         {{-- Download PDF & CSV--}}
-        @include('inc.download',['pdf_path' => 'boxes.pdf', 'csv_path' => 'boxes.csv'])
+        @include('inc.download',['pdf_path' => 'boxes.pdf', 'csv_path' => 'boxes.csv', 'data' => $query])
         {{-- Filter --}}
         @include('inc.filter',['names' => $boxes_names,'type' => 'box'])
     </div>
@@ -28,16 +37,16 @@
                 
                 @switch($box_history->state)
                 
-                    @case(0)
+                    @case('Up')
                         <td><span class="badge badge-success">Up</span></td>
                         @break
 
-                    @case(1)
+                    @case('Down')
                         <td><span class="badge badge-danger">Down</span></td>
                         @break
                         
-                    @case(2)
-                        <td><span class="badge badge-unknown">Ureachable</span></td>
+                    @case('Unreachable')
+                        <td><span class="badge badge-unknown">Unreachable</span></td>
                         @break
                     
                     @default

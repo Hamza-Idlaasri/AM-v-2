@@ -59,15 +59,23 @@ class Hosts extends Component
             $hosts_histories = $this->filterByName($hosts_histories,$this->host_name);
         }
 
-        // if($this->date_from)
-        // {
-        //     $hosts_histories = $this->filterByDateFrom($hosts_histories,$this->date_from);
-        // }
-        
-        // if($this->date_to)
-        // {
-        //     $hosts_histories = $this->filterByDateTo($hosts_histories,$this->date_to);
-        // }
+        foreach ($hosts_histories as $hosts) {
+
+            unset($hosts->host_object_id);
+            unset($hosts->hostcheck_id);
+
+            switch ($hosts->state) {
+                case 0:
+                    $hosts->state = 'Up';
+                    break;
+                case 1:
+                    $hosts->state = 'Down';
+                    break;
+                case 2:
+                    $hosts->state = 'Unreachable';
+                    break;
+            }
+        }
 
         return view('livewire.historic.hosts')
             ->with(['hosts_histories' => $hosts_histories,'hosts_names' => $hosts_names])

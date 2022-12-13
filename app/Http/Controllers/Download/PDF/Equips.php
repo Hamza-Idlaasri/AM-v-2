@@ -15,138 +15,145 @@ class Equips extends Controller
         $this->middleware(['auth']);
     }
     
-    public function pdf()
+    public function pdf(Request $request,$data)
     {
-        $equipements_history = $this->EquipsHistoric();
+        if ($data == 'null') {
 
-        $pdf = PDF::loadView('download.equips', compact('equipements_history'))->setPaper('a4', 'landscape');
+            return redirect()->back();
 
-        date_default_timezone_set('Africa/Casablanca');
+        } else {
+          
+            parse_str($data,$historic);
 
-        return $pdf->stream('equipements_historique'.date('Y-m-d H:i:s').'.pdf');
+            $equipements_history = $historic['data'];
+
+            $pdf = PDF::loadView('download.equips', compact('equipements_history'))->setPaper('a4', 'landscape');
+
+            return $pdf->stream('equipements_historique'.date('Y-m-d H:i:s').'.pdf');
+        }
     }
 
-    public function EquipsHistoric()
-    {
-        $equips_name = $this->getEquipsName()->get();
+    // public function EquipsHistoric()
+    // {
+    //     $equips_name = $this->getEquipsName()->get();
         
-        $equips_histories = [];
+    //     $equips_histories = [];
 
-        foreach ($equips_name as $equip) {
+    //     foreach ($equips_name as $equip) {
 
-            $all_equips_checks = $this->getEquipsChecks()
-                ->where('nagios_servicechecks.service_object_id','=',$equip->service_object_id)
-                ->get();
+    //         $all_equips_checks = $this->getEquipsChecks()
+    //             ->where('nagios_servicechecks.service_object_id','=',$equip->service_object_id)
+    //             ->get();
 
-            if(sizeof($all_equips_checks))
-            {
-                $status = $this->getStatus($all_equips_checks);  
+    //         if(sizeof($all_equips_checks))
+    //         {
+    //             $status = $this->getStatus($all_equips_checks);  
 
-                for ($i=0; $i < sizeof($status); $i++) {
+    //             for ($i=0; $i < sizeof($status); $i++) {
                     
-                    $equip_checks = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])
-                        ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
-                        ->get();
+    //                 $equip_checks = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])
+    //                     ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+    //                     ->get();
                     
-                    $end_host_checks = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][1])
-                        ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
-                        ->get();
+    //                 $end_host_checks = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][1])
+    //                     ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+    //                     ->get();
 
-                    $equip_checks[0]->end_time = $end_host_checks[0]->end_time;
+    //                 $equip_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-                    array_push($equips_histories,$equip_checks[0]);
-                }
+    //                 array_push($equips_histories,$equip_checks[0]);
+    //             }
 
-            } else {
+    //         } else {
                             
-                continue;
-            }
+    //             continue;
+    //         }
 
-        }
+    //     }
 
-        return $equips_histories;
-    }
+    //     return $equips_histories;
+    // }
 
-    public function getEquipsChecks()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+    // public function getEquipsChecks()
+    // {
+    //     $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_servicechecks')
-        ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-        ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-        ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-        ->where('nagios_customvariables.varvalue',$site_name)
-        ->where('alias','box')
-        ->select('nagios_hosts.alias','nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.*');
-    }
+    //     return DB::table('nagios_servicechecks')
+    //     ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+    //     ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+    //     ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //     ->where('nagios_customvariables.varvalue',$site_name)
+    //     ->where('alias','box')
+    //     ->select('nagios_hosts.alias','nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.*');
+    // }
 
-    public function getEquipsName()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+    // public function getEquipsName()
+    // {
+    //     $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
-    }
+    //     return DB::table('nagios_hosts')
+    //         ->where('alias','box')
+    //         ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //         ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+    //         ->where('nagios_customvariables.varvalue',$site_name)
+    //         ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
+    // }
 
-    public function getStatus($equip)
-    {
-        $status = [];
+    // public function getStatus($equip)
+    // {
+    //     $status = [];
 
-        $interval = [];
+    //     $interval = [];
 
-        for ($i=0; $i < sizeof($equip); $i++) { 
+    //     for ($i=0; $i < sizeof($equip); $i++) { 
                 
-            if($i == 0)
-            {
-                array_push($interval,$equip[0]->servicecheck_id);
-            }
+    //         if($i == 0)
+    //         {
+    //             array_push($interval,$equip[0]->servicecheck_id);
+    //         }
 
-            if ($i > 0 && $i < sizeof($equip)-1) {
+    //         if ($i > 0 && $i < sizeof($equip)-1) {
                 
-                if($equip[$i]->state == $equip[$i-1]->state)
-                {
-                    continue;
+    //             if($equip[$i]->state == $equip[$i-1]->state)
+    //             {
+    //                 continue;
 
-                } else {
+    //             } else {
 
-                    array_push($interval,$equip[$i-1]->servicecheck_id);
+    //                 array_push($interval,$equip[$i-1]->servicecheck_id);
 
-                    array_push($status,$interval);
+    //                 array_push($status,$interval);
 
-                    $interval = [];
+    //                 $interval = [];
 
-                    array_push($interval,$equip[$i]->servicecheck_id);
+    //                 array_push($interval,$equip[$i]->servicecheck_id);
 
-                }
+    //             }
 
-            }
+    //         }
 
-            if($i == sizeof($equip)-1)
-            {
-                if($equip[$i]->state == $equip[$i-1]->state)
-                {
-                    array_push($interval,$equip[$i]->servicecheck_id);
-                    array_push($status,$interval);
+    //         if($i == sizeof($equip)-1)
+    //         {
+    //             if($equip[$i]->state == $equip[$i-1]->state)
+    //             {
+    //                 array_push($interval,$equip[$i]->servicecheck_id);
+    //                 array_push($status,$interval);
 
-                } else {
+    //             } else {
 
-                    array_push($interval,$equip[$i-1]->servicecheck_id);
-                    array_push($status,$interval);
+    //                 array_push($interval,$equip[$i-1]->servicecheck_id);
+    //                 array_push($status,$interval);
 
-                    $interval = [];
+    //                 $interval = [];
 
-                    array_push($interval,$equip[$i]->servicecheck_id);
-                    array_push($interval,$equip[$i]->servicecheck_id);
-                    array_push($status,$interval);
-                }
-            }
+    //                 array_push($interval,$equip[$i]->servicecheck_id);
+    //                 array_push($interval,$equip[$i]->servicecheck_id);
+    //                 array_push($status,$interval);
+    //             }
+    //         }
 
-        }
+    //     }
 
-        return $status;
-    }
+    //     return $status;
+    // }
 }

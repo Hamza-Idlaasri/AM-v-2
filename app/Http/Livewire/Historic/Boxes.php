@@ -57,15 +57,23 @@ class Boxes extends Component
             $boxes_histories = $this->filterByName($boxes_histories,$this->box_name);
         }
 
-        // if($this->date_from)
-        // {
-        //     $boxes_histories = $this->filterByDateFrom($boxes_histories,$this->date_from);
-        // }
-        
-        // if($this->date_to)
-        // {
-        //     $boxes_histories = $this->filterByDateTo($boxes_histories,$this->date_to);
-        // }
+        foreach ($boxes_histories as $boxes) {
+
+            unset($boxes->host_object_id);
+            unset($boxes->hostcheck_id);
+
+            switch ($boxes->state) {
+                case 0:
+                    $boxes->state = 'Up';
+                    break;
+                case 1:
+                    $boxes->state = 'Down';
+                    break;
+                case 2:
+                    $boxes->state = 'Unreachable';
+                    break;
+            }
+        }
         
         return view('livewire.historic.boxes')
             ->with(['boxes_histories' => $boxes_histories,'boxes_names' => $boxes_names])

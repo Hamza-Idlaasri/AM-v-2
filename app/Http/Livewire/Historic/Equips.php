@@ -57,15 +57,28 @@ class Equips extends Component
             $equips_histories = $this->filterByName($equips_histories,$this->equip_name);
         }
 
-        // if($this->date_from)
-        // {
-        //      $equips_histories = $this->filterByDateFrom($equips_histories,$this->date_from);
-        // }
-        
-        // if($this->date_to)
-        // {
-        //      $equips_histories = $this->filterByDateTo($equips_histories,$this->date_to);
-        // }
+        foreach ($equips_histories as $equips) {
+
+            unset($equips->alias);
+            unset($equips->host_object_id);
+            unset($equips->service_object_id);
+            unset($equips->servicecheck_id);
+
+            switch ($equips->state) {
+                case 0:
+                    $equips->state = 'Ok';
+                    break;
+                case 1:
+                    $equips->state = 'Warning';
+                    break;
+                case 2:
+                    $equips->state = 'Critical';
+                    break;
+                case 3:
+                    $equips->state = 'Unknown';
+                    break;
+            }
+        }
 
         return view('livewire.historic.equips')
             ->with(['equips_histories' => $equips_histories, 'equips_names' => $this->getEquipsGroups($equips_names)])

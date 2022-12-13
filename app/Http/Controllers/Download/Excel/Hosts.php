@@ -16,148 +16,155 @@ class Hosts extends Controller
         $this->middleware(['auth']);
     }
     
-    public function csv()
+    public function csv(Request $request,$data)
     {
-        date_default_timezone_set('Africa/Casablanca');
+        if ($data == 'null') {
+
+            return redirect()->back();
+
+        } else {
         
-        return Excel::download(new HostsExcel($this->HostsHistoric()), 'hosts_historique '.date('Y-m-d H:i:s').'.csv');
-    }
+            parse_str($data,$historic);
 
-    public function HostsHistoric()
-    {
-        $hosts_histories = [];
-
-        $hosts_name = $this->getHostsName()->get();
-        
-        foreach ($hosts_name as $host) {
-
-            $all_hosts_checks = $this->getHostsChecks()
-                ->where('nagios_hostchecks.host_object_id','=',$host->host_object_id)
-                ->get();
-
-            if(sizeof($all_hosts_checks))
-            {
-                $status = $this->getStatus($all_hosts_checks);  
-
-                for ($i=0; $i < sizeof($status); $i++) {
-                    
-                    $host_checks = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])
-                        ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                        ->get();
-                    
-                    $end_host_checks = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][1])
-                        ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                        ->get();
-
-                    $host_checks[0]->end_time = $end_host_checks[0]->end_time;
-
-                    switch ($host_checks[0]->state) {
-                
-                        case 0:
-                            $host_checks[0]->state = 'Up';
-                            break;
-                        case 1:
-                            $host_checks[0]->state = 'Down';
-                            break;
-                        case 2:
-                            $host_checks[0]->state = 'Unreachable';
-                            break;
-        
-                    }
-
-                    array_push($hosts_histories,$host_checks[0]);
-                }
-
-            } else {
-
-                continue;
-            }
-
+            return Excel::download(new HostsExcel($historic['data']), 'hosts_historique '.date('Y-m-d H:i:s').'.csv');
         }
-
-        return $hosts_histories;
     }
 
-    public function getHostsChecks()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+    // public function HostsHistoric()
+    // {
+    //     $hosts_histories = [];
 
-        return DB::table('nagios_hostchecks')
-            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('alias','host')
-            ->where('is_raw_check','=', 0)
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*');
-    }
+    //     $hosts_name = $this->getHostsName()->get();
+        
+    //     foreach ($hosts_name as $host) {
 
-    public function getHostsName()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+    //         $all_hosts_checks = $this->getHostsChecks()
+    //             ->where('nagios_hostchecks.host_object_id','=',$host->host_object_id)
+    //             ->get();
 
-        return DB::table('nagios_hosts')
-            ->where('alias','host')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
-            ->orderBy('display_name');
-    }
+    //         if(sizeof($all_hosts_checks))
+    //         {
+    //             $status = $this->getStatus($all_hosts_checks);  
 
-    public function getStatus($host)
-    {
-        $status = [];
+    //             for ($i=0; $i < sizeof($status); $i++) {
+                    
+    //                 $host_checks = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])
+    //                     ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
+    //                     ->get();
+                    
+    //                 $end_host_checks = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][1])
+    //                     ->select('nagios_hosts.display_name','nagios_hosts.address','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
+    //                     ->get();
 
-        $interval = [];
+    //                 $host_checks[0]->end_time = $end_host_checks[0]->end_time;
 
-        for ($i=0; $i < sizeof($host); $i++) { 
+    //                 switch ($host_checks[0]->state) {
                 
-            if($i == 0)
-            {
-                array_push($interval,$host[0]->hostcheck_id);
-            }
+    //                     case 0:
+    //                         $host_checks[0]->state = 'Up';
+    //                         break;
+    //                     case 1:
+    //                         $host_checks[0]->state = 'Down';
+    //                         break;
+    //                     case 2:
+    //                         $host_checks[0]->state = 'Unreachable';
+    //                         break;
+        
+    //                 }
 
-            if ($i > 0 && $i < sizeof($host)-1) {
+    //                 array_push($hosts_histories,$host_checks[0]);
+    //             }
+
+    //         } else {
+
+    //             continue;
+    //         }
+
+    //     }
+
+    //     return $hosts_histories;
+    // }
+
+    // public function getHostsChecks()
+    // {
+    //     $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
+    //     return DB::table('nagios_hostchecks')
+    //         ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+    //         ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //         ->where('alias','host')
+    //         ->where('is_raw_check','=', 0)
+    //         ->where('nagios_customvariables.varvalue',$site_name)
+    //         ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*');
+    // }
+
+    // public function getHostsName()
+    // {
+    //     $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
+    //     return DB::table('nagios_hosts')
+    //         ->where('alias','host')
+    //         ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //         ->where('nagios_customvariables.varvalue',$site_name)
+    //         ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+    //         ->orderBy('display_name');
+    // }
+
+    // public function getStatus($host)
+    // {
+    //     $status = [];
+
+    //     $interval = [];
+
+    //     for ($i=0; $i < sizeof($host); $i++) { 
                 
-                if($host[$i]->state == $host[$i-1]->state)
-                {
-                    continue;
+    //         if($i == 0)
+    //         {
+    //             array_push($interval,$host[0]->hostcheck_id);
+    //         }
 
-                } else {
+    //         if ($i > 0 && $i < sizeof($host)-1) {
+                
+    //             if($host[$i]->state == $host[$i-1]->state)
+    //             {
+    //                 continue;
 
-                    array_push($interval,$host[$i-1]->hostcheck_id);
+    //             } else {
 
-                    array_push($status,$interval);
+    //                 array_push($interval,$host[$i-1]->hostcheck_id);
 
-                    $interval = [];
+    //                 array_push($status,$interval);
 
-                    array_push($interval,$host[$i]->hostcheck_id);
+    //                 $interval = [];
 
-                }
+    //                 array_push($interval,$host[$i]->hostcheck_id);
 
-            }
+    //             }
 
-            if($i == sizeof($host)-1)
-            {
-                if($host[$i]->state == $host[$i-1]->state)
-                {
-                    array_push($interval,$host[$i]->hostcheck_id);
-                    array_push($status,$interval);
+    //         }
 
-                } else {
+    //         if($i == sizeof($host)-1)
+    //         {
+    //             if($host[$i]->state == $host[$i-1]->state)
+    //             {
+    //                 array_push($interval,$host[$i]->hostcheck_id);
+    //                 array_push($status,$interval);
 
-                    array_push($interval,$host[$i-1]->hostcheck_id);
-                    array_push($status,$interval);
+    //             } else {
 
-                    $interval = [];
+    //                 array_push($interval,$host[$i-1]->hostcheck_id);
+    //                 array_push($status,$interval);
 
-                    array_push($interval,$host[$i]->hostcheck_id);
-                    array_push($interval,$host[$i]->hostcheck_id);
-                    array_push($status,$interval);
-                }
-            }
+    //                 $interval = [];
 
-        }
+    //                 array_push($interval,$host[$i]->hostcheck_id);
+    //                 array_push($interval,$host[$i]->hostcheck_id);
+    //                 array_push($status,$interval);
+    //             }
+    //         }
 
-        return $status;
-    }
+    //     }
+
+    //     return $status;
+    // }
 }
