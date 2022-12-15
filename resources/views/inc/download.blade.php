@@ -11,6 +11,7 @@
         <a href="{{ route($csv_path, $data) }}" class="btn btn-outline-success font-weight-bold mt-1"><i class="fas fa-file-csv fa-lg"></i> CSV</a> --}}
     
         <form action="{{ route($pdf_path) }}" method="post">
+            @csrf
             <input type="hidden" name="data" value="{{$query}}">
             <button type="submit" class="btn btn-outline-danger font-weight-bold mb-1"><i class="fas fa-file-pdf fa-lg"></i> PDF</button>
         </form>

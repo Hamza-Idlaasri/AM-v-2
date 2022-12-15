@@ -27,10 +27,10 @@ body{
     
         @forelse ($boxes_history as $box_history)
             <tr>
-                <td>{{$box_history->display_name}}</td>
-                <td>{{$box_history->address}}</td>
+                <td>{{$box_history['display_name']}}</td>
+                <td>{{$box_history['address']}}</td>
                 
-                @switch($box_history->state)
+                @switch($box_history['state'])
                 
                     @case('Up')
                         <td><span class="badge badge-success">Up</span></td>
@@ -48,9 +48,9 @@ body{
                         
                 @endswitch
                 
-                <td>{{$box_history->start_time}}</td>
-                <td>{{$box_history->end_time}}</td>
-                <td class="description">{{$box_history->output}}</td>
+                <td>{{$box_history['start_time']}}</td>
+                <td>{{$box_history['end_time']}}</td>
+                <td class="description">{{$box_history['output']}}</td>
             </tr>
 
         @empty

@@ -23,6 +23,7 @@ class Equips extends Component
 
             $all_equips_checks = $this->getEquipsChecks()
                 ->where('nagios_servicechecks.service_object_id','=',$equip->service_object_id)
+                ->take(10)
                 ->get();
 
             if(sizeof($all_equips_checks))

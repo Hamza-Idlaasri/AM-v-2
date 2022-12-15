@@ -205,10 +205,10 @@ Route::get('/statistiques/equipements', App\Http\Livewire\Statistic\Equips::clas
 
 /******* Download  *******/
 /** PDF */
-Route::get('/hosts/pdf/{data?}',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf')->where('data','(.*)');
-Route::get('/services/pdf/{data?}',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf')->where('data','(.*)');
-Route::get('/boxes/pdf/{data?}',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf')->where('data','(.*)');
-Route::get('/equipements/pdf/{data?}',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf')->where('data','(.*)');
+Route::post('/hosts/pdf',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf');
+Route::post('/services/pdf',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf');
+Route::post('/boxes/pdf',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf');
+Route::post('/equipements/pdf',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf');
 /** CSV */
 Route::post('/hosts/csv',[App\Http\Controllers\Download\Excel\Hosts::class,'csv'])->name('hosts.csv');
 Route::post('/services/csv',[App\Http\Controllers\Download\Excel\Services::class,'csv'])->name('services.csv');

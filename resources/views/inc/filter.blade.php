@@ -75,7 +75,7 @@
         @if ($type == 'equip')
             {{-- Equips Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="equips_names">Equipement :</label>
-            <select wire:model="equip_name" name="equips_names" id="equips_names" class="form-control">
+            <select wire:model="equip_name" name="equips_names" id="equips_names" class="form-control w-25">
                 <option value="">All</option>
 
                 @foreach ($names as $name)

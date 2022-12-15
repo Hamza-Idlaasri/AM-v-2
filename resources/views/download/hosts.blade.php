@@ -27,10 +27,10 @@ body{
     
         @forelse ($hosts_history as $host_history)
             <tr>
-                <td>{{$host_history->display_name}}</td>
-                <td>{{$host_history->address}}</td>
+                <td>{{$host_history['display_name']}}</td>
+                <td>{{$host_history['address']}}</td>
                 
-                @switch($host_history->state)
+                @switch($host_history['state'])
                 
                     @case('Up')
                         <td><span class="badge badge-success">Up</span></td>
@@ -48,9 +48,9 @@ body{
                         
                 @endswitch
                 
-                <td>{{$host_history->start_time}}</td>
-                <td>{{$host_history->end_time}}</td>
-                <td class="description">{{$host_history->output}}</td>
+                <td>{{$host_history['start_time']}}</td>
+                <td>{{$host_history['end_time']}}</td>
+                <td class="description">{{$host_history['output']}}</td>
             </tr>
 
         @empty

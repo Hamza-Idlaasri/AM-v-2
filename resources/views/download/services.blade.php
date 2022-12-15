@@ -32,11 +32,11 @@ body{
 
         <tr>
    
-            <td>{{$service_history->host_name}}</td> 
+            <td>{{$service_history['host_name']}}</td> 
 
-            <td>{{$service_history->service_name}}</td>
+            <td>{{$service_history['service_name']}}</td>
             
-            @switch($service_history->state)
+            @switch($service_history['state'])
 
                 @case('Ok')
                     <td><span class="badge badge-success">Ok</span></td>
@@ -53,9 +53,9 @@ body{
                     
             @endswitch
             
-            <td>{{$service_history->start_time}}</td>
-            <td>{{$service_history->end_time}}</td>
-            <td class="description">{{$service_history->output}}</td>
+            <td>{{$service_history['start_time']}}</td>
+            <td>{{$service_history['end_time']}}</td>
+            <td class="description">{{$service_history['output']}}</td>
         </tr>
         @endforeach
     </table>
