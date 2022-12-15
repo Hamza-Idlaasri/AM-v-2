@@ -15,15 +15,15 @@ class Equips extends Controller
         $this->middleware(['auth']);
     }
     
-    public function pdf(Request $request,$data)
+    public function pdf(Request $request)
     {
-        if ($data == 'null') {
+        if ($request->data == 'null') {
 
             return redirect()->back();
 
         } else {
           
-            parse_str($data,$historic);
+            parse_str($request->data,$historic);
 
             $equipements_history = $historic['data'];
 

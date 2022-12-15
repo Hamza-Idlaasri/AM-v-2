@@ -11,7 +11,7 @@
     {{-- Filter --}}
     <div class="container w-100 p-0 d-flex justify-content-between align-items-center">
         {{-- Download PDF & CSV --}}
-        @include('inc.download',['pdf_path' => 'equips.pdf', 'csv_path' => 'equips.csv','data' => $query])
+        @include('inc.download',['pdf_path' => 'equips.pdf', 'csv_path' => 'equips.csv'])
         {{-- Filter --}}
         @include('inc.filter',['names' => $equips_names,'type' => 'equip'])
     </div>

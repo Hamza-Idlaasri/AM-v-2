@@ -25,7 +25,7 @@
 
     <div class="grid-container">
         
-        <div class="topbar bg-danger">
+        <div class="topbar">
             @livewire('grid.topbar')
         </div>
 

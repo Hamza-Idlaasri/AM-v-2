@@ -16,15 +16,15 @@ class Hosts extends Controller
         $this->middleware(['auth']);
     }
     
-    public function csv(Request $request,$data)
+    public function csv(Request $request)
     {
-        if ($data == 'null') {
+        if ($request->data == 'null') {
 
             return redirect()->back();
 
         } else {
         
-            parse_str($data,$historic);
+            parse_str($request->data,$historic);
 
             return Excel::download(new HostsExcel($historic['data']), 'hosts_historique '.date('Y-m-d H:i:s').'.csv');
         }

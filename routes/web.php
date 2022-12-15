@@ -205,15 +205,15 @@ Route::get('/statistiques/equipements', App\Http\Livewire\Statistic\Equips::clas
 
 /******* Download  *******/
 /** PDF */
-Route::get('/hosts/pdf/{data?}',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf')->where('data','(.*)');;
-Route::get('/services/pdf/{data?}',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf')->where('data','(.*)');;
-Route::get('/boxes/pdf/{data?}',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf')->where('data','(.*)');;
-Route::get('/equipements/pdf/{data?}',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf')->where('data','(.*)');;
+Route::get('/hosts/pdf/{data?}',[App\Http\Controllers\Download\PDF\Hosts::class,'pdf'])->name('hosts.pdf')->where('data','(.*)');
+Route::get('/services/pdf/{data?}',[App\Http\Controllers\Download\PDF\Services::class,'pdf'])->name('services.pdf')->where('data','(.*)');
+Route::get('/boxes/pdf/{data?}',[App\Http\Controllers\Download\PDF\Boxes::class,'pdf'])->name('boxes.pdf')->where('data','(.*)');
+Route::get('/equipements/pdf/{data?}',[App\Http\Controllers\Download\PDF\Equips::class,'pdf'])->name('equips.pdf')->where('data','(.*)');
 /** CSV */
-Route::get('/hosts/csv/{data?}',[App\Http\Controllers\Download\Excel\Hosts::class,'csv'])->name('hosts.csv')->where('data','(.*)');
-Route::get('/services/csv/{data?}',[App\Http\Controllers\Download\Excel\Services::class,'csv'])->name('services.csv')->where('data','(.*)');
-Route::get('/boxes/csv/{data?}',[App\Http\Controllers\Download\Excel\Boxes::class,'csv'])->name('boxes.csv')->where('data','(.*)');
-Route::get('/equipements/csv/{data?}',[App\Http\Controllers\Download\Excel\Equips::class,'csv'])->name('equips.csv')->where('data','(.*)');
+Route::post('/hosts/csv',[App\Http\Controllers\Download\Excel\Hosts::class,'csv'])->name('hosts.csv');
+Route::post('/services/csv',[App\Http\Controllers\Download\Excel\Services::class,'csv'])->name('services.csv');
+Route::post('/boxes/csv',[App\Http\Controllers\Download\Excel\Boxes::class,'csv'])->name('boxes.csv');
+Route::post('/equipements/csv',[App\Http\Controllers\Download\Excel\Equips::class,'csv'])->name('equips.csv');
 
 /******************************************************************************************************************/
 

@@ -160,7 +160,7 @@ class Hosts extends Component
         }
         else
         {
-            DB::table('nagios_hosts')
+            return DB::table('nagios_hosts')
                 ->where('alias','host')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_customvariables.varvalue',$site_name)
