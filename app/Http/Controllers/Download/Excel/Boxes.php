@@ -26,7 +26,7 @@ class Boxes extends Controller
         
             parse_str($request->data,$historic);
         
-            return Excel::download(new BoxesExcel($historic['data']), 'boxes_historique '.date('Y-m-d H:i:s').'.csv');
+            return Excel::download(new BoxesExcel($historic['data']), 'boxes_historique '.date('Y-m-d H:i:s').'.xlsx');
         }
     }
 

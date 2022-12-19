@@ -4,8 +4,11 @@ namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize; 
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class HostsExcel implements FromCollection, WithHeadings
+class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithStyles
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -33,5 +36,12 @@ class HostsExcel implements FromCollection, WithHeadings
         ];
     }
 
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            // Style the first row as bold text.
+            1    => ['font' => ['bold' => true]],
+        ];
+    }
 
 }

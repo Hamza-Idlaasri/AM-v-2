@@ -19,7 +19,7 @@
         <form action="{{ route($csv_path) }}" method="post">
             @csrf
             <input type="hidden" name="data" value="{{$query}}">
-            <button type="submit" class="btn btn-outline-success font-weight-bold mt-1"><i class="fas fa-file-csv fa-lg"></i> CSV</button>
+            <button type="submit" class="btn btn-outline-success font-weight-bold mt-1"><i class="fas fa-file-csv fa-lg"></i> EXL</button>
         </form>
     </div>
 </div>

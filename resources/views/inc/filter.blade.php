@@ -1,4 +1,4 @@
-<nav class="navbar navbar-light pt-3 pb-4 px-0 float-right form-inline">
+<nav class="navbar navbar-light pt-3 pb-4 px-0 float-right form-inline" style="width: 90%">
 
     @if ($type == 'host' || $type == 'box')
         
@@ -15,7 +15,7 @@
         @if ($type == 'host')
             {{-- Hosts Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="hosts_names">Host :</label>
-            <select wire:model="host_name" name="hosts_names" id="hosts_names" class="form-control">
+            <select wire:model="host_name" name="hosts_names" id="hosts_names" class="form-control" style="width: 20%">
                 <option value="">All</option>
                 @foreach ($names as $name)
                 <option value="{{$name->host_name}}">{{$name->host_name}}</option>
@@ -26,7 +26,7 @@
         @if ($type == 'box')
             {{-- Boxes Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="boxes_names">Box :</label>
-            <select wire:model="box_name" name="boxes_names" id="boxes_names" class="form-control">
+            <select wire:model="box_name" name="boxes_names" id="boxes_names" class="form-control" style="width: 20%">
                 <option value="">All</option>
                 @foreach ($names as $name)
                 <option value="{{$name->box_name}}">{{$name->box_name}}</option>
@@ -52,7 +52,7 @@
         @if ($type == 'service')
             {{-- Services Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="services_names">Service :</label>
-            <select wire:model="service_name" name="services_names" id="services_names" class="form-control">
+            <select wire:model="service_name" name="services_names" id="services_names" class="form-control" style="width: 20%">
                 <option value="">All</option>
 
                 @foreach ($names as $name)
@@ -75,7 +75,7 @@
         @if ($type == 'equip')
             {{-- Equips Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="equips_names">Equipement :</label>
-            <select wire:model="equip_name" name="equips_names" id="equips_names" class="form-control w-25">
+            <select wire:model="equip_name" name="equips_names" id="equips_names" class="form-control" style="width: 20%">
                 <option value="">All</option>
 
                 @foreach ($names as $name)

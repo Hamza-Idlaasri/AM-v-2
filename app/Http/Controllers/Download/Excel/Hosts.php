@@ -26,7 +26,7 @@ class Hosts extends Controller
         
             parse_str($request->data,$historic);
 
-            return Excel::download(new HostsExcel($historic['data']), 'hosts_historique '.date('Y-m-d H:i:s').'.csv');
+            return Excel::download(new HostsExcel($historic['data']), 'hosts_historique '.date('Y-m-d H:i:s').'.xlsx');
         }
     }
 
