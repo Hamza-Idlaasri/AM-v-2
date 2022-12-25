@@ -88,6 +88,7 @@ class Boxes extends Component
 
             $all_boxes_checks = $this->getBoxesChecks()
                 ->where('nagios_hostchecks.host_object_id','=',$box->host_object_id)
+                ->take(2)
                 ->get();
 
             if(sizeof($all_boxes_checks))
@@ -96,8 +97,11 @@ class Boxes extends Component
 
                 for ($i=0; $i < sizeof($status); $i++) {
                     
-                    $box = $this->getBoxesChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])->get();
-                    array_push($boxes_checks,$box[0]);
+                    $box = $this->getBoxesChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])->first();
+
+                    if (!empty($box)) {
+                        array_push($boxes_checks,$box);
+                    }
                 
                 }
 

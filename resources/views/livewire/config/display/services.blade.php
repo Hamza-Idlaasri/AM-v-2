@@ -64,10 +64,10 @@
                     <span class="w-100 d-flex justify-content-around align-items-center">
 
                         {{-- Edit Service --}}
-                        <a href="{{ route('edit-service', ['id' => $service->service_id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
+                        <a href="{{ route('edit-service', ['id' => $service->service_id]) }}" class="btn text-info" style="border: 0; @if($service->host_object_id == 1) pointer-events: none; opacity:0.5 @endif"><i class="fas fa-pen"></i></a>
                         
                         {{-- Delete Service --}}
-                        <a href="{{ route('delete-service', ['id' => $service->service_object_id]) }}" class="btn text-danger">
+                        <a href="{{ route('delete-service', ['id' => $service->service_object_id]) }}" class="btn text-danger" style="@if($service->host_object_id == 1) pointer-events: none; opacity:0.5 @endif">
                             <i class="far fa-trash-alt"></i>
                         </a>
 

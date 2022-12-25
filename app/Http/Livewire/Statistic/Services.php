@@ -41,14 +41,14 @@ class Services extends Component
         else
         {
             return DB::table('nagios_servicechecks')
-            ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-            ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('alias','host')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
-            ->orderBy('start_time')
-            ->where('nagios_servicechecks.end_time','>=',$date);
+                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('alias','host')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
+                ->orderBy('start_time')
+                ->where('nagios_servicechecks.end_time','>=',$date);
         }
        
     }
@@ -92,6 +92,7 @@ class Services extends Component
 
             $all_services_checks = $this->getServicesChecks()
                 ->where('nagios_servicechecks.service_object_id','=',$service->service_object_id)
+                ->take(2)
                 ->get();
 
             if(sizeof($all_services_checks))
@@ -100,8 +101,10 @@ class Services extends Component
 
                 for ($i=0; $i < sizeof($status); $i++) {
                     
-                    $service = $this->getServicesChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])->get();
-                    array_push($services_checks,$service[0]);
+                    $service = $this->getServicesChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])->first();
+                    if (!empty($service)) {
+                        array_push($services_checks,$service);
+                    }
                 
                 }
 

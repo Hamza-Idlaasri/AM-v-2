@@ -54,11 +54,13 @@
         </div>
         
         {{-- Append to a site --}}
-        <div class="p-2 rounded" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
+        <div class="p-2 rounded @error('password') border-danger @enderror" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
                 
             @forelse ($all_sites as $site)
-                <input type="radio" wire:model="site" id="{{$site->id}}" value="{{$site->site_name}}"> <label for="{{$site->id}}">{{ $site->site_name }}</label>
-                <br>
+                @if ($site->id != 1)
+                    <input type="radio" wire:model="site" id="{{$site->id}}" value="{{$site->site_name}}"> <label for="{{$site->id}}">{{ $site->site_name }}</label>
+                    <br>
+                @endif
             @empty
                 <p>No site found</p>
             @endforelse

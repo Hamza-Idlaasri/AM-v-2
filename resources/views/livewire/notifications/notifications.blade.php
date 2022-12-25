@@ -2,25 +2,25 @@
     
     <div class="container d-flex w-50 justify-content-around mb-4 mx-auto" id="btn-list">
 
-        <button wire:click="checkNotif('hosts')" class="btn btn-primary font-weight-bold position-relative" id="hosts-btn">Hosts 
+        <button wire:click="checkNotif('hosts')" class="btn font-weight-bold position-relative @if ($hosts_activated) btn-primary @else btn-light @endif">Hosts 
             @if ($hosts_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $hosts_not_checked }}</span>
             @endif
         </button>
 
-        <button wire:click="checkNotif('services')" class="btn btn-light font-weight-bold position-relative" id="services-btn">Services 
+        <button wire:click="checkNotif('services')" class="btn font-weight-bold position-relative @if ($services_activated) btn-primary @else btn-light @endif">Services 
             @if ($services_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $services_not_checked }}</span>   
             @endif
         </button>
 
-        <button wire:click="checkNotif('boxes')" class="btn btn-light font-weight-bold position-relative" id="boxes-btn">Boxes 
+        <button wire:click="checkNotif('boxes')" class="btn font-weight-bold position-relative @if ($boxes_activated) btn-primary @else btn-light @endif">Boxes 
             @if ($boxes_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $boxes_not_checked }}</span>
             @endif
         </button>
 
-        <button wire:click="checkNotif('equips')" class="btn btn-light font-weight-bold position-relative" id="equips-btn">Equipements 
+        <button wire:click="checkNotif('equips')" class="btn font-weight-bold position-relative @if ($equips_activated) btn-primary @else btn-light @endif">Equipements 
             @if ($equips_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $equips_not_checked }}</span>
             @endif

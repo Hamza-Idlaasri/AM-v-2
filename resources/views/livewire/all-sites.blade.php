@@ -1,7 +1,11 @@
 <div class="container w-100 my-4 p-2 bg-white shadow rounded">
 
     <div id="back">
-    <a wire:click="site(1)" class="px-4 py-3 h5" style="cursor: pointer">Overview</a>
+    <br>
+    <div class="d-flex justify-content-between px-4">
+        <span class="px-4 py-2 h5">Global Overview</span>
+        <a wire:click="site(1)" class="px-4 py-2" style="cursor: pointer">See All Sites <i class="fa-solid fa-arrow-right-long"></i></a>
+    </div>
     {{-- Summary --}}
     <div class="container d-flex justify-content-around align-items-center w-100 bg-white mt-2">
         {{-- Hosts --}}
@@ -217,18 +221,18 @@
         
         {{-- Summary of all sites --}}
         <div class="container bg-white border rounded p-4" style="width:60%;border-color: rgba(128, 128, 128, 0.5);border-top-left-radius:0px !important;border-bottom-left-radius:0px !important;">
-            <h6 class="d-flex justify-content-between align-items-center">Sites Summary @if (auth()->user()->hasRole('super_admin'))<button class="btn text-primary" id="add-new-site"><i class="fa-solid fa-plus"></i> Add New Site</button>@endif</h6>
-
+            <h6 class="d-flex justify-content-between align-items-center">Sites Summary @if (auth()->user()->hasRole('super_admin'))<button class="btn btn-outline-primary" id="add-new-site"><i class="fa-solid fa-plus"></i> Add New Site</button>@endif</h6>
+            
             <br>
 
             <div style="max-height: 55vh;overflow: auto;">
 
                 @forelse ($sites_details as $site)
 
-                    <table class="table table-bordered text-center table-hover" x-data="{ open: false }">
+                    <table class="table table-bordered text-center table-hover" {{--x-data="{ open: false }"--}}>
                         <thead class="bg-light text-dark">
                             <th colspan="4"><a wire:click="site({{$site->id}})" class="text-primary h5" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> {{ $site->site_name }}</a>
-                                <button style="outline: none;border: none;" @click.prevent="open = true"><span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="fa-solid fa-angle-down"></i></span></button>
+                                {{-- <button style="outline: none;border: none;" @click.prevent="open = true"><span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="fa-solid fa-angle-down"></i></span></button> --}}
                             </th>
                         </thead>
 
@@ -253,7 +257,7 @@
                                 </td>
                             </tr>
 
-                            <tr x-show+="open" x-cloak>
+                            <tr {{--x-show+="open" x-cloak--}}>
                                 {{-- Hosts --}}
                                 <td>
                                     <span class="badge badge-success" title="{{ $site->hosts_up }} {{ Str::plural('host',$site->hosts_up)}} Up">{{ $site->hosts_up }}</span>

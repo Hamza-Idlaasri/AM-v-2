@@ -15,7 +15,7 @@ class Equips extends Component
         $equips_status = $this->getEquipsStatus($equips_name);
 
         $datasets = $this->getChartRange();
-
+        // dd($equips_status,$datasets);
         return view('livewire.statistic.equips')
             ->with(['equips_status' => $equips_status, 'datasets' => $datasets])
             ->extends('layouts.app')
@@ -26,18 +26,18 @@ class Equips extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
+        // $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
 
         if ($site_name == 'All') {
             
             return DB::table('nagios_servicechecks')
                 ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
+                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.state','nagios_servicechecks.servicecheck_id','nagios_servicechecks.start_time','nagios_servicechecks.end_time')
                 ->where('alias','box')
                 ->orderByDesc('nagios_services.display_name')
-                ->orderBy('start_time')
-                ->where('nagios_servicechecks.end_time','>=',$date);
+                ->orderBy('start_time');
+                // ->where('nagios_servicechecks.end_time','>=',$date);
         }
         else
         {
@@ -45,12 +45,12 @@ class Equips extends Component
                 ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
+                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.state','nagios_servicechecks.servicecheck_id','nagios_servicechecks.start_time','nagios_servicechecks.end_time')
                 ->where('alias','box')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->orderByDesc('nagios_services.display_name')
-                ->orderBy('start_time')
-                ->where('nagios_servicechecks.end_time','>=',$date);
+                ->orderBy('start_time');
+                // ->where('nagios_servicechecks.end_time','>=',$date);
         }
         
 
@@ -63,18 +63,18 @@ class Equips extends Component
         if ($site_name == 'All') {
             
             return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
+                ->where('alias','box')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
         }
         else
         {
             return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_services.display_name as box_name','nagios_services.service_object_id','nagios_services.display_name as equip_name');
         }
         
     }
@@ -92,16 +92,20 @@ class Equips extends Component
 
             $all_equips_checks = $this->getEquipsChecks()
                 ->where('nagios_servicechecks.service_object_id','=',$equip->service_object_id)
+                ->take(2)
                 ->get();
 
-            if(sizeof($all_equips_checks))
+            if(!empty($all_equips_checks))
             {
-                $status = $this->getInterval($all_equips_checks);  
+                $status = $this->getInterval($all_equips_checks);
 
                 for ($i=0; $i < sizeof($status); $i++) {
-                    
-                    $equip = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])->get();
-                    array_push($equips_checks,$equip[0]);
+
+                    $equip = $this->getEquipsChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])->first();
+
+                    if(!empty($equip)) {
+                        array_push($equips_checks,$equip);
+                    }
                 
                 }
 
@@ -113,7 +117,6 @@ class Equips extends Component
 
         foreach ($equips_checks as $equip) {
             
-
             switch ($equip->state) {
                 
                 case 0:

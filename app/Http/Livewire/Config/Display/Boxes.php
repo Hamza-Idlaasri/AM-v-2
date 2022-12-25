@@ -28,7 +28,7 @@ class Boxes extends Component
 
         if (!empty($boxes)) 
             $this->convertRetryTime($boxes);
-
+        
         return view('livewire.config.display.boxes')
             ->with('boxes', $boxes)
             ->extends('layouts.app')
@@ -39,11 +39,10 @@ class Boxes extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        if ($site_name) {
+        if ($site_name == "All") {
             return DB::table('nagios_hosts')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->select('nagios_hosts.host_id','nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state','nagios_hosts.retry_interval','nagios_hoststatus.max_check_attempts','nagios_hoststatus.has_been_checked','nagios_hoststatus.notifications_enabled')
+                ->select('nagios_hosts.host_id','nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state','nagios_hoststatus.output','nagios_hosts.retry_interval','nagios_hoststatus.max_check_attempts','nagios_hoststatus.has_been_checked','nagios_hoststatus.notifications_enabled')
                 ->where('nagios_hosts.alias','box')
                 ->orderBy('nagios_hosts.display_name');
 
@@ -51,7 +50,7 @@ class Boxes extends Component
             return DB::table('nagios_hosts')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->select('nagios_hosts.host_id','nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state','nagios_hosts.retry_interval','nagios_hoststatus.max_check_attempts','nagios_hoststatus.has_been_checked','nagios_hoststatus.notifications_enabled')
+                ->select('nagios_hosts.host_id','nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state','nagios_hoststatus.output','nagios_hosts.retry_interval','nagios_hoststatus.max_check_attempts','nagios_hoststatus.has_been_checked','nagios_hoststatus.notifications_enabled')
                 ->where('nagios_hosts.alias','box')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->orderBy('nagios_hosts.display_name');

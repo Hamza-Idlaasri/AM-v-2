@@ -89,6 +89,7 @@ class Hosts extends Component
 
             $host_check = $this->getHostsChecks()
                 ->where('nagios_hostchecks.host_object_id','=',$host->host_object_id)
+                ->take(2)
                 ->get();
 
             if(sizeof($host_check))
@@ -97,8 +98,10 @@ class Hosts extends Component
 
                 for ($i=0; $i < sizeof($status); $i++) {
 
-                    $host = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])->get();
-                    array_push($hosts_checks,$host[0]);
+                    $host = $this->getHostsChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])->first();
+                    if (!empty($host)) {
+                        array_push($hosts_checks,$host);
+                    }
 
                 }
 
