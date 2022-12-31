@@ -21,11 +21,11 @@ class Equips extends Component
         {
             $equips =$this->getEquips()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->paginate(10);
+                ->paginate(30);
 
         } else {
 
-            $equips = $this->getEquips()->paginate(10);
+            $equips = $this->getEquips()->paginate(30);
 
         }
 
@@ -49,20 +49,20 @@ class Equips extends Component
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
                 ->where('current_state','<>','0')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command')
-                ->orderBy('nagios_hosts.display_name');
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command');
+                // ->orderBy('nagios_hosts.display_name');
         }
         else
         {
             return DB::table('nagios_hosts')
-            ->where('alias','box')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-            ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->where('current_state','<>','0')
-            ->orderBy('nagios_hosts.display_name');
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->where('current_state','<>','0');
+            // ->orderBy('nagios_hosts.display_name');
         }
     }
 

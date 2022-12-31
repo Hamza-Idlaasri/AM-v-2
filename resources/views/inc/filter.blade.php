@@ -6,9 +6,9 @@
         <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
         <select wire:model="status" name="status" id="status" class="form-control">
             <option value="all">All</option>
-            <option value="up">Up</option>
-            <option value="down">Down</option>
-            <option value="unreachable">Unreachable</option>
+            <option value="Up">Up</option>
+            <option value="Down">Down</option>
+            <option value="Unreachable">Unreachable</option>
         </select>
 
         {{-- Names --}}
@@ -42,10 +42,10 @@
         <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
         <select wire:model="status" name="status" id="status" class="form-control">
             <option value="all">All</option>
-            <option value="ok">Ok</option>
-            <option value="warning">Warning</option>
-            <option value="critical">Critical</option>
-            <option value="unknown">Unknown</option>
+            <option value="Ok">Ok</option>
+            <option value="Warning">Warning</option>
+            <option value="Critical">Critical</option>
+            <option value="Unknown">Unknown</option>
         </select>
 
         {{-- Names --}}

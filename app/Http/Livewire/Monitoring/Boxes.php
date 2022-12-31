@@ -21,11 +21,11 @@ class Boxes extends Component
         {
             $boxs = $this->getBoxes()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->paginate(10);
+                ->paginate(30);
 
         } else {
 
-            $boxs = $this->getBoxes()->paginate(10);
+            $boxs = $this->getBoxes()->paginate(30);
 
         }
 

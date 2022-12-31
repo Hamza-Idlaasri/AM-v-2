@@ -21,11 +21,11 @@ class Hosts extends Component
         {
             $hosts = $this->getHosts()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->paginate(10);
+                ->paginate(30);
 
         } else {
 
-            $hosts = $this->getHosts()->paginate(10);
+            $hosts = $this->getHosts()->paginate(30);
 
         }
 

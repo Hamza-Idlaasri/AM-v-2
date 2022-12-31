@@ -21,11 +21,11 @@ class Boxes extends Component
         {
             $boxs = $this->getBoxes()
                 ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->paginate(10);
+                ->paginate(30);
 
         } else {
 
-            $boxs = $this->getBoxes()->paginate(10);
+            $boxs = $this->getBoxes()->paginate(30);
 
         }
 
@@ -39,7 +39,7 @@ class Boxes extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        if ($site_name) {
+        if ($site_name == "All") {
             
             return DB::table('nagios_hosts')
                 ->where('alias','box')

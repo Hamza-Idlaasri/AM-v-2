@@ -3,12 +3,12 @@
 
 <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
     
-    @if (($hosts_up + $hosts_down + $hosts_unreachable) > 0)
+    {{-- @if (($hosts_up + $hosts_down + $hosts_unreachable) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Hosts</h6>
             <canvas  id="hosts"></canvas>     
         </div>
-    @endif
+    @endif --}}
     
     @if (($boxes_up + $boxes_down + $boxes_unreachable) > 0) 
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
@@ -17,12 +17,12 @@
         </div>
     @endif
 
-    @if (($services_ok + $services_critical + $services_warning + $services_unknown) > 0)
+    {{-- @if (($services_ok + $services_critical + $services_warning + $services_unknown) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Services</h6>
             <canvas  id="services"></canvas>     
         </div>
-    @endif
+    @endif --}}
 
     @if (($equips_ok + $equips_critical + $equips_warning + $equips_unknown) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">

@@ -1,7 +1,7 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">    
 
     @php
-        $query = http_build_query(array('data' => $equips_histories));
+        $query = json_encode($download);
 
         if (empty($query)) {
             $query = 'null';
@@ -73,7 +73,8 @@
     </table>
 
     {{-- {{$equips_histories->appends(['status' => request()->query('status'),'from' => request()->query('from'),'to' => request()->query('to'),'name' => request()->query('name')])->links('vendor.pagination.bootstrap-4')}} --}}
-
+    {{-- Pagination --}}
+    {{$equips_histories->links('vendor.livewire.bootstrap')}}
 </div>
 
 <script>

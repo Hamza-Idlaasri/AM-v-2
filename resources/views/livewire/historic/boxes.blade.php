@@ -1,7 +1,7 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
 
     @php
-        $query = http_build_query(array('data' => $boxes_histories));
+        $query = json_encode($download);
 
         if (empty($query)) {
             $query = 'null';
@@ -32,7 +32,7 @@
     
         @forelse ($boxes_histories as $box_history)
             <tr>
-                <td>{{$box_history->display_name}}</td>
+                <td>{{$box_history->box_name}}</td>
                 <td>{{$box_history->address}}</td>
                 
                 @switch($box_history->state)
@@ -68,6 +68,7 @@
     </table>
 
     {{-- {{$boxes_histories->appends(['status' => request()->query('status'),'from' => request()->query('from'),'to' => request()->query('to'),'name' => request()->query('name')])->links('vendor.pagination.bootstrap-4')}} --}}
+    {{$boxes_histories->links('vendor.livewire.bootstrap')}}
 
 </div>
 

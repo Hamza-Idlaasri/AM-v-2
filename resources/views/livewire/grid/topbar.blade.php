@@ -3,7 +3,7 @@
     {{-- Summary --}}
     <div class="d-flex justify-content-around align-items-center" style="width: 65%;margin-left: 10%;">
         {{-- Hosts --}}
-        <div class="bg-white d-flex rounded align-items-center p-2" id="summary_hosts">
+        <!-- <div class="bg-white d-flex rounded align-items-center p-2" id="summary_hosts">
             <span class="m-1 badge" title="Hosts"><i class="fa-solid fa-display fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" sstyle="cursor: default" title="total des hosts : {{ $total_hosts }}">
                 @if ($total_hosts >= 1000)
@@ -77,7 +77,7 @@
                 @endif
             </span>
         </div>
-        <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>
+        <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span> -->
         {{-- Boxes --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_boxs">
             <span class="m-1 badge" title="Boxes"><i class="fa-solid fa-microchip fa-lg"></i></span>
