@@ -25,8 +25,10 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave="ease-in transition-faster"
                 x-transition:leave-end="opacity-0 scale-90">
-                {{-- <a href="/monitoring/hosts" class="sub-item" id="m-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a> --}}
-                {{-- <a href="/monitoring/services" class="sub-item" id="m-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a> --}}
+                @if (auth()->user()->hasRole('super_admin'))
+                <a href="/monitoring/hosts" class="sub-item" id="m-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a>
+                <a href="/monitoring/services" class="sub-item" id="m-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
+                @endif
                 <a href="/monitoring/boxes" class="sub-item" id="m-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxes</span></a>
                 <a href="/monitoring/equipements" class="sub-item" id="m-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
             </div>
@@ -42,8 +44,10 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave="ease-in transition-faster"
                 x-transition:leave-end="opacity-0 scale-90">
-                {{-- <a href="/problems/hosts" class="sub-item" id="p-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a> --}}
-                {{-- <a href="/problems/services" class="sub-item" id="p-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a> --}}
+                @if (auth()->user()->hasRole('super_admin'))
+                <a href="/problems/hosts" class="sub-item" id="p-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a>
+                <a href="/problems/services" class="sub-item" id="p-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
+                @endif
                 <a href="/problems/boxes" class="sub-item" id="p-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxes</span></a>
                 <a href="/problems/equipements" class="sub-item" id="p-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
             </div>
@@ -77,12 +81,12 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave="ease-in transition-faster"
                 x-transition:leave-end="opacity-0 scale-90">
-                {{-- <a href="/config/hosts" class="sub-item" id="c-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a> --}}
-                {{-- <a href="/config/services" class="sub-item" id="c-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a> --}}
+                <a href="/config/hosts" class="sub-item" id="c-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a>
+                <a href="/config/services" class="sub-item" id="c-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
                 <a href="/config/boxes" class="sub-item" id="c-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title"> Boxes</span></a>
                 <a href="/config/equipements" class="sub-item" id="c-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
-                {{-- <a href="/config/hostgroups" class="sub-item" id="c-hg"><i class="fa-solid fa-network-wired"></i><span class="item-title"> Hostgroups</span></a> --}}
-                {{-- <a href="/config/servicegroups" class="sub-item" id="c-sg"><i class="fa-solid fa-gears"></i><span class="item-title"> Servicegroups</span></a> --}}
+                <a href="/config/hostgroups" class="sub-item" id="c-hg"><i class="fa-solid fa-network-wired"></i><span class="item-title"> Hostgroups</span></a>
+                <a href="/config/servicegroups" class="sub-item" id="c-sg"><i class="fa-solid fa-gears"></i><span class="item-title"> Servicegroups</span></a>
                 <a href="/config/boxgroups" class="sub-item" id="c-bg"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxgroups</span></a>
                 <a href="/config/equipgroups" class="sub-item" id="c-eg"><i class="fa-solid fa-server"></i><span class="item-title"> Equipgroups</span></a>
                 <a href="/config/users" class="sub-item" id="c-users"><i class="fa-solid fa-users"></i><span class="item-title"> Users</span></a>
@@ -106,8 +110,10 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave="ease-in transition-faster"
                 x-transition:leave-end="opacity-0 scale-90">
-                {{-- <a href="/statistiques/hosts" class="sub-item" id="s-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a> --}}
-                {{-- <a href="/statistiques/services" class="sub-item" id="s-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a> --}}
+                @if (auth()->user()->hasRole('super_admin'))
+                <a href="/statistiques/hosts" class="sub-item" id="s-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a>
+                <a href="/statistiques/services" class="sub-item" id="s-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
+                @endif
                 <a href="/statistiques/boxes" class="sub-item" id="s-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxes</span></a>
                 <a href="/statistiques/equipements" class="sub-item" id="s-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
             </div>
@@ -115,7 +121,7 @@
 
         {{-- Historic --}}
         <div class="item-container" x-data="{ open: false }">
-            <button id="historic-btn" class="dd-menu item" @click.prevent="open = true"><i class="fa-solid fa-calendar-days"></i> <span class="item-title">Historic <span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="fa-solid fa-angle-down"></i></span></span></button>
+            <button id="historic-btn" class="dd-menu item" @click.prevent="open = true"><i class="fa-solid fa-calendar-days"></i> <span class="item-title">Historical Data <span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="fa-solid fa-angle-down"></i></span></span></button>
             <div id="historic" class="sub-menu" x-show="open" x-cloak @click.away="open = false"
                 x-transition:enter-start="opacity-0 scale-90"
                 x-transition:enter="ease-out transition-medium"
@@ -123,8 +129,10 @@
                 x-transition:leave-start="opacity-100 scale-100"
                 x-transition:leave="ease-in transition-faster"
                 x-transition:leave-end="opacity-0 scale-90">
-                {{-- <a href="/historiques/hosts" class="sub-item" id="h-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a> --}}
-                {{-- <a href="/historiques/services" class="sub-item" id="h-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a> --}}
+                @if (auth()->user()->hasRole('super_admin'))
+                <a href="/historiques/hosts" class="sub-item" id="h-hosts"><i class="fa-solid fa-display"></i><span class="item-title"> Hosts</span></a>
+                <a href="/historiques/services" class="sub-item" id="h-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
+                @endif
                 <a href="/historiques/boxes" class="sub-item" id="h-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxes</span></a>
                 <a href="/historiques/equipements" class="sub-item" id="h-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
             </div>

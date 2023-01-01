@@ -7,8 +7,9 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize; 
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithStyles
+class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithStyles, WithMapping
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -41,6 +42,18 @@ class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  Wi
         return [
             // Style the first row as bold text.
             1    => ['font' => ['bold' => true]],
+        ];
+    }
+
+    public function map($services): array
+    {
+        return [
+            $services->host_name,
+            $services->service_name,
+            $services->state,
+            $services->start_time,
+            $services->end_time,
+            $services->output
         ];
     }
 }

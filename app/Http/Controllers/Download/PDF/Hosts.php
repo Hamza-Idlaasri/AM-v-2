@@ -23,9 +23,7 @@ class Hosts extends Controller
 
         } else {
           
-            parse_str($request->data,$historic);
-
-            $hosts_history = $historic['data'];
+            $hosts_history = json_decode($request->data);
 
             $pdf = PDF::loadView('download.hosts', compact('hosts_history'))->setPaper('a4', 'landscape');
 

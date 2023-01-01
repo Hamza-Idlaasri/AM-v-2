@@ -16,13 +16,23 @@ class NetworkMap extends Component
 
             $hosts = DB::table('nagios_hosts')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state')
-                ->get();
+                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.current_state');
+            
+            if (!auth()->user()->hasRole('super_admin')) {
+                $hosts = $hosts->where('nagios_hosts.alias','box');
+            }
+            
+            $hosts = $hosts->get();
 
             $parent_hosts = DB::table('nagios_hosts')
                 ->join('nagios_host_parenthosts','nagios_hosts.host_id','=','nagios_host_parenthosts.host_id')
-                ->select('nagios_hosts.host_object_id','nagios_host_parenthosts.parent_host_object_id')
-                ->get();
+                ->select('nagios_hosts.host_object_id','nagios_host_parenthosts.parent_host_object_id');
+
+            if (!auth()->user()->hasRole('super_admin')) {
+                $parent_hosts = $parent_hosts->where('nagios_hosts.alias','box');
+            }
+            
+            $parent_hosts = $parent_hosts->get();
 
             return view('livewire.network-map')
                 ->with('hosts', $hosts)

@@ -7,8 +7,9 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize; 
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithStyles
+class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithStyles, WithMapping
 {
     /**
     * @return \Illuminate\Support\Collection
@@ -44,4 +45,15 @@ class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
         ];
     }
 
+    public function map($hosts): array
+    {
+        return [
+            $hosts->host_name,
+            $hosts->address,
+            $hosts->state,
+            $hosts->start_time,
+            $hosts->end_time,
+            $hosts->output
+        ];
+    }
 }

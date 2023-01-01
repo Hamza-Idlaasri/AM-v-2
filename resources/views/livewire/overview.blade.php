@@ -2,14 +2,17 @@
 <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
 <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
-    
-    {{-- @if (($hosts_up + $hosts_down + $hosts_unreachable) > 0)
+    {{-- Hosts --}}
+    @if (auth()->user()->hasRole('super_admin'))
+    @if (($hosts_up + $hosts_down + $hosts_unreachable) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Hosts</h6>
             <canvas  id="hosts"></canvas>     
         </div>
-    @endif --}}
+    @endif
+    @endif
     
+    {{-- Boxes --}}
     @if (($boxes_up + $boxes_down + $boxes_unreachable) > 0) 
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Boxes</h6>
@@ -17,13 +20,17 @@
         </div>
     @endif
 
-    {{-- @if (($services_ok + $services_critical + $services_warning + $services_unknown) > 0)
+    {{-- Services --}}
+    @if (auth()->user()->hasRole('super_admin'))
+    @if (($services_ok + $services_critical + $services_warning + $services_unknown) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Services</h6>
             <canvas  id="services"></canvas>     
         </div>
-    @endif --}}
+    @endif
+    @endif
 
+    {{-- Equips --}}
     @if (($equips_ok + $equips_critical + $equips_warning + $equips_unknown) > 0)
         <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
             <h6 class="mb-2 text-secondary">Porcentage des Equipements</h6>

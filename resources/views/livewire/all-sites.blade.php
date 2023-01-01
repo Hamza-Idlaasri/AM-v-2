@@ -10,35 +10,36 @@
     {{-- Summary --}}
     <div class="container d-flex justify-content-around align-items-center w-100 bg-white mt-2">
         {{-- Hosts --}}
-        <!--<div class="bg-white d-flex rounded align-items-center p-2" id="summary_hosts">
+        @if (auth()->user()->hasRole('super_admin'))
+        <div class="bg-white d-flex rounded align-items-center p-2" id="summary_hosts">
             <span class="m-1 badge" title="Hosts"><i class="fa-solid fa-display fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" sstyle="cursor: default" title="total des hosts : {{ $summary->total_hosts }}">
-                {{-- @if ($summary->total_hosts >= 1000)
+                @if ($summary->total_hosts >= 1000)
                     {{floor($summary->total_hosts/1000).'k'}}
                 @else
                     {{ $summary->total_hosts }}
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-success m-1" style="cursor: default" title="{{ $summary->hosts_up }} {{ Str::plural('host',$summary->hosts_up)}} Up">
-                {{-- @if ($summary->hosts_up >= 1000)
+                @if ($summary->hosts_up >= 1000)
                     {{floor($summary->hosts_up/1000).'k'}}
                 @else
                     {{ $summary->hosts_up }}                
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-danger m-1" style="cursor: default" title="{{ $summary->hosts_down }} {{ Str::plural('host',$summary->hosts_down)}} Down">
-                {{-- @if ($summary->hosts_down >= 1000)
+                @if ($summary->hosts_down >= 1000)
                     {{floor($summary->hosts_down/1000).'k'}}
                 @else
                     {{ $summary->hosts_down }}
-                @endif     --}}
+                @endif    
             </span>
             <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $summary->hosts_unreach }} {{ Str::plural('host',$summary->hosts_unreach)}} unreach">
-                {{-- @if ($summary->hosts_unreach >= 1000)
+                @if ($summary->hosts_unreach >= 1000)
                     {{floor($summary->hosts_unreach/1000).'k'}}
                 @else
                     {{ $summary->hosts_unreach }}
-                @endif --}}
+                @endif
             </span>
 
         </div>
@@ -49,42 +50,43 @@
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_services">
             <span class="m-1 badge" title="Services"><i class="fa-solid fa-gear fa-lg"></i></span>
             <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des services : {{ $summary->total_services }}">
-                {{-- @if ($summary->total_services >= 1000)
+                @if ($summary->total_services >= 1000)
                     {{floor($summary->total_services/1000).'k'}}
                 @else
                     {{ $summary->total_services }}
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-success m-1" style="cursor: default" title="{{ $summary->services_ok }} {{ Str::plural('service',$summary->services_ok)}} ok">
-                {{-- @if ($summary->services_ok >= 1000)
+                @if ($summary->services_ok >= 1000)
                     {{floor($summary->services_ok/1000).'k'}}
                 @else
                     {{ $summary->services_ok }}
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-warning m-1" style="cursor: default" title="{{ $summary->services_warning }} {{ Str::plural('service',$summary->services_warning)}} warning">
-                {{-- @if ($summary->services_warning >= 1000)
+                @if ($summary->services_warning >= 1000)
                     {{floor($summary->services_warning/1000).'k'}}
                 @else
                     {{ $summary->services_warning }}
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-danger m-1" style="cursor: default" title="{{ $summary->services_critical }} {{ Str::plural('service',$summary->services_critical)}} critical">
-                {{-- @if ($summary->services_critical >= 1000)
+                @if ($summary->services_critical >= 1000)
                     {{floor($summary->services_critical/1000).'k'}}
                 @else
                     {{ $summary->services_critical }}
-                @endif --}}
+                @endif
             </span>
             <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $summary->services_unknown }} {{ Str::plural('service',$summary->services_unknown)}} unknown">
-                {{-- @if ($summary->services_unknown >= 1000)
+                @if ($summary->services_unknown >= 1000)
                     {{floor($summary->services_unknown/1000).'k'}}
                 @else
                     {{ $summary->services_unknown }}
-                @endif --}}
+                @endif
             </span>
         </div>
-        <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>-->
+        <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>
+        @endif
         {{-- Boxes --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_boxs">
             <span class="m-1 badge" title="Boxes"><i class="fa-solid fa-microchip fa-lg"></i></span>
@@ -240,14 +242,16 @@
                         <tbody>
 
                             <tr>
-                                {{-- <td>
+                                @if (auth()->user()->hasRole('super_admin'))
+                                <td>
                                     <span class="badge">{{ $site->total_hosts }}</span>
                                     <span class="badge" title="Hosts"><i class="fa-solid fa-display fa-lg"></i></span>
                                 </td>
                                 <td>
                                     <span class="badge">{{ $site->total_services }}</span>
                                     <span class="badge" title="Services"><i class="fa-solid fa-gear fa-lg"></i></span>
-                                </td> --}}
+                                </td>
+                                @endif
                                 <td>
                                     <span class="badge">{{ $site->total_boxes }}</span>
                                     <span class="badge" title="Boxes"><i class="fa-solid fa-microchip fa-lg"></i></span>
@@ -260,7 +264,8 @@
 
                             <tr {{--x-show+="open" x-cloak--}}>
                                 {{-- Hosts --}}
-                                <!--<td>
+                                @if (auth()->user()->hasRole('super_admin'))
+                                <td>
                                     <span class="badge badge-success" title="{{ $site->hosts_up }} {{ Str::plural('host',$site->hosts_up)}} Up">{{ $site->hosts_up }}</span>
                                     <span class="badge badge-danger" title="{{ $site->hosts_down }} {{ Str::plural('host',$site->hosts_down)}} Down">{{ $site->hosts_down }}</span>
                                     <span class="badge badge-unknown" title="{{ $site->hosts_unreach }} {{ Str::plural('host',$site->hosts_unreach)}} Unreachable">{{ $site->hosts_unreach }}</span>
@@ -271,7 +276,8 @@
                                     <span class="badge badge-warning" title="{{ $site->services_warning }} {{ Str::plural('service',$site->services_warning)}} Warning">{{ $site->services_warning }}</span>
                                     <span class="badge badge-danger" title="{{ $site->services_critical }} {{ Str::plural('service',$site->services_critical)}} Critical">{{ $site->services_critical }}</span>
                                     <span class="badge badge-unknown" title="{{ $site->services_unknown }} {{ Str::plural('service',$site->services_unknown)}} Unknown">{{ $site->services_unknown }}</span>
-                                </td>-->
+                                </td>
+                                @endif
                                 {{-- Boxes --}}
                                 <td>
                                     <span class="badge badge-success" title="{{ $site->boxes_up }} {{ Str::plural('box',$site->boxes_up)}} Up">{{ $site->boxes_up }}</span>

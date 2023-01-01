@@ -23,9 +23,7 @@ class Services extends Controller
 
         } else {
           
-            parse_str($request->data,$historic);
-
-            $services_history = $historic['data'];
+            $services_history = json_decode($request->data);
 
             $pdf = PDF::loadView('download.services', compact('services_history'))->setPaper('a4', 'landscape');
 

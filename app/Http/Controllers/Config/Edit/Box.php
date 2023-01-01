@@ -48,6 +48,7 @@ class Box extends Controller
 
         // Parent relationship
         if($request->input('boxes'))
+            //TODO : CHANGE linux_server !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
         else
             $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;

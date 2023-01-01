@@ -32,11 +32,11 @@ body{
 
         <tr>
    
-            <td>{{$equipement_history['box_name']}}</td> 
+            <td>{{$equipement_history->box_name}}</td> 
 
-            <td>{{$equipement_history['equip_name']}}</td>
+            <td>{{$equipement_history->equip_name}}</td>
             
-            @switch($equipement_history['state'])
+            @switch($equipement_history->state)
 
                 @case('Ok')
                     <td><span class="badge badge-success">Ok</span></td>
@@ -54,9 +54,9 @@ body{
                     
             @endswitch
             
-            <td>{{$equipement_history['start_time']}}</td>
-            <td>{{$equipement_history['end_time']}}</td>
-            <td class="description">{{$equipement_history['output']}}</td>
+            <td>{{$equipement_history->start_time}}</td>
+            <td>{{$equipement_history->end_time}}</td>
+            <td class="description">{{$equipement_history->output}}</td>
         </tr>
         @endforeach
     </table>

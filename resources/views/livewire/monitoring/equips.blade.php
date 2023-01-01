@@ -2,6 +2,92 @@
 
     @include('inc.searchbar',['route' => 'monitoring.equips'])
 
+    {{-- Problems --}}
+    <div class="float-none mt-4" style="font-size: 90%">
+
+        <table class="table table-bordered text-center table-hover">
+
+            <thead class="bg-light text-dark">
+                <tr>
+                    <th>Boxes</th>
+                    <th>Equips</th>
+                    <th>Status</th>
+                    <th>Dernier verification</th>
+                    <th>Input Nbr</th>
+                    <th style="width: 30%">Description</th>
+                </tr>
+            </thead>
+    
+            <?php $check = 0 ?>
+            
+            @forelse ($equips_problems as $equip)        
+            
+            <tr>
+                {{-- Boxes Name --}}
+                @if ($check == 0 || $equip->host_object_id != $check)       
+                    
+                        <td>
+                            <a href="{{ route('mb-details', ['id' => $equip->host_object_id]) }}">{{$equip->box_name}}</a>
+                        </td> 
+    
+                        <?php $check = $equip->host_object_id ?>
+                    
+                @else
+                    <td></td>
+                @endif
+                
+                {{-- Equips Name --}}
+                <td>
+                    <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->equip_name}}</a>
+                    
+                    @if ($equip->is_flapping)
+                        <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
+                            <i class="fas fa-retweet"></i>
+                        </span>
+                    @endif
+                </td>
+                
+                {{-- Status --}}
+                @switch($equip->current_state)
+                    @case(1)
+                        <td><span class="badge badge-warning">Warning</span></td>
+                        @break
+                    @case(2)
+                        <td><span class="badge badge-danger">Critical</span></td>
+                        @break
+                    @case(3)
+                        <td><span class="badge badge-unknown">Ureachable</span></td>
+                        @break
+                    @default
+                        
+                @endswitch
+                
+                {{-- Dernier verification --}}
+                <td>{{$equip->last_check}}</td>
+    
+                {{-- Input Nr --}}
+                <td>{{$equip->check_command}}</td>
+    
+                {{-- Description --}}
+                <td class="description">{{$msg[$equip->current_state]}}</td>
+            </tr>
+                
+            @empty
+    
+                <tr>
+                    <td colspan="5">No result found <strong>{{ $search }}</strong></td>
+                </tr>
+    
+            @endforelse
+    
+        </table>
+    </div>
+    
+    <br>
+    <hr>
+    <br>
+    
+    {{-- All Status --}}
     <div class="float-none mt-4" style="font-size: 90%">
 
     <table class="table table-bordered text-center table-hover">
@@ -71,7 +157,7 @@
             <td>{{$equip->check_command}}</td>
 
             {{-- Description --}}
-            <td class="description">{{$equip->output}}</td>
+            <td class="description">{{$msg[$equip->current_state]}}</td>
         </tr>
             
         @empty
