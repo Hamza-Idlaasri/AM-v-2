@@ -8,307 +8,272 @@ use App\Models\UsersSite;
 
 class Services extends Component
 {
+    public $service_name;
+    public $date_from;
+    public $date_to;
+    public $site_name;
+
+    public $services_ok = 0;
+    public $services_warning = 0;
+    public $services_critical = 0;
+    public $services_unknown = 0;
+
     public function render()
     {
-        $services_name = $this->getServicesName()->get();
-        
-        $services_status = $this->getServicesStatus($services_name);
-        
-        $datasets = $this->getChartRange();
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
+        $this->getStateRanges();
+    
+        $services_status = (object)['services_ok' => $this->services_ok,'services_warning' => $this->services_warning,'services_critical' => $this->services_critical,'services_unknown' => $this->services_unknown];
 
         return view('livewire.statistic.services')
-            ->with(['services_status' => $services_status, 'datasets' => $datasets])
+            ->with(['services_status' => $services_status, 'services_names' => $this->getServicesGroups()])
             ->extends('layouts.app')
             ->section('content');
     }
 
+    public function getStateRanges()
+    {
+        $services_names = $this->ServicesNames();
+
+        $services_ranges = [];
+
+        foreach ($services_names as $service) {
+
+            $checks = $this->getServicesChecks()->where('nagios_services.service_object_id', $service->service_object_id)->get();
+
+            if(!empty($checks)) {
+                array_push($services_ranges, $checks);
+            }
+
+            unset($checks);
+        }
+        
+        $this->OrganizeStates($services_ranges);
+    }
+
+    public function OrganizeStates($services_ranges)
+    {
+        $services_range_of_states = [];
+
+        foreach ($services_ranges as $service) {
+            
+            // Get a single serviceschecks
+            $checks_of_service = $service;
+            
+            $start_index = 0;
+            $end_index = 0;
+
+            if (sizeof($checks_of_service) == 1) {
+                // push the state in table
+                array_push($services_range_of_states, $checks_of_service[0]->state);
+            } else {
+                // Search on single services checks ranges
+                for ($i=0; $i < sizeof($checks_of_service); $i++) {
+                    
+                    if ($i < (sizeof($checks_of_service)-1)) {
+
+                        if ($checks_of_service[$i]->state == $checks_of_service[$i+1]->state) {
+                            $end_index = $i;
+                            continue;
+                        } else {
+
+                            $end_index = $i;
+
+                            // set end_time of equip check to the last end_time of state
+                            // $checks_of_service[$start_index]->end_time = $checks_of_service[$end_index]->end_time;
+
+                            // push the state in table
+                            array_push($services_range_of_states, $checks_of_service[$start_index]->state);
+
+                            // reset the start_index var
+                            $start_index = $i+1;
+                        }
+
+                    } else {
+                        if ($checks_of_service[$i]->state == $checks_of_service[$i-1]->state) {
+
+                            // set end_time of equip check to the last end_time of state
+                            // $checks_of_service[$start_index]->end_time = $checks_of_service[$i]->end_time;
+
+                            // push the state in table
+                            array_push($services_range_of_states, $checks_of_service[$start_index]->state);
+
+                        } else {
+                            /**** BEFOR LAST INDEX */
+                            // set end_time of equip check to the last end_time of state
+                            // $checks_of_service[$start_index]->end_time = $checks_of_service[$i-1]->end_time;
+
+                            // push the state in table
+                            array_push($services_range_of_states, $checks_of_service[$start_index]->state);
+
+                            /**** LAST INDEX */
+                            // push the state in table
+                            array_push($services_range_of_states, $checks_of_service[$i]->state);
+                        }
+                    }
+
+                }
+            }
+            
+        }
+
+        return $this->SortStatus($services_range_of_states);
+    }
+
+    public function SortStatus($ranges)
+    {  
+        foreach ($ranges as $state) {
+            
+            switch ($state) {
+                case 0:
+                    $this->services_ok++;
+                    break;
+                case 1:
+                    $this->services_warning++;
+                    break;
+                case 2:
+                    $this->services_critical++;
+                    break;
+                case 3:
+                    $this->services_unknown++;
+                    break;
+            }
+        }
+
+    }
+
     public function getServicesChecks()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
-
-        if ($site_name == 'All') {
-            
-            return DB::table('nagios_servicechecks')
-                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->where('alias','host')
-                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
-                ->orderBy('start_time')
-                ->where('nagios_servicechecks.end_time','>=',$date);
-        }
-        else
-        {
-            return DB::table('nagios_servicechecks')
-                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('alias','host')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_hosts.alias','nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.*')
-                ->orderBy('start_time')
-                ->where('nagios_servicechecks.end_time','>=',$date);
-        }
-       
-    }
-
-    public function getServicesName()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == 'All') {
-            
-            return DB::table('nagios_hosts')
-                ->where('alias','host')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name')
-                ->orderBy('nagios_services.display_name');
-        }
-        else
-        {
-            return DB::table('nagios_hosts')
-                ->where('alias','host')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_services.display_name as host_name','nagios_services.service_object_id','nagios_services.display_name as service_name')
-                ->orderBy('nagios_services.display_name');
-        }
-    }
-
-    
-
-    public function getServicesStatus($services_name)
-    {
-        $services_ok = 0;
-        $services_warning = 0;
-        $services_critical = 0;
-        $services_unknown = 0;
-
-        $services_checks = [];
         
-        foreach ($services_name as $service) {
+        if ($this->site_name == 'All') {
+            
+            $services_histories = DB::table('nagios_servicechecks')
+                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+                ->where('alias','host')
+                ->orderBy('nagios_servicechecks.start_time');
+                
+        } else {
 
-            $all_services_checks = $this->getServicesChecks()
-                ->where('nagios_servicechecks.service_object_id','=',$service->service_object_id)
-                ->take(2)
+            $services_histories = DB::table('nagios_servicechecks')
+                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+                ->where('alias','host')
+                ->orderBy('nagios_servicechecks.start_time');
+
+        }
+        
+        // filter by name
+        if ($this->service_name) {
+            $services_histories = $services_histories->where('nagios_services.display_name',$this->service_name);    
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $services_histories = $services_histories->where('nagios_servicechecks.start_time','>=',$this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $services_histories = $services_histories->where('nagios_servicechecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        $services_histories = $services_histories->take(20000);
+
+        return $services_histories;
+    }
+
+    public function ServicesNames()
+    {
+        
+        if ($this->site_name == 'All') {
+
+            return DB::table('nagios_services')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->select('nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_hosts.host_object_id','nagios_hosts.display_name as host_name')
+                ->where('alias','host')
                 ->get();
 
-            if(sizeof($all_services_checks))
-            {
-                $status = $this->getInterval($all_services_checks);  
-
-                for ($i=0; $i < sizeof($status); $i++) {
-                    
-                    $service = $this->getServicesChecks()->where('nagios_servicechecks.servicecheck_id','=',$status[$i][0])->first();
-                    if (!empty($service)) {
-                        array_push($services_checks,$service);
-                    }
-                
-                }
-
-            } else {
-                continue;
-            }
+        } else {
+        
+            return DB::table('nagios_services')
+                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_hosts.host_object_id','nagios_hosts.display_name as host_name')
+                ->where('alias','host')
+                ->get();
 
         }
-
-        foreach ($services_checks as $service) {
-            
-
-            switch ($service->state) {
-                
-                case 0:
-                    $services_ok++;
-                    break;
-                
-                case 1:
-                    $services_warning++;
-                    break;
-                
-                case 2:
-                    $services_critical++;
-                    break;
-                
-                case 3:
-                    $services_unknown++;
-                    break;
-            }
-        }
-
-        return (object)['services_ok' => $services_ok,'services_warning' => $services_warning,'services_critical' => $services_critical,'services_unknown' => $services_unknown];
     }
 
-    public function getInterval($service)
+    public function getServicesGroups()
     {
-        $status = [];
-
-        $interval = [];
-
-        for ($i=0; $i < sizeof($service); $i++) { 
-                
-            if($i == 0)
-            {
-                array_push($interval,$service[0]->servicecheck_id);
-            }
-
-            if ($i > 0 && $i < sizeof($service)-1) {
-                
-                if($service[$i]->state == $service[$i-1]->state)
+        $groups = [];
+        $hosts = $this->getServices();
+        $all_groups = [];
+    
+        foreach ($hosts as $host) {
+    
+            $group = [];
+    
+            foreach ($this->ServicesNames() as $service) {
+    
+                if($service->host_object_id == $host->host_object_id)
                 {
-                    continue;
-
-                } else {
-
-                    array_push($interval,$service[$i-1]->servicecheck_id);
-
-                    array_push($status,$interval);
-
-                    $interval = [];
-
-                    array_push($interval,$service[$i]->servicecheck_id);
-
-                }
-
-            }
-
-            if($i == sizeof($service)-1)
-            {
-                if($service[$i]->state == $service[$i-1]->state)
-                {
-                    array_push($interval,$service[$i]->servicecheck_id);
-                    array_push($status,$interval);
-
-                } else {
-
-                    array_push($interval,$service[$i-1]->servicecheck_id);
-                    array_push($status,$interval);
-
-                    $interval = [];
-
-                    array_push($interval,$service[$i]->servicecheck_id);
-                    array_push($interval,$service[$i]->servicecheck_id);
-                    array_push($status,$interval);
+                    array_push($group,$service);
                 }
             }
-
+    
+            array_push($groups,$group);
         }
-
-        return $status;
+    
+        $services = [];
+    
+        for ($i=0; $i < sizeof($groups); $i++) {
+    
+            foreach ($groups[$i] as $gp) {
+    
+                array_push($services,$gp->service_name);
+    
+            }
+    
+            array_push($all_groups,(object)['host_name' => $groups[$i][0]->host_name, 'services' => $services]);
+    
+            $services = [];
+        }
+    
+        return $all_groups;
     }
 
-    public function getChartRange()
+    public function getServices()
     {
-        $datasets = [];
 
-        $services = $this->getServicesName()->get();
+        if ($this->site_name == 'All') {
 
-        $data = [
-            'equip_name' => '',
-            'Ok' => '',
-            'Warning' => '',
-            'Critical' => '',
-            'Unknown' => '',
-        ];
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name')
+                ->get();
 
-        foreach ($services as $service) {
+        } else {
 
-            // Get All host checks
-            $service_checks = $this->getServicesChecks()->where('nagios_services.display_name', $service->service_name)->get();
-
-            // Get Ranges
-            $range = [];
-            $service_ranges = [];
-
-            if (sizeof($service_checks)) {
-            
-                for ($i=0; $i < sizeof($service_checks); $i++) {
-                    
-                    if ($i == 0) {
-                        array_push($range, $service_checks[0]);
-                    }
-
-                    if ($i > 0 && $i < sizeof($service_checks)-1) {
-
-                        if ($service_checks[$i]->state == $service_checks[$i-1]->state) {
-                            continue;
-                        } 
-                        else
-                        {
-                            array_push($range,$service_checks[$i-1]);
-                            array_push($service_ranges,$range);
-                            $range = [];
-                            array_push($range,$service_checks[$i]);
-                        }
-
-                    }
-
-                    if ($i == sizeof($service_checks)-1) {
-                        
-                        if ($service_checks[$i]->state == $service_checks[$i-1]->state) {
-                            array_push($range,$service_checks[$i]);
-                            array_push($service_ranges,$range);
-                            $range = [];
-                        }
-                        else
-                        {
-                            array_push($range,$service_checks[$i-1]);
-                            array_push($service_ranges,$range);
-                            $range = [];
-                            array_push($range,$service_checks[$i]);
-                            array_push($range,$service_checks[$i]);
-                            array_push($service_ranges,$range);
-                            $range = [];
-                        }
-                    }
-                }
-
-                // Make datasets        
-                $ok = [];
-                $warning = [];
-                $critical = [];
-                $unknown = [];
-
-                for ($i=0; $i < sizeof($service_ranges); $i++) { 
-                    
-                    if ($i == 0) {
-                        $service_name = $service_ranges[0][0]->service_name.' ('.$service_ranges[0][0]->host_name.')';
-                    }
-
-                    switch ($service_ranges[$i][0]->state) {
-                        
-                        case 0:
-                            array_push($ok, [$service_ranges[$i][0]->start_time,$service_ranges[$i][1]->end_time]);
-                            break;
-
-                        case 1:
-                            array_push($warning, [$service_ranges[$i][0]->start_time,$service_ranges[$i][1]->end_time]);
-                            break;
-
-                        case 2:
-                            array_push($critical, [$service_ranges[$i][0]->start_time,$service_ranges[$i][1]->end_time]);
-                            break;
-
-                        case 3:
-                            array_push($unknown, [$service_ranges[$i][0]->start_time,$service_ranges[$i][1]->end_time]);
-                            break;
-                    }
-                }
-
-                $data = [
-                    'service_name' => $service_name,
-                    'Ok' => $ok,
-                    'Warning' => $warning,
-                    'Critical' => $critical,
-                    'Unknown' => $unknown,
-                ];
-            }
-
-            array_push($datasets,$data);
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name')
+                ->get();
         }
-
-        return $datasets;
 
     }
 }

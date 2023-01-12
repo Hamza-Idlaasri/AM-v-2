@@ -1,5 +1,6 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll>
 
+    {{-- Search-Bar --}}
     @include('inc.searchbar',['route' => 'monitoring.equips'])
 
     {{-- Problems --}}
@@ -9,75 +10,68 @@
 
             <thead class="bg-light text-dark">
                 <tr>
-                    <th>Boxes</th>
-                    <th>Equips</th>
+                    <th>Equipement</th>
+                    <th>Pins</th>
                     <th>Status</th>
+                    <th>Salle</th>
                     <th>Dernier verification</th>
                     <th>Input Nbr</th>
                     <th style="width: 30%">Description</th>
                 </tr>
             </thead>
     
-            <?php $check = 0 ?>
-            
-            @forelse ($equips_problems as $equip)        
-            
-            <tr>
-                {{-- Boxes Name --}}
-                @if ($check == 0 || $equip->host_object_id != $check)       
-                    
-                        <td>
-                            <a href="{{ route('mb-details', ['id' => $equip->host_object_id]) }}">{{$equip->box_name}}</a>
-                        </td> 
-    
-                        <?php $check = $equip->host_object_id ?>
-                    
-                @else
-                    <td></td>
-                @endif
-                
-                {{-- Equips Name --}}
-                <td>
-                    <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->equip_name}}</a>
-                    
-                    @if ($equip->is_flapping)
-                        <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
-                            <i class="fas fa-retweet"></i>
-                        </span>
-                    @endif
-                </td>
-                
-                {{-- Status --}}
-                @switch($equip->current_state)
-                    @case(1)
-                        <td><span class="badge badge-warning">Warning</span></td>
-                        @break
-                    @case(2)
-                        <td><span class="badge badge-danger">Critical</span></td>
-                        @break
-                    @case(3)
-                        <td><span class="badge badge-unknown">Ureachable</span></td>
-                        @break
-                    @default
-                        
-                @endswitch
-                
-                {{-- Dernier verification --}}
-                <td>{{$equip->last_check}}</td>
-    
-                {{-- Input Nr --}}
-                <td>{{$equip->check_command}}</td>
-    
-                {{-- Description --}}
-                <td class="description">{{$msg[$equip->current_state]}}</td>
-            </tr>
-                
-            @empty
-    
+            @forelse ($equips_problems as $equip)
+                @if(sizeof($equip->pins) > 0)
                 <tr>
-                    <td colspan="5">No result found <strong>{{ $search }}</strong></td>
-                </tr>
+                {{-- Equipement Name --}}
+                <td>{{$equip->equip_name}}</td>
+                
+                @forelse ($equip->pins as $pin)
+                        @if (array_search($pin,$equip->pins) > 0)
+                            <td></td>
+                        @endif
+                        {{-- Pin Name --}}
+                        <td>{{$pin->pin_name}}</td>
     
+                        {{-- Status --}}
+                        @switch($pin->current_state)
+                            @case(0)
+                                <td><span class="badge badge-success">Ok</span></td>
+                                @break
+                            @case(1)
+                                <td><span class="badge badge-warning">Warning</span></td>
+                                @break
+                            @case(2)
+                                <td><span class="badge badge-danger">Critical</span></td>
+                                @break
+                            @case(3)
+                                <td><span class="badge badge-unknown">Ureachable</span></td>
+                                @break
+                            @default
+                        @endswitch
+                        
+                        {{-- Hall Nake --}}
+                        <td>{{$pin->hall_name}}</td>
+    
+                        {{-- Dernier verification --}}
+                        <td>{{$pin->last_check}}</td>
+    
+                        {{-- Input Nr --}}
+                        <td>{{$pin->check_command}}</td>
+    
+                        {{-- Description --}}
+                        <td class="description">{{$msg[$pin->current_state]}}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7">No result found <strong>{{ $search }}</strong></td>
+                    </tr>
+                @endforelse
+                @endif
+            @empty
+                <tr>
+                    <td colspan="7">No result found <strong>{{ $search }}</strong></td>
+                </tr>
             @endforelse
     
         </table>
@@ -94,36 +88,89 @@
 
         <thead class="bg-light text-dark">
             <tr>
-                <th>Boxes</th>
-                <th>Equips</th>
+                <th>Equipement</th>
+                <th>Pins</th>
                 <th>Status</th>
+                <th>Salle</th>
                 <th>Dernier verification</th>
                 <th>Input Nbr</th>
                 <th style="width: 30%">Description</th>
             </tr>
         </thead>
 
-        <?php $check = 0 ?>
+        @forelse ($equips as $equip)
+            @if(sizeof($equip->pins) > 0)
+            <tr>
+            {{-- Equipement Name --}}
+            <td>{{$equip->equip_name}}</td>
+            
+            @forelse ($equip->pins as $pin)
+                    @if (array_search($pin,$equip->pins) > 0)
+                        <td></td>
+                    @endif
+                    {{-- Pin Name --}}
+                    <td>{{$pin->pin_name}}</td>
+
+                    {{-- Status --}}
+                    @switch($pin->current_state)
+                        @case(0)
+                            <td><span class="badge badge-success">Ok</span></td>
+                            @break
+                        @case(1)
+                            <td><span class="badge badge-warning">Warning</span></td>
+                            @break
+                        @case(2)
+                            <td><span class="badge badge-danger">Critical</span></td>
+                            @break
+                        @case(3)
+                            <td><span class="badge badge-unknown">Ureachable</span></td>
+                            @break
+                        @default
+                    @endswitch
+                    
+                    {{-- Hall Nake --}}
+                    <td>{{$pin->hall_name}}</td>
+
+                    {{-- Dernier verification --}}
+                    <td>{{$pin->last_check}}</td>
+
+                    {{-- Input Nr --}}
+                    <td>{{$pin->check_command}}</td>
+
+                    {{-- Description --}}
+                    <td class="description">{{$msg[$pin->current_state]}}</td>
+                </tr>
+
+            @empty
+                <tr>
+                    <td colspan="7">No result found <strong>{{ $search }}</strong></td>
+                </tr>
+            @endforelse
+            @endif
+        @empty
+            <tr>
+                <td colspan="7">No result found <strong>{{ $search }}</strong></td>
+            </tr>
+        @endforelse
         
-        @forelse ($equips as $equip)        
+
+        {{-- @forelse ($equips as $equip)        
         
         <tr>
-            {{-- Boxes Name --}}
-            @if ($check == 0 || $equip->host_object_id != $check)       
+            {{-- Equipement Name 
+            @if ($check == 0 || $equip->host_object_id != $check)   
                 
-                    <td>
-                        <a href="{{ route('mb-details', ['id' => $equip->host_object_id]) }}">{{$equip->box_name}}</a>
-                    </td> 
-
-                    <?php $check = $equip->host_object_id ?>
+                <td>
+                    <a href="{{ route('mb-details', ['id' => 1]) }}">{{$equip->equip_name}}</a>
+                </td> 
                 
             @else
                 <td></td>
             @endif
             
-            {{-- Equips Name --}}
+            {{-- Equips Name 
             <td>
-                <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->equip_name}}</a>
+                <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->pin_name}}</a>
                 
                 @if ($equip->is_flapping)
                     <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
@@ -132,7 +179,7 @@
                 @endif
             </td>
             
-            {{-- Status --}}
+            {{-- Status 
             @switch($equip->current_state)
                 @case(0)
                     <td><span class="badge badge-success">Ok</span></td>
@@ -150,23 +197,26 @@
                     
             @endswitch
             
-            {{-- Dernier verification --}}
+            {{-- Hall Nake 
+            <td>{{$equip->hall_name}}</td>
+
+            {{-- Dernier verification 
             <td>{{$equip->last_check}}</td>
 
-            {{-- Input Nr --}}
+            {{-- Input Nr 
             <td>{{$equip->check_command}}</td>
 
-            {{-- Description --}}
+            {{-- Description 
             <td class="description">{{$msg[$equip->current_state]}}</td>
         </tr>
             
         @empty
 
             <tr>
-                <td colspan="5">No result found <strong>{{ $search }}</strong></td>
+                <td colspan="7">No result found <strong>{{ $search }}</strong></td>
             </tr>
 
-        @endforelse
+        @endforelse --}}
 
     </table>
 

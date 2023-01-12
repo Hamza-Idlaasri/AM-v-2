@@ -50,10 +50,28 @@ class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  Wi
         return [
             $services->host_name,
             $services->service_name,
-            $services->state,
+            $this->convertState($services->state),
             $services->start_time,
             $services->end_time,
             $services->output
         ];
+    }
+
+    public function convertState($state)
+    {
+        switch ($state) {
+            case 0:
+                return  'Ok';
+                break;
+            case 1:
+                return  'Warning';
+                break;
+            case 2:
+                return  'Critical';
+                break;
+            case 3:
+                return  'Unknown';
+                break;
+        }
     }
 }

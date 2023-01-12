@@ -5,38 +5,103 @@
     @if (sizeof($inputs_not_used) > 0)
         <form action="{{ route('create-equip', $box->box_id) }}" method="get">
 
+        <div class="card my-2 rounded bg-white shadow-sm w-50 mx-auto">
+            
+            <div class="card-header">
+                Define Equipement:
+            </div>
+            {{-- Equipements --}}
+            <div class="card-body">
+                <label for="equip_name"><b>Equipement name <span class="text-danger">*</span></b> </label>
+                <input type="text" name="equipName" class="form-control @error('equipName') border-danger @enderror" id="equip_name" value="{{ old('equipName') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Equip name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
+                @error('equipName')
+                    <div class="text-danger">
+                        {{ $message }}
+                    </div>
+                @enderror
+            </div>
+            {{-- Choose Site --}}
+            <div class="card-body">
+                <label for="site_name"><b>Choose Site <span class="text-danger">*</span></b> </label>
+                @error('site')
+                <div class="text-danger">
+                    {{ $message }}
+                </div>
+                @enderror
+                <div class="p-2 rounded @error('site') border-danger @enderror" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
+                    @forelse ($sites as $site)
+                        <input type="radio" name="site" id="{{$site->id}}" value="{{$site->site_name}}"> <label for="{{$site->id}}">{{ $site->site_name }}</label>
+                        <br>
+                    @empty
+                        <p>No site found</p>
+                    @endforelse
+                </div>
+            </div>
+    
+        </div>
+
         <div class="card rounded bg-white m-3 shadow-sm">
-            <div class="card-header">Define Equipements :</div>
-            <div class="container p-3 defineEquip">
-                <div class="equip1 d-flex w-100 my-3">
-                    <div class="w-50">
-                        <label for="equip_name"><b>Equipement name <span class="text-danger">*</span></b></label>
-                        <input type="text" name="equipName[]" class="eqName1 form-control w-75 @error('equipName.*') border-danger @enderror" id="equip_name" value="{{ old('equipName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Equip. name must be between 2 & 200 charcarters in length and containes only letters, numbers, and the symbols -_+">
-                        @error('equipName.*')
+            <div class="card-header">Define Pins :</div>
+            <div class="container p-3 definePin">
+                <div class="pin1 d-flex w-100 my-3">
+                    <div class="w-25 mx-1">
+                        <label for="pin_name"><b>Pin name <span class="text-danger">*</span></b></label>
+                        <input type="text" name="pinName[]" class="pinName1 form-control @error('pinName.*') border-danger @enderror" id="pin_name" value="{{ old('pinName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Pin name must be between 2 & 200 charcarters in length and containes only letters, numbers, and the symbols -_+">
+                        @error('pinName.*')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <div class="w-25 mx-1">
+                        <label for="hall_name"><b>Hall name <span class="text-danger">*</span></b></label>
+                        <input type="text" name="hallName[]" class="hallName1 form-control @error('hallName.*') border-danger @enderror" id="hall_name" value="{{ old('hallName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Hall name must be between 2 & 200 charcarters in length and containes only letters, numbers, and the symbols -_+">
+                        @error('hallName.*')
                             <div class="text-danger">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
 
-                    <div class="w-50">
-                        <label for="input"><b>Input Number <!--<span class="text-danger">*</span>--></b></label>
-                        <input  type="number" min="1" max="10" name="inputNbr[]" class="iNbr1 form-control w-75 @error('inputNbr.*') border-danger @enderror" id="input" value="1">
+                    <div class="w-25 mx-1">
+                        <label for="input"><b>Input Number <span class="text-danger">*</span></b></label>
+                        <input  type="number" min="1" max="10" name="inputNbr[]" class="iNbr1 form-control @error('inputNbr.*') border-danger @enderror" id="input" value="1">
                         @error('inputNbr.*')
                             <div class="text-danger">
                                 {{ $message }}
                             </div>
                         @enderror
                     </div>
+
+                    <div class="w-25 ml-3">
+                        <label for="working_state"><b>Working State <span class="text-danger">*</span></b></label>
+                        @error('workingState.*')
+                        <div class="text-danger">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        <br>
+                        <div class="w-50 form-check d-flex justify-content-around">
+                            <div>
+                                <input type="checkbox" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="H" checked>
+                                <label for="working_state" class="form-check-label"> H</label>
+                            </div>
+                            <div>
+                                <input type="checkbox" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="L">
+                                <label for="working_state" class="form-check-label"> L</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="float-right">
                 @if (sizeof($inputs_not_used) > 1)
-                <span class="btn text-primary bg-white float-right shadow-sm add" title="Add another equipement for monitoring"><i class="fas fa-plus"></i></span>
+                <span class="btn text-primary bg-white float-right shadow-sm add" title="Add another pin for monitoring"><i class="fas fa-plus"></i></span>
                 @endif
 
-                <span class="btn text-primary bg-white float-right shadow-sm" id="rmv" title="Remove last equipement" style="display: none"><i class="fas fa-minus"></i></span>            
+                <span class="btn text-danger bg-white float-right shadow-sm" id="rmv" title="Remove last pin" style="display: none"><i class="fas fa-minus"></i></span>            
             </div>
 
         </div>
@@ -100,28 +165,28 @@
 
 </div>
   
-{{-- this script for adding new equipement --}}
+{{-- this script for adding new pin --}}
 <script>
 
 const rmv = document.getElementById('rmv');
 
 let i = 2;
-const addEquip = document.querySelector('.add');
-const Equip = document.querySelector('.equip1');
+const addPin = document.querySelector('.add');
+const Pin = document.querySelector('.pin1');
 
 let inputs_not_used = @json($inputs_not_used);
 
-addEquip.onclick = () => {
+addPin.onclick = () => {
 
     let test = document.createElement('div');
-    test.classList.add('equip'+i,'w-100','d-flex','my-3');
-    test.innerHTML = Equip.innerHTML;
-    document.querySelector('.defineEquip').appendChild(test);
+    test.classList.add('pin'+i,'w-100','d-flex','my-3');
+    test.innerHTML = Pin.innerHTML;
+    document.querySelector('.definePin').appendChild(test);
 
     i++;
     
     if(i > inputs_not_used.length)
-        addEquip.style.display = 'none';
+        addPin.style.display = 'none';
     
     if (i > 2) {
     rmv.style.display = 'block';
@@ -134,12 +199,12 @@ addEquip.onclick = () => {
 rmv.onclick = () => {
 
 if (i > 2) {
-    document.querySelector('.defineEquip').lastElementChild.remove();
+    document.querySelector('.definePin').lastElementChild.remove();
     i--;
 }
 
 if (i >= 2) {
-    addEquip.style.display = 'block';
+    addPin.style.display = 'block';
 }
 
 if (i == 2) {
@@ -147,6 +212,5 @@ if (i == 2) {
 }
 
 }
-  
   
 </script>

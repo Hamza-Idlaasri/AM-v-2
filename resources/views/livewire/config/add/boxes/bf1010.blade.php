@@ -40,22 +40,24 @@
 
                     <div class="sizing" style="max-height:200px;overflow: auto">
                         
-                        @foreach ($hosts as $host)
+                        @forelse ($hosts as $host)
                             <input type="radio" name="hosts" value="{{$host->display_name}}"> {{$host->display_name}}
                             <br>
-                        @endforeach
+                        @empty
+                            <i>No Parent found</i>
+                        @endforelse
                         
                     </div>
 
                 </div>
             </div>
         
-
-        <div class="card rounded bg-white shadow-sm">
+        {{-- Define Equipement --}}
+        {{-- <div class="card rounded bg-white shadow-sm">
             <div class="card-header">Define Equipements :</div>
             <div class="card-body  defineEquip">
                 <div class="equip1 d-flex w-100 my-3">
-                    <div class="w-50 mx-1">
+                    <div class="w-25 mx-1">
                         <label for="equip_name"><b>Equipement name <span class="text-danger">*</span></b></label>
                         <input type="text" name="equipName[]" class="eqName1 form-control @error('equipName.*') border-danger @enderror" id="equip_name" value="{{ old('equipName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
                         @error('equipName.*')
@@ -64,8 +66,18 @@
                             </div>
                         @enderror
                     </div>
+                    
+                    <div class="w-25 mx-1">
+                        <label for="pin_name"><b>Pin name <span class="text-danger">*</span></b></label>
+                        <input type="text" name="pinName[]" class="pinName1 form-control @error('pinName.*') border-danger @enderror" id="pin_name" value="{{ old('pinName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
+                        @error('pinName.*')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
 
-                    <div class="w-50 mx-1">
+                    <div class="w-25 mx-1">
                         <label for="input"><b>Input Number <!--<span class="text-danger">*</span>--></b></label>
                         <input  type="number" min="1" max="10" name="inputNbr[]" class="iNbr1 form-control @error('inputNbr.*') border-danger @enderror" id="input" value="1">
                         @error('inputNbr.*')
@@ -74,15 +86,43 @@
                             </div>
                         @enderror
                     </div>
+
+                    <div class="w-25 mx-1">
+                        <label for="hall_name"><b>Hall name <span class="text-danger">*</span></b></label>
+                        <input type="text" name="hallName[]" class="hallName1 form-control @error('hallName.*') border-danger @enderror" id="hall_name" value="{{ old('hallName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
+                        @error('hallName.*')
+                            <div class="text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    
+                    <div class="w-25 mx-1">
+                        <label for="working_state"><b>Working State <span class="text-danger">*</span></b></label>
+                        @error('workingState.*')
+                        <div class="text-danger">
+                            {{ $message }}
+                        </div>
+                        @enderror
+                        <br>
+                        <div class="form-check">
+                            <input type="radio" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="{{ old('workingState.*')}}">
+                            <label for="" class="form-check-label">H </label>
+                            <br>
+                            <input type="radio" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="{{ old('workingState.*')}}">
+                            <label for="" class="form-check-label">L </label>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="float-right">
+                {{-- Add Equip 
                 <span class="btn text-primary bg-white float-right add" title="Add another equipement for monitoring"><i class="fas fa-plus"></i></span>
+                {{-- Remove Equip 
                 <span class="btn text-primary bg-white float-right shadow-sm" id="rmv" title="Remove last equipement" style="display: none"><i class="fas fa-minus"></i></span>            
-
             </div>
 
-        </div>
+        </div> --}}
         <br>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
@@ -126,6 +166,8 @@ const rmv = document.getElementById('rmv');
 let i = 2;
 const addEquip = document.querySelector('.add');
 const Equip = document.querySelector('.equip1');
+const Pin = document.querySelector('.pin1');
+const Hall = document.querySelector('.hall1');
 
 addEquip.onclick = () => {
 

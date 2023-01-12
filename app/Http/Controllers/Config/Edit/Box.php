@@ -24,8 +24,8 @@ class Box extends Controller
             // 'boxName' => 'required|min:2|max:20|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'boxName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required|min:7|max:15',
-            'check_interval' => 'required|min:1|max:100',
-            'retry_interval' => 'required|min:1|max:100',
+            'check_interval' => 'required|min:1|max:20',
+            'retry_interval' => 'required|min:1|max:1200',
             'max_attempts' => 'required|min:1|max:100',
             'notif_interval' => 'required|min:1|max:1000'
 

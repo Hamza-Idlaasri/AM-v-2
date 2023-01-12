@@ -24,7 +24,7 @@ class Equips extends Controller
             return redirect()->back();
 
         } else {
-        
+
             return Excel::download(new EquipsExcel(json_decode($request->data)), 'equips_historique '.date('Y-m-d H:i:s').'.xlsx');
         
         }

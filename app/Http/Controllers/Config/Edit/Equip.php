@@ -20,8 +20,8 @@ class Equip extends Controller
             
             // 'equipName' => 'required|min:2|max:20|unique:nagios_services,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'equipName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
-            'check_interval' => 'required|min:1|max:100',
-            'retry_interval' => 'required|min:1|max:100',
+            'check_interval' => 'required|min:1|max:20',
+            'retry_interval' => 'required|min:1|max:1200',
             'max_attempts' => 'required|min:1|max:100',
             'notif_interval' => 'required|min:1|max:1000',
             // 'inputNbr' => 'required',

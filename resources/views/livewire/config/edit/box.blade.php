@@ -95,7 +95,7 @@
                 {{-- Check Interval --}}
                 <label for="CheckInterval"><b>Check Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="1" max="100" name="check_interval" class="form-control p-unity @error('check_interval') border-danger @enderror" id="CheckInterval" value="{{ $box->check_interval }}">
+                    <input  type="number" min="1" max="20" name="check_interval" class="form-control p-unity @error('check_interval') border-danger @enderror" id="CheckInterval" value="{{ $box->check_interval }}">
                     <span class="unity">min</span>
                 </div>
                 @error('check_interval')
@@ -109,7 +109,7 @@
                 {{-- Retry Interval --}}
                 <label for="retryInterval"><b>Retry Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
-                    <input  type="number" min="4" max="100" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $box->retry_interval }}">
+                    <input  type="number" min="4" max="1200" name="retry_interval" class="form-control p-unity @error('retry_interval') border-danger @enderror" id="retryInterval" value="{{ $box->retry_interval }}">
                     <span class="unity">sec</span>
                 </div>
                 @error('retry_interval')

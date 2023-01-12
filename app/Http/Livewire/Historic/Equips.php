@@ -30,7 +30,7 @@ class Equips extends Component
         if($this->status != 'all')
         {
             foreach ($equips_histories as $key => $equip) {
-                if ($equip->state === $this->status) {
+                if ($equip->state == $this->status) {
                     continue;
                 } else {
                     unset($equips_histories[$key]);
@@ -40,20 +40,6 @@ class Equips extends Component
             $equips_histories = array_values($equips_histories);
 
         }    
-
-        // filter by Name
-        if ($this->equip_name)
-        {
-            foreach ($equips_histories as $key => $equip) {
-                if ($equip->equip_name == $this->equip_name) {
-                    continue;
-                } else {
-                    unset($equips_histories[$key]);
-                }
-            }
-
-            $equips_histories = array_values($equips_histories);
-        }
 
         return view('livewire.historic.equips')
             ->with(['equips_histories' => $this->paginate($equips_histories), 'equips_names' => $this->getEquipsGroups(),'download' => $equips_histories])
@@ -95,7 +81,7 @@ class Equips extends Component
 
             if (sizeof($checks_of_equip) == 1) {
                 // Convert State
-                $checks_of_equip[0]->state = $this->convertState($checks_of_equip[0]->state);
+                //$checks_of_equip[0]->state = $this->convertState($checks_of_equip[0]->state);
                 // push the range in table
                 array_push($equips_range_of_states, $checks_of_equip[0]);
             } else {
@@ -115,7 +101,7 @@ class Equips extends Component
                             $checks_of_equip[$start_index]->end_time = $checks_of_equip[$end_index]->end_time;
 
                             // Convert State
-                            $checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
+                            //$checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
 
                             // push the range in table
                             array_push($equips_range_of_states, $checks_of_equip[$start_index]);
@@ -131,7 +117,7 @@ class Equips extends Component
                             $checks_of_equip[$start_index]->end_time = $checks_of_equip[$i]->end_time;
                             
                             // Convert State
-                            $checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
+                            //$checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
 
                             // push the range in table
                             array_push($equips_range_of_states, $checks_of_equip[$start_index]);
@@ -142,14 +128,14 @@ class Equips extends Component
                             $checks_of_equip[$start_index]->end_time = $checks_of_equip[$i-1]->end_time;
                             
                             // Convert State
-                            $checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
+                            //$checks_of_equip[$start_index]->state = $this->convertState($checks_of_equip[$start_index]->state);
 
                             // push the range in table
                             array_push($equips_range_of_states, $checks_of_equip[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
-                            $checks_of_equip[$i]->state = $this->convertState($checks_of_equip[$i]->state);
+                            //$checks_of_equip[$i]->state = $this->convertState($checks_of_equip[$i]->state);
 
                             // push the range in table
                             array_push($equips_range_of_states, $checks_of_equip[$i]);
@@ -183,9 +169,8 @@ class Equips extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
                 ->where('alias','box')
-                ->orderBy('nagios_servicechecks.start_time')
-                ->take(20000);
-                
+                ->orderBy('nagios_servicechecks.start_time');
+
         } else {
 
             $equips_histories = DB::table('nagios_servicechecks')
@@ -195,11 +180,15 @@ class Equips extends Component
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
                 ->where('alias','box')
-                ->orderBy('nagios_servicechecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_servicechecks.start_time');
 
         }
         
+        // filter by name
+        if ($this->equip_name) {
+            $equips_histories = $equips_histories->where('nagios_services.display_name',$this->equip_name);
+        }
+
         // filter by Date From
         if ($this->date_from)
         {
@@ -211,6 +200,8 @@ class Equips extends Component
         {
             $equips_histories = $equips_histories->where('nagios_servicechecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
         }
+
+        $equips_histories = $equips_histories->take(20000);
 
         return $equips_histories;
     }
@@ -309,21 +300,21 @@ class Equips extends Component
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    public function convertState($state)
-    {
-        switch ($state) {
-            case 0:
-                return  $state = 'Ok';
-                break;
-            case 1:
-                return  $state = 'Warning';
-                break;
-            case 2:
-                return  $state = 'Critical';
-                break;
-            case 3:
-                return  $state = 'Unknown';
-                break;
-        }
-    }
+    // public function convertState($state)
+    // {
+    //     switch ($state) {
+    //         case 0:
+    //             return  $state = 'Ok';
+    //             break;
+    //         case 1:
+    //             return  $state = 'Warning';
+    //             break;
+    //         case 2:
+    //             return  $state = 'Critical';
+    //             break;
+    //         case 3:
+    //             return  $state = 'Unknown';
+    //             break;
+    //     }
+    // }
 }

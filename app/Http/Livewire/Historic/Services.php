@@ -30,7 +30,7 @@ class Services extends Component
         if($this->status != 'all')
         {
             foreach ($services_histories as $key => $service) {
-                if ($service->state === $this->status) {
+                if ($service->state == $this->status) {
                     continue;
                 } else {
                     unset($services_histories[$key]);
@@ -40,20 +40,6 @@ class Services extends Component
             $services_histories = array_values($services_histories);
 
         }    
-
-        // filter by Name
-        if ($this->service_name)
-        {
-            foreach ($services_histories as $key => $service) {
-                if ($service->service_name == $this->service_name) {
-                    continue;
-                } else {
-                    unset($services_histories[$key]);
-                }
-            }
-
-            $services_histories = array_values($services_histories);
-        }
 
         return view('livewire.historic.services')
             ->with(['services_histories' => $this->paginate($services_histories), 'services_names' => $this->getServicesGroups(),'download' => $services_histories])
@@ -95,7 +81,7 @@ class Services extends Component
 
             if (sizeof($checks_of_service) == 1) {
                 // Convert State
-                $checks_of_service[0]->state = $this->convertState($checks_of_service[0]->state);
+                //$checks_of_service[0]->state = $this->convertState($checks_of_service[0]->state);
                 // push the range in table
                 array_push($services_range_of_states, $checks_of_service[0]);
             } else {
@@ -115,7 +101,7 @@ class Services extends Component
                             $checks_of_service[$start_index]->end_time = $checks_of_service[$end_index]->end_time;
 
                             // Convert State
-                            $checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
+                            //$checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
 
                             // push the range in table
                             array_push($services_range_of_states, $checks_of_service[$start_index]);
@@ -131,7 +117,7 @@ class Services extends Component
                             $checks_of_service[$start_index]->end_time = $checks_of_service[$i]->end_time;
                             
                             // Convert State
-                            $checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
+                            //$checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
 
                             // push the range in table
                             array_push($services_range_of_states, $checks_of_service[$start_index]);
@@ -142,14 +128,14 @@ class Services extends Component
                             $checks_of_service[$start_index]->end_time = $checks_of_service[$i-1]->end_time;
                             
                             // Convert State
-                            $checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
+                            //$checks_of_service[$start_index]->state = $this->convertState($checks_of_service[$start_index]->state);
 
                             // push the range in table
                             array_push($services_range_of_states, $checks_of_service[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
-                            $checks_of_service[$i]->state = $this->convertState($checks_of_service[$i]->state);
+                            //$checks_of_service[$i]->state = $this->convertState($checks_of_service[$i]->state);
 
                             // push the range in table
                             array_push($services_range_of_states, $checks_of_service[$i]);
@@ -183,8 +169,7 @@ class Services extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
                 ->where('alias','host')
-                ->orderBy('nagios_servicechecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_servicechecks.start_time');
                 
         } else {
 
@@ -195,11 +180,15 @@ class Services extends Component
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
                 ->where('alias','host')
-                ->orderBy('nagios_servicechecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_servicechecks.start_time');
 
         }
         
+        // filter by name
+        if ($this->service_name) {
+            $services_histories = $services_histories->where('nagios_services.display_name',$this->service_name);    
+        }
+
         // filter by Date From
         if ($this->date_from)
         {
@@ -212,12 +201,14 @@ class Services extends Component
             $services_histories = $services_histories->where('nagios_servicechecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
         }
 
+        $services_histories = $services_histories->take(20000);
+
         return $services_histories;
     }
 
     public function EquipsNames()
     {
-        
+
         if ($this->site_name == 'All') {
 
             return DB::table('nagios_services')
@@ -309,21 +300,21 @@ class Services extends Component
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    public function convertState($state)
-    {
-        switch ($state) {
-            case 0:
-                return  $state = 'Ok';
-                break;
-            case 1:
-                return  $state = 'Warning';
-                break;
-            case 2:
-                return  $state = 'Critical';
-                break;
-            case 3:
-                return  $state = 'Unknown';
-                break;
-        }
-    }
+    // public function convertState($state)
+    // {
+    //     switch ($state) {
+    //         case 0:
+    //             return  $state = 'Ok';
+    //             break;
+    //         case 1:
+    //             return  $state = 'Warning';
+    //             break;
+    //         case 2:
+    //             return  $state = 'Critical';
+    //             break;
+    //         case 3:
+    //             return  $state = 'Unknown';
+    //             break;
+    //     }
+    // }
 }

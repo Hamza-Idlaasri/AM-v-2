@@ -33,7 +33,7 @@
             @livewire('grid.sidebar')
         </div>
 
-        <div class="main d-flex justify-content-center align-items-start" style="overflow-x: hidden;">
+        <div class="main mt-3 d-flex justify-content-center align-items-start" style="overflow-x: hidden;">
             @yield('content')
                 
             {{-- Popup Notifications --}}

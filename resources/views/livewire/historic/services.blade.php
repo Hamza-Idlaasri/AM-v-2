@@ -13,7 +13,7 @@
         {{-- Download PDF & CSV --}}
         @include('inc.download',['pdf_path' => 'services.pdf', 'csv_path' => 'services.csv'])
         {{-- Filter --}}
-        @include('inc.filter',['names' => $services_names, 'type' => 'service'])
+        @include('inc.filter',['names' => $services_names, 'type' => 'service', 'from' => 'historic'])
     </div>
 
     {{-- Table --}}
@@ -29,7 +29,6 @@
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
-    
 
         @forelse ($services_histories as $service_history)
 
@@ -41,16 +40,16 @@
             
             @switch($service_history->state)
                 
-                @case('Ok')
+                @case(0)
                     <td><span class="badge badge-success">Ok</span></td>
                     @break
-                @case('Warning')
+                @case(1)
                     <td><span class="badge badge-warning">Warning</span></td>
                     @break
-                @case('Critical')
+                @case(2)
                     <td><span class="badge badge-danger">Critical</span></td>
                     @break
-                @case('Unknown')
+                @case(3)
                     <td><span class="badge badge-unknown">Unknown</span></td>
                     @break
                 @default

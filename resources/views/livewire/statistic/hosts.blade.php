@@ -1,23 +1,37 @@
 <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
-<div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
+<div class="container w-100 bg-white shadow rounded mt-4">
 
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Porcentage des Hosts</h6>
-        <canvas id="PieChart"></canvas>
+    {{-- Filter --}}
+    <div>
+        <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
+            {{-- Filter --}}
+            @include('inc.filter', ['names' => $hosts_names, 'type' => 'host', 'from' => 'statistic'])
+        </div>
     </div>
 
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Total des Hosts</h6>
-        <canvas id="BarChart"></canvas>
+    <hr>
+
+    {{-- Chart --}}
+    <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
+        
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
+            <h6 class="mb-2 text-secondary">Porcentage des Hosts</h6>
+            <canvas id="PieChart"></canvas>
+        </div>
+
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
+            <h6 class="mb-2 text-secondary">Total des Hosts</h6>
+            <canvas id="BarChart"></canvas>
+        </div>
+
+        {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
+            <h6 class="mb-2 text-secondary">Timeline des Hosts</h6>
+            <br>
+            <div id="floating" style="height: 60vh"></div>
+        </div> --}}
+        
     </div>
-
-    {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
-        <h6 class="mb-2 text-secondary">Timeline des Hosts</h6>
-        <br>
-        <div id="floating" style="height: 60vh"></div>
-    </div> --}}
-
 </div>
 
 {{----------------------------------- Piechart ----------------------------------------------------------------------}}
@@ -273,7 +287,7 @@
         }
     });
 </script> --}}
-
+{{-- 
 <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});
     google.charts.setOnLoadCallback(drawChart);
@@ -335,7 +349,7 @@
     }
   </script>
 
-
+  --}}
 <script>
 
 window.addEventListener('load', function() {

@@ -8,299 +8,217 @@ use App\Models\UsersSite;
 
 class Boxes extends Component
 {
+    public $box_name;
+    public $date_from;
+    public $date_to;
+    public $site_name;
+
+    public $boxes_up = 0;
+    public $boxes_down = 0;
+    public $boxes_unreachable = 0;
+
     public function render()
     {
-        $boxes_name = $this->getBoxesName()->get();
-        
-        $boxes_status = $this->getBoxesStatus($boxes_name);
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $datasets = $this->getChartRange();
+        $this->getStateRanges();
+
+        $boxes_status = (object)['boxes_up' => $this->boxes_up,'boxes_down' => $this->boxes_down,'boxes_unreachable' => $this->boxes_unreachable];
 
         return view('livewire.statistic.boxes')
-            ->with(['boxes_status' => $boxes_status,'datasets' => $datasets])
+            ->with(['boxes_status' => $boxes_status, 'boxes_names' => $this->getBoxes()])
             ->extends('layouts.app')
             ->section('content');
     }
 
+    public function getStateRanges()
+    {
+        $boxes_names = $this->getBoxes();
+
+        $boxes_ranges = [];
+
+        foreach ($boxes_names as $box) {
+
+            $checks = $this->getBoxesChecks()->where('nagios_hosts.host_object_id', $box->host_object_id)->get();
+
+            if(!empty($checks)) {
+                array_push($boxes_ranges, $checks);
+            }
+
+            unset($checks);
+        }
+        
+        return $this->OrganizeStates($boxes_ranges);
+    }
+
+    public function OrganizeStates($boxes_ranges)
+    {
+        $boxes_range_of_states = [];
+
+        foreach ($boxes_ranges as $host) {
+            
+            // Get a single box checks
+            $checks_of_box = $host;
+            
+            $start_index = 0;
+            $end_index = 0;
+
+            if (sizeof($checks_of_box) == 1) {
+                // Convert State
+                //$checks_of_box[0]->state = $this->convertState($checks_of_box[0]->state);
+                // push the range in table
+                array_push($boxes_range_of_states, $checks_of_box[0]->state);
+            } else {
+                // Search on single hosts checks ranges
+                for ($i=0; $i < sizeof($checks_of_box); $i++) {
+                    
+                    if ($i < (sizeof($checks_of_box)-1)) {
+
+                        if ($checks_of_box[$i]->state == $checks_of_box[$i+1]->state) {
+                            $end_index = $i;
+                            continue;
+                        } else {
+
+                            $end_index = $i;
+
+                            // set end_time of host check to the last end_time of state
+                            // $checks_of_box[$start_index]->end_time = $checks_of_box[$end_index]->end_time;
+
+                            // Convert State
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+
+                            // push the range in table
+                            array_push($boxes_range_of_states, $checks_of_box[$start_index]->state);
+
+                            // reset the start_index var
+                            $start_index = $i+1;
+                        }
+
+                    } else {
+                        if ($checks_of_box[$i]->state == $checks_of_box[$i-1]->state) {
+
+                            // set end_time of host check to the last end_time of state
+                            // $checks_of_box[$start_index]->end_time = $checks_of_box[$i]->end_time;
+                            
+                            // Convert State
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+
+                            // push the range in table
+                            array_push($boxes_range_of_states, $checks_of_box[$start_index]->state);
+
+                        } else {
+                            /**** BEFOR LAST INDEX */
+                            // set end_time of host check to the last end_time of state
+                            // $checks_of_box[$start_index]->end_time = $checks_of_box[$i-1]->end_time;
+                            
+                            // Convert State
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+
+                            // push the range in table
+                            array_push($boxes_range_of_states, $checks_of_box[$start_index]->state);
+
+                            /**** LAST INDEX */
+                            // Convert State
+                            //$checks_of_box[$i]->state = $this->convertState($checks_of_box[$i]->state);
+
+                            // push the range in table
+                            array_push($boxes_range_of_states, $checks_of_box[$i]->state);
+                        }
+                    }
+
+                }
+            }
+            
+        }
+
+        return $this->SortStatus($boxes_range_of_states);
+    }
+
+    public function SortStatus($ranges)
+    {
+        foreach ($ranges as $state) {
+            
+            switch ($state) {
+                case 0:
+                    $this->boxes_up++;
+                    break;
+                case 1:
+                    $this->boxes_down++;
+                    break;
+                case 2:
+                    $this->boxes_unreachable++;
+                    break;
+            }
+        }
+    }
+
     public function getBoxesChecks()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        $date = date('Y-m-d H:i:s', strtotime('-24 hours', time()));
-
-        if ($site_name == 'All') {
+        
+        if ($this->site_name == 'All') {
             
-            return DB::table('nagios_hostchecks')
-                ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
+            $boxes_histories = DB::table('nagios_hostchecks')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->where('alias','box')
+                ->where('alias','host')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('start_time')
-                ->where('nagios_hostchecks.end_time','>=',$date);
-        }
-        else
-        {
-            return DB::table('nagios_hostchecks')
-                ->select('nagios_hosts.*','nagios_hosts.host_object_id','nagios_hostchecks.*')
+                ->orderBy('nagios_hostchecks.start_time');
+                
+        } else {
+
+            $boxes_histories = DB::table('nagios_hostchecks')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('alias','box')
-                ->where('nagios_customvariables.varvalue',$site_name)
+                ->where('alias','host')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('start_time')
-                ->where('nagios_hostchecks.end_time','>=',$date);
-        }
-        
-    }
+                ->orderBy('nagios_hostchecks.start_time');
+        }   
 
-    public function getBoxesName()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == 'All') {
-            
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
-                ->orderBy('display_name');
+        // filter bu name
+        if ($this->box_name) {
+            $boxes_histories = $boxes_histories->where('nagios_hosts.display_name',$this->box_name);    
         }
-        else
+
+        // filter by Date From
+        if ($this->date_from)
         {
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
-                ->orderBy('display_name');
+            $boxes_histories = $boxes_histories->where('nagios_hostchecks.start_time','>=',$this->date_from);
         }
-        
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $boxes_histories = $boxes_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        $boxes_histories = $boxes_histories->take(20000);
+
+        return $boxes_histories;
     }
 
-    public function getBoxesStatus($boxes_name)
+    public function getBoxes()
     {
-        $boxes_up = 0;
-        $boxes_down = 0;
-        $boxes_unreachable = 0;
 
-        $boxes_checks = [];
-        
-        foreach ($boxes_name as $box) {
+        if ($this->site_name == 'All') {
 
-            $all_boxes_checks = $this->getBoxesChecks()
-                ->where('nagios_hostchecks.host_object_id','=',$box->host_object_id)
-                ->take(2)
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name')
                 ->get();
 
-            if(sizeof($all_boxes_checks))
-            {
-                $status = $this->getInterval($all_boxes_checks);  
+        } else {
 
-                for ($i=0; $i < sizeof($status); $i++) {
-                    
-                    $box = $this->getBoxesChecks()->where('nagios_hostchecks.hostcheck_id','=',$status[$i][0])->first();
-
-                    if (!empty($box)) {
-                        array_push($boxes_checks,$box);
-                    }
-                
-                }
-
-            } else {
-                continue;
-            }
-
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
+                ->orderBy('display_name')
+                ->get();
         }
-
-        foreach ($boxes_checks as $box) {
-            
-
-            switch ($box->state) {
-                
-                case 0:
-                    $boxes_up++;
-                    break;
-                
-                case 1:
-                    $boxes_down++;
-                    break;
-                
-                case 2:
-                    $boxes_unreachable++;
-                    break;
-            }
-        }
-
-        return (object)['boxes_up' => $boxes_up,'boxes_down' => $boxes_down,'boxes_unreachable' => $boxes_unreachable];
-    }
-
-    public function getInterval($box)
-    {
-        $status = [];
-
-        $interval = [];
-
-        for ($i=0; $i < sizeof($box); $i++) { 
-                
-            if($i == 0)
-            {
-                array_push($interval,$box[0]->hostcheck_id);
-            }
-
-            if ($i > 0 && $i < sizeof($box)-1) {
-                
-                if($box[$i]->state == $box[$i-1]->state)
-                {
-                    continue;
-
-                } else {
-
-                    array_push($interval,$box[$i-1]->hostcheck_id);
-
-                    array_push($status,$interval);
-
-                    $interval = [];
-
-                    array_push($interval,$box[$i]->hostcheck_id);
-
-                }
-
-            }
-
-            if($i == sizeof($box)-1)
-            {
-                if($box[$i]->state == $box[$i-1]->state)
-                {
-                    array_push($interval,$box[$i]->hostcheck_id);
-                    array_push($status,$interval);
-
-                } else {
-
-                    array_push($interval,$box[$i-1]->hostcheck_id);
-                    array_push($status,$interval);
-
-                    $interval = [];
-
-                    array_push($interval,$box[$i]->hostcheck_id);
-                    array_push($interval,$box[$i]->hostcheck_id);
-                    array_push($status,$interval);
-                }
-            }
-
-        }
-
-        return $status;
-    }
-
-    public function getChartRange()
-    {
-        $datasets = [];
-
-        $boxes = $this->getBoxesName()->get();
-
-        $data = [
-            'host_name' => '',
-            'Up' => '',
-            'Down' => '',
-            'Unreachable' => '',
-        ];
-
-        foreach ($boxes as $box) {
-
-            // Get All box checks
-            $box_checks = $this->getBoxesChecks()->where('nagios_hosts.display_name', $box->host_name)->get();
-
-            // Get Ranges
-            $range = [];
-            $box_ranges = [];
-
-            if (sizeof($box_checks)) {
-            
-                for ($i=0; $i < sizeof($box_checks); $i++) {
-                    
-                    if ($i == 0) {
-                        array_push($range, $box_checks[0]);
-                    }
-
-                    if ($i > 0 && $i < sizeof($box_checks)-1) {
-
-                        if ($box_checks[$i]->state == $box_checks[$i-1]->state) {
-                            continue;
-                        } 
-                        else
-                        {
-                            array_push($range,$box_checks[$i-1]);
-                            array_push($box_ranges,$range);
-                            $range = [];
-                            array_push($range,$box_checks[$i]);
-                        }
-
-                    }
-
-                    if ($i == sizeof($box_checks)-1) {
-                        
-                        if ($box_checks[$i]->state == $box_checks[$i-1]->state) {
-                            array_push($range,$box_checks[$i]);
-                            array_push($box_ranges,$range);
-                            $range = [];
-                        }
-                        else
-                        {
-                            array_push($range,$box_checks[$i-1]);
-                            array_push($box_ranges,$range);
-                            $range = [];
-                            array_push($range,$box_checks[$i]);
-                            array_push($range,$box_checks[$i]);
-                            array_push($box_ranges,$range);
-                            $range = [];
-                        }
-                    }
-                }
-
-                // Make datasets        
-                $up = [];
-                $down = [];
-                $unreach = [];
-
-                for ($i=0; $i < sizeof($box_ranges); $i++) { 
-                    
-                    if ($i == 0) {
-                        $box_name = $box_ranges[0][0]->display_name;
-                    }
-
-                    switch ($box_ranges[$i][0]->state) {
-                        
-                        case 0:
-                            array_push($up, [$box_ranges[$i][0]->start_time,$box_ranges[$i][1]->end_time]);
-                            // array_push($up, $box_ranges[$i][0]->start_time);
-                            // array_push($up, $box_ranges[$i][1]->end_time);
-                            break;
-
-                        case 1:
-                            array_push($down, [$box_ranges[$i][0]->start_time,$box_ranges[$i][1]->end_time]);
-                            // array_push($down, $box_ranges[$i][0]->start_time);
-                            // array_push($down, $box_ranges[$i][1]->end_time);
-                            break;
-
-                        case 2:
-                            array_push($unreach, [$box_ranges[$i][0]->start_time,$box_ranges[$i][1]->end_time]);
-                            // array_push($unreach, $box_ranges[$i][0]->start_time);
-                            // array_push($unreach, $box_ranges[$i][1]->end_time);
-                            break;
-                    }
-                }
-
-                $data = [
-                    'box_name' => $box_name,
-                    'Up' => $up,
-                    'Down' => $down,
-                    'Unreachable' => $unreach,
-                ];
-            }
-
-            array_push($datasets,$data);
-        }
-
-        return $datasets;
 
     }
 }

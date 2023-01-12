@@ -354,4 +354,14 @@ class AllSites extends Component
         ];
 
     }
+
+    public function deleteSite()
+    {
+        dd('hello');
+    }
+
+    public function updateSiteName($site_id)
+    {
+        
+    }
 }

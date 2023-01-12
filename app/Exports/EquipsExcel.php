@@ -50,10 +50,28 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
         return [
             $equips->box_name,
             $equips->equip_name,
-            $equips->state,
+            $this->convertState($equips->state),
             $equips->start_time,
             $equips->end_time,
             $equips->output
         ];
+    }
+
+    public function convertState($state)
+    {
+        switch ($state) {
+            case 0:
+                return  'Ok';
+                break;
+            case 1:
+                return  'Warning';
+                break;
+            case 2:
+                return  'Critical';
+                break;
+            case 3:
+                return  'Unknown';
+                break;
+        }
     }
 }

@@ -1,23 +1,37 @@
 <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
-<div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
-    
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Porcentage des Services</h6>
-        <canvas  id="PieChart"></canvas>     
+<div class="container w-100 bg-white shadow rounded mt-4">
+
+    {{-- Filter --}}
+    <div>
+        <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
+            {{-- Filter --}}
+            @include('inc.filter', ['names' => $services_names,'type' => 'service','from' => 'statistic'])
+        </div>
     </div>
 
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Total des Services</h6>
-        <canvas id="BarChart"></canvas>
+    <hr>
+
+    {{-- Charts --}}
+    <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
+        
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
+            <h6 class="mb-2 text-secondary">Porcentage des Services</h6>
+            <canvas  id="PieChart"></canvas>     
+        </div>
+
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
+            <h6 class="mb-2 text-secondary">Total des Services</h6>
+            <canvas id="BarChart"></canvas>
+        </div>
+        
+        {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
+            <h6 class="mb-2 text-secondary">Timeline des Services</h6>
+            <br>
+            <div id="floating" style="height: 60vh"></div>
+        </div> --}}
+
     </div>
-
-    {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
-        <h6 class="mb-2 text-secondary">Timeline des Services</h6>
-        <br>
-        <div id="floating" style="height: 60vh"></div>
-    </div> --}}
-
 </div>
 
 {{---------------------------------------- Piechart ------------------------------------------------------------------}}
@@ -291,7 +305,7 @@
     });
 </script> --}}
 
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
@@ -353,7 +367,7 @@
     chart.draw(dataTable,options);
 }
   
-</script>
+</script> --}}
 
 
 {{-- Change sidebar menu choice --}}

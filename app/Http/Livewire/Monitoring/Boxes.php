@@ -30,7 +30,7 @@ class Boxes extends Component
         }
 
         return view('livewire.monitoring.boxes')
-        ->with(['boxs'=>$boxs,'search' => $this->search])
+        ->with(['boxs'=>$boxs,'search' => $this->search, 'msg' => $this->description()])
         ->extends('layouts.app')
         ->section('content');
     }
@@ -58,5 +58,10 @@ class Boxes extends Component
                 ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output')
                 ->orderBy('display_name');
         }
+    }
+
+    public function description()
+    {
+        return ['fonctionne normalement','le box est OFF','difficulté à reconnaître l\'état du box, vérifier si le box est ON'];
     }
 }

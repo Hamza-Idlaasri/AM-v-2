@@ -41,20 +41,6 @@ class Hosts extends Component
 
         }    
 
-        // filter by Name
-        if ($this->host_name)
-        {
-            foreach ($hosts_histories as $key => $host) {
-                if ($host->host_name == $this->host_name) {
-                    continue;
-                } else {
-                    unset($hosts_histories[$key]);
-                }
-            }
-
-            $hosts_histories = array_values($hosts_histories);
-        }
-
         return view('livewire.historic.hosts')
             ->with(['hosts_histories' => $this->paginate($hosts_histories), 'hosts_names' => $this->getHosts(),'download' => $hosts_histories])
             ->extends('layouts.app')
@@ -95,7 +81,7 @@ class Hosts extends Component
 
             if (sizeof($checks_of_host) == 1) {
                 // Convert State
-                $checks_of_host[0]->state = $this->convertState($checks_of_host[0]->state);
+                //$checks_of_host[0]->state = $this->convertState($checks_of_host[0]->state);
                 // push the range in table
                 array_push($hostes_range_of_states, $checks_of_host[0]);
             } else {
@@ -115,7 +101,7 @@ class Hosts extends Component
                             $checks_of_host[$start_index]->end_time = $checks_of_host[$end_index]->end_time;
 
                             // Convert State
-                            $checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
+                            //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
 
                             // push the range in table
                             array_push($hostes_range_of_states, $checks_of_host[$start_index]);
@@ -131,7 +117,7 @@ class Hosts extends Component
                             $checks_of_host[$start_index]->end_time = $checks_of_host[$i]->end_time;
                             
                             // Convert State
-                            $checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
+                            //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
 
                             // push the range in table
                             array_push($hostes_range_of_states, $checks_of_host[$start_index]);
@@ -142,14 +128,14 @@ class Hosts extends Component
                             $checks_of_host[$start_index]->end_time = $checks_of_host[$i-1]->end_time;
                             
                             // Convert State
-                            $checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
+                            //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
 
                             // push the range in table
                             array_push($hostes_range_of_states, $checks_of_host[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
-                            $checks_of_host[$i]->state = $this->convertState($checks_of_host[$i]->state);
+                            //$checks_of_host[$i]->state = $this->convertState($checks_of_host[$i]->state);
 
                             // push the range in table
                             array_push($hostes_range_of_states, $checks_of_host[$i]);
@@ -183,8 +169,7 @@ class Hosts extends Component
                 ->where('alias','host')
                 ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_hostchecks.start_time');
                 
         } else {
 
@@ -195,9 +180,13 @@ class Hosts extends Component
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_hostchecks.start_time');
         }   
+
+        // filter bu name
+        if ($this->host_name) {
+            $hosts_histories = $hosts_histories->where('nagios_hosts.display_name',$this->host_name);    
+        }
 
         // filter by Date From
         if ($this->date_from)
@@ -210,6 +199,8 @@ class Hosts extends Component
         {
             $hosts_histories = $hosts_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
         }
+
+        $hosts_histories = $hosts_histories->take(20000);
 
         return $hosts_histories;
     }
@@ -245,18 +236,18 @@ class Hosts extends Component
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    public function convertState($state)
-    {
-        switch ($state) {
-            case 0:
-                return  $state = 'Up';
-                break;
-            case 1:
-                return  $state = 'Down';
-                break;
-            case 2:
-                return  $state = 'Unreachable';
-                break;
-        }
-    }
+    // public function convertState($state)
+    // {
+    //     switch ($state) {
+    //         case 0:
+    //             return  $state = 'Up';
+    //             break;
+    //         case 1:
+    //             return  $state = 'Down';
+    //             break;
+    //         case 2:
+    //             return  $state = 'Unreachable';
+    //             break;
+    //     }
+    // }
 }

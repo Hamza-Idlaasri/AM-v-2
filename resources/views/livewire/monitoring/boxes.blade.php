@@ -51,7 +51,7 @@
                 @endswitch
 
                 <td>{{ $box->last_check }}</td>
-                <td class="description">{{ $box->output }}</td>
+                <td class="description">{{ $msg[$box->current_state]}}</td>
             </tr>
 
 

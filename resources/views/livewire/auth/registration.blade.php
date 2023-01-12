@@ -54,7 +54,7 @@
         </div>
         
         {{-- Append to a site --}}
-        <div class="p-2 rounded @error('password') border-danger @enderror" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
+        <div class="p-2 rounded @error('site') border-danger @enderror" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
                 
             @forelse ($all_sites as $site)
                 @if ($site->id != 1)

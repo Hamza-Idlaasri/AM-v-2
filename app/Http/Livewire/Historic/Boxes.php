@@ -41,20 +41,6 @@ class Boxes extends Component
 
         }    
 
-        // filter by Name
-        if ($this->box_name)
-        {
-            foreach ($boxes_histories as $key => $box) {
-                if ($box->box_name == $this->box_name) {
-                    continue;
-                } else {
-                    unset($boxes_histories[$key]);
-                }
-            }
-
-            $boxes_histories = array_values($boxes_histories);
-        }
-
         return view('livewire.historic.boxes')
             ->with(['boxes_histories' => $this->paginate($boxes_histories), 'boxes_names' => $this->getBoxes(),'download' => $boxes_histories])
             ->extends('layouts.app')
@@ -95,7 +81,7 @@ class Boxes extends Component
 
             if (sizeof($checks_of_box) == 1) {
                 // Convert State
-                $checks_of_box[0]->state = $this->convertState($checks_of_box[0]->state);
+                //$checks_of_box[0]->state = $this->convertState($checks_of_box[0]->state);
                 // push the range in table
                 array_push($boxes_range_of_states, $checks_of_box[0]);
             } else {
@@ -115,7 +101,7 @@ class Boxes extends Component
                             $checks_of_box[$start_index]->end_time = $checks_of_box[$end_index]->end_time;
 
                             // Convert State
-                            $checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
 
                             // push the range in table
                             array_push($boxes_range_of_states, $checks_of_box[$start_index]);
@@ -131,7 +117,7 @@ class Boxes extends Component
                             $checks_of_box[$start_index]->end_time = $checks_of_box[$i]->end_time;
                             
                             // Convert State
-                            $checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
 
                             // push the range in table
                             array_push($boxes_range_of_states, $checks_of_box[$start_index]);
@@ -142,14 +128,14 @@ class Boxes extends Component
                             $checks_of_box[$start_index]->end_time = $checks_of_box[$i-1]->end_time;
                             
                             // Convert State
-                            $checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
+                            //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
 
                             // push the range in table
                             array_push($boxes_range_of_states, $checks_of_box[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
-                            $checks_of_box[$i]->state = $this->convertState($checks_of_box[$i]->state);
+                            //$checks_of_box[$i]->state = $this->convertState($checks_of_box[$i]->state);
 
                             // push the range in table
                             array_push($boxes_range_of_states, $checks_of_box[$i]);
@@ -183,8 +169,7 @@ class Boxes extends Component
                 ->where('alias','box')
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_hostchecks.start_time');
                 
         } else {
 
@@ -195,10 +180,14 @@ class Boxes extends Component
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time')
-                ->take(20000);
+                ->orderBy('nagios_hostchecks.start_time');
                 
         }   
+
+        // filter by name
+        if ($this->box_name) {
+            $boxes_histories = $boxes_histories->where('nagios_hosts.display_name',$this->box_name);
+        }
 
         // filter by Date From
         if ($this->date_from)
@@ -211,6 +200,8 @@ class Boxes extends Component
         {
             $boxes_histories = $boxes_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
         }
+
+        $boxes_histories = $boxes_histories->take(20000);
 
         return $boxes_histories;
     }
@@ -246,19 +237,19 @@ class Boxes extends Component
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    public function convertState($state)
-    {
-        switch ($state) {
-            case 0:
-                return  $state = 'Up';
-                break;
-            case 1:
-                return  $state = 'Down';
-                break;
-            case 2:
-                return  $state = 'Unreachable';
-                break;
-        }
-    }
+    // public function convertState($state)
+    // {
+    //     switch ($state) {
+    //         case 0:
+    //             return  $state = 'Up';
+    //             break;
+    //         case 1:
+    //             return  $state = 'Down';
+    //             break;
+    //         case 2:
+    //             return  $state = 'Unreachable';
+    //             break;
+    //     }
+    // }
 
 }

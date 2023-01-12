@@ -6,6 +6,11 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 use App\Models\UsersSite;
+use App\Models\EquipsDetail;
+use App\Models\EquipsNames;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Equips extends Component
 {
@@ -15,21 +20,25 @@ class Equips extends Component
  
     protected $queryString = ['search'];
 
+    public $site_name;
+
     public function render()
     {
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         if($this->search)
         {
-            $equips =$this->getEquips()
-                ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->paginate(30);
+            $equips = $this->getEquips()
+                ->where('nagios_services.display_name','like', '%'.$this->search.'%')
+                ->get();
             
-            $equips_problems =$this->getEquipsProblems()
-                ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
+            $equips_problems = $this->getEquipsProblems()
+                ->where('nagios_services.display_name','like', '%'.$this->search.'%')
                 ->get();
 
         } else {
 
-            $equips = $this->getEquips()->paginate(30);
+            $equips = $this->getEquips()->get();
             $equips_problems = $this->getEquipsProblems()->get();
 
         }
@@ -40,53 +49,57 @@ class Equips extends Component
         if(!empty($equips_problems))
             $this->fixInputNbr($equips_problems);
 
-        $msg = $this->description();
+        $equips = $this->OrganizeData($equips);
+
+        $equips_problems = $this->OrganizeData($equips_problems);
 
         return view('livewire.monitoring.equips')
-            ->with(['equips' => $equips,'equips_problems' => $equips_problems,'msg' => $msg,'search' => $this->search])
+            ->with(['equips' => $this->paginate($equips),'equips_problems' => $equips_problems,'msg' => $this->description(),'search' => $this->search])
             ->extends('layouts.app')
             ->section('content');
     }
 
     public function getEquips()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == 'All') {
+        if ($this->site_name == 'All') {
             
             return DB::table('nagios_hosts')
                 ->where('alias','box')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command');
-                // ->orderBy('nagios_hosts.display_name');
-        }
-        else 
-        {
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->orderBy('nagios_hosts.display_name')
+                ->orderBy('nagios_services.display_name');
+
+        } else {
+
             return DB::table('nagios_hosts')
                 ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command');
-                // ->orderBy('nagios_hosts.display_name');
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->orderBy('nagios_hosts.display_name')
+                ->orderBy('nagios_services.display_name');
         }
     }
    
     public function getEquipsProblems()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == 'All') {
+        if ($this->site_name == 'All') {
             
             return DB::table('nagios_hosts')
                 ->where('alias','box')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command')
-                ->where('current_state','<>','0');
-                // ->orderBy('nagios_hosts.display_name');
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->where('current_state','<>','0')
+                ->orderBy('nagios_hosts.display_name')
+                ->orderBy('nagios_services.display_name');
         }
         else 
         {
@@ -95,10 +108,12 @@ class Equips extends Component
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command')
-                ->where('current_state','<>','0');
-                // ->orderBy('nagios_hosts.display_name');
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->where('current_state','<>','0')
+                ->orderBy('nagios_hosts.display_name')
+                ->orderBy('nagios_services.display_name');
         }
     }
 
@@ -109,8 +124,41 @@ class Equips extends Component
         }
     }
 
+    public function OrganizeData($all_equips)
+    {
+        $equips_names = EquipsNames::all();
+
+        $equips_data = [];
+
+        foreach ($equips_names as $name) {
+
+            $pins = [];
+
+            foreach ($all_equips as $equip) {
+                if ($equip->equip_name == $name->equip_name) {
+                    array_push($pins,$equip);
+                } else {
+                    continue;
+                }
+            }
+
+            $data = (object)['equip_name' => $name->equip_name, 'pins' => $pins];
+            
+            array_push($equips_data, $data);
+        }
+
+        return $equips_data;
+    }
+
     public function description()
     {
-        return ['l\'équipement fonctionne normalement','l\'équipement est OFF','difficulté à reconnaître l\'état de l\'équipement, vérifier si le box parent est ON'];
+        return ['fonctionne normalement','Alert!, l\'équipement ne fonctionne pas normalement','l\'équipement est OFF','difficulté à reconnaître l\'état de l\'équipement, vérifier si le box parent est ON'];
+    }
+
+    public function paginate($items, $perPage = 2, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

@@ -13,7 +13,7 @@
         {{-- Download PDF & CSV --}}
         @include('inc.download',['pdf_path' => 'equips.pdf', 'csv_path' => 'equips.csv'])
         {{-- Filter --}}
-        @include('inc.filter',['names' => $equips_names,'type' => 'equip'])
+        @include('inc.filter',['names' => $equips_names,'type' => 'equip', 'from' => 'historic'])
     </div>
     
     {{-- Table --}}
@@ -41,16 +41,16 @@
             
             @switch($equip_history->state)
                 
-                @case('Ok')
+                @case(0)
                     <td><span class="badge badge-success">Ok</span></td>
                     @break
-                @case('Warning')
+                @case(1)
                     <td><span class="badge badge-warning">Warning</span></td>
                     @break
-                @case('Critical')
+                @case(2)
                     <td><span class="badge badge-danger">Critical</span></td>
                     @break
-                @case('Unknown')
+                @case(3)
                     <td><span class="badge badge-unknown">Unknown</span></td>
                     @break
                 @default

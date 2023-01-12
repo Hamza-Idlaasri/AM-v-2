@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\UsersSite;
+use App\Models\Sites;
 
 class Equip extends Component
 {
@@ -18,7 +19,7 @@ class Equip extends Component
 
     public function render()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+        $sites = Sites::all()->except(1);
 
         $box = DB::table('nagios_hosts')
             ->where('alias', 'box')
@@ -60,7 +61,7 @@ class Equip extends Component
         $inputs_not_used = str_replace($box->box_type.'_','',$inputs_not_used);
 
         return view('livewire.config.add.equips.equip')
-            ->with(['inputs_used' => $inputs_used, 'inputs_not_used' => $inputs_not_used, 'box' => $box])
+            ->with(['inputs_used' => $inputs_used, 'inputs_not_used' => $inputs_not_used, 'box' => $box, 'sites' => $sites])
             ->extends('layouts.app')
             ->section('content');
     }

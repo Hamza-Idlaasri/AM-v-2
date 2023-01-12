@@ -16,6 +16,7 @@
         "laravel/ui": "^3.4",
         "livewire/livewire": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "monolog/monolog": "^2.8",
         "santigarcor/laratrust": "^7.0"
     },
     "require-dev": {

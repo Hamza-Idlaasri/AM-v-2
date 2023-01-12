@@ -50,10 +50,25 @@ class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
         return [
             $hosts->host_name,
             $hosts->address,
-            $hosts->state,
+            $this->convertState($hosts->state),
             $hosts->start_time,
             $hosts->end_time,
             $hosts->output
         ];
+    }
+
+    public function convertState($state)
+    {
+        switch ($state) {
+            case 0:
+                return  'Up';
+                break;
+            case 1:
+                return  'Down';
+                break;
+            case 2:
+                return  'Unreachable';
+                break;
+        }
     }
 }

@@ -1,23 +1,36 @@
-<script src="{{ asset('js/chartjs-plugin.js') }}"></script>
+<div class="container w-100 bg-white shadow rounded mt-4">
 
-<div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
-    
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Porcentage des Equipements</h6>
-        <canvas  id="PieChart"></canvas>     
+    <div>
+        {{-- Filter --}}
+        <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
+            {{-- Filter --}}
+            @include('inc.filter',['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
+        </div>
     </div>
 
-    <div class="bg-white shadow py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px">
-        <h6 class="mb-2 text-secondary">Total des Equipements</h6>
-        <canvas id="BarChart"></canvas>
-    </div>
-    
-    {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
-        <h6 class="mb-2 text-secondary">Timeline des Equipements</h6>
-        <br>
-        <div id="floating" style="height: 60vh"></div>
-    </div> --}}
+    <hr>
 
+    <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
+
+    <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
+        
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
+            <h6 class="mb-2 text-secondary">Porcentage des Equipements</h6>
+            <canvas  id="PieChart"></canvas>     
+        </div>
+
+        <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218!important">
+            <h6 class="mb-2 text-secondary">Total des Equipements</h6>
+            <canvas id="BarChart"></canvas>
+        </div>
+        
+        {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
+            <h6 class="mb-2 text-secondary">Timeline des Equipements</h6>
+            <br>
+            <div id="floating" style="height: 60vh"></div>
+        </div> --}}
+
+    </div>
 </div>
 
 {{------------------------------------------ Piechart -----------------------------------------------------------}}
@@ -64,7 +77,7 @@
 
 <!---------------------------------------- BarChart ------------------------------------------------------------------->
 <script>
-
+    console.log('test', {{$equips_status->equips_ok}})
     let ctxBarChart = document.getElementById('BarChart').getContext('2d');
     let equipsBarChart = new Chart(ctxBarChart, {
         type: 'bar',
@@ -117,29 +130,12 @@
                 }
             },
             
-            // animation: {
-            //     duration: 1,
-            //     onComplete: function () {
-            //         var chartInstance = this.chart,
-            //             ctx = chartInstance.ctx;
-            //         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
-            //         ctx.textAlign = 'center';
-            //         ctx.textBaseline = 'bottom';
-
-            //         this.data.datasets.forEach(function (dataset, i) {
-            //             var meta = chartInstance.controller.getDatasetMeta(i);
-            //             meta.data.forEach(function (bar, index) {
-            //                 var data = dataset.data[index];
-            //                 ctx.fillText(data, bar._model.x, bar._model.y - 5);
-            //             });
-            //         });
-            //     }
-            // }
         }
     });
+    
 </script>
 
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});
     google.charts.setOnLoadCallback(drawChart);
     function drawChart() {
@@ -201,7 +197,7 @@
         chart.draw(dataTable,options);
     }
   
-</script>
+</script> --}}
 
 <script>
 

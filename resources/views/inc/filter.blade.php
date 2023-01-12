@@ -1,15 +1,17 @@
 <nav class="navbar navbar-light pt-3 pb-4 px-0 float-right form-inline" style="width: 90%">
 
     @if ($type == 'host' || $type == 'box')
-        
-        {{-- Status --}}
-        <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
-        <select wire:model="status" name="status" id="status" class="form-control">
-            <option value="all">All</option>
-            <option value="Up">Up</option>
-            <option value="Down">Down</option>
-            <option value="Unreachable">Unreachable</option>
-        </select>
+        @if ($from != 'statistic')
+            {{-- Status --}}
+            <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
+            <select wire:model="status" name="status" id="status" class="form-control">
+                <option value="all">All</option>
+                <option value="0">Up</option>
+                <option value="1">Down</option>
+                <option value="2">Unreachable</option>
+            </select>
+        @endif
+
 
         {{-- Names --}}
         @if ($type == 'host')
@@ -37,16 +39,17 @@
     @endif
 
     @if ($type == 'service' || $type == 'equip')
-        
-        {{-- Status --}}
-        <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
-        <select wire:model="status" name="status" id="status" class="form-control">
-            <option value="all">All</option>
-            <option value="Ok">Ok</option>
-            <option value="Warning">Warning</option>
-            <option value="Critical">Critical</option>
-            <option value="Unknown">Unknown</option>
-        </select>
+        @if ($from != 'statistic')
+            {{-- Status --}}
+            <label class="font-weight-bold ml-4 mr-2" for="status">Status :</label>
+            <select wire:model="status" name="status" id="status" class="form-control">
+                <option value="all">All</option>
+                <option value="0">Ok</option>
+                <option value="1">Warning</option>
+                <option value="2">Critical</option>
+                <option value="3">Unknown</option>
+            </select>
+        @endif
 
         {{-- Names --}}
         @if ($type == 'service')

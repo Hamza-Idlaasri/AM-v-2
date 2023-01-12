@@ -50,10 +50,25 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
         return [
             $boxes->box_name,
             $boxes->address,
-            $boxes->state,
+            $this->convertState($boxes->state),
             $boxes->start_time,
             $boxes->end_time,
             $boxes->output
         ];
+    }
+
+    public function convertState($state)
+    {
+        switch ($state) {
+            case 0:
+                return  'Up';
+                break;
+            case 1:
+                return  'Down';
+                break;
+            case 2:
+                return  'Unreachable';
+                break;
+        }
     }
 }

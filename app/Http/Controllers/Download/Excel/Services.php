@@ -23,10 +23,8 @@ class Services extends Controller
             return redirect()->back();
 
         } else {
-
-            parse_str($request->data,$historic);
             
-            return Excel::download(new ServicesExcel($historic['data']), 'services_historique '.date('Y-m-d H:i:s').'.xlsx');
+            return Excel::download(new ServicesExcel(json_decode($request->data)), 'services_historique '.date('Y-m-d H:i:s').'.xlsx');
         
         }
     }

@@ -232,10 +232,22 @@
 
                 @forelse ($sites_details as $site)
 
-                    <table class="table table-bordered text-center table-hover" {{--x-data="{ open: false }"--}}>
+                    <table class="table table-bordered text-center table-hover">
                         <thead class="bg-light text-dark">
-                            <th colspan="4"><a wire:click="site({{$site->id}})" class="text-primary h5" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> {{ $site->site_name }}</a>
-                                {{-- <button style="outline: none;border: none;" @click.prevent="open = true"><span class="angle" :aria-expanded="open ? 'true' : 'false'" :class="{ 'sub-menu-opend': open }"><i class="fa-solid fa-angle-down"></i></span></button> --}}
+                            <th colspan="4" style="position: relative">
+                                {{-- Link To site --}}
+                                <a wire:click="site({{$site->id}})" class="text-primary h5" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> {{ $site->site_name }}</a>
+                                {{-- Delete & Update --}}
+                                {{-- <div x-data="{ open: false }" style="width: 60px;position: absolute;right:10px;top:5px">
+                                    <button @click.prevent="open = true" class="btn btn-light rounded-circle text-secondary"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    <div class="sub-menu bg-white shadow p-1 rounded" x-show="open" x-cloak @click.away="open = false" style="width:50px">
+                                        {{-- Edit 
+                                        <button class="btn text-info"><i class="fa-solid fa-pen"></i></button>
+                                        <br>
+                                        {{-- Delete
+                                        <button class="btn text-danger" id="delete-site"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </div> --}}
                             </th>
                         </thead>
 
@@ -305,6 +317,7 @@
     </div>
     </div>
 
+    {{-- Add New Site --}}
     <div class="w-25 p-4 bg-white rounded shadow border" id="addSite-popup" style="display:none;position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
         <h5>Add New Site :</h5>
         <br>
@@ -319,9 +332,20 @@
         <br>
         <div class="w-50 float-right d-flex justify-content-around align-items-center">
             <button class="btn btn-primary" form="addSite">Add</button>
-            <button class="btn btn-light" id="cancel">Cancel</button>
+            <button class="btn btn-light" id="cancel-add">Cancel</button>
         </div>
     </div>
+
+    {{-- Delete Site --}}
+    {{-- <div class="w-25 p-4 bg-white rounded shadow border" id="deletSite-popup" style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+
+        <h5>Are you sure you want to delete this site <q><b>Hello</b></q></h5>
+        <br>
+        <div class="w-50 float-right d-flex justify-content-around align-items-center">
+            <button wire:click="deleteSite" class="btn btn-danger" id="deleteSite">Delete</button>
+            <button class="btn btn-light" id="cancel-delete">Cancel</button>
+        </div>
+    </div> --}}
 
 </div>
 
@@ -332,11 +356,22 @@ document.getElementById('add-new-site').onclick = () => {
     document.getElementById('back').style.opacity = '.1';
 }
 
-document.getElementById('cancel').onclick = () => {
+document.getElementById('cancel-add').onclick = () => {
     document.getElementById('addSite-popup').style.display = 'none';
     document.getElementById('back').style.opacity = '1';
 
 }
+
+// document.getElementById('delete-site').onclick = () => {
+//     document.getElementById('deleteSite-popup').style.display = 'block';
+//     document.getElementById('back').style.opacity = '.1';
+// }
+
+// document.getElementById('cancel-delete').onclick = () => {
+//     document.getElementById('deleteSite-popup').style.display = 'none';
+//     document.getElementById('back').style.opacity = '1';
+
+// }
 
 </script>
 
