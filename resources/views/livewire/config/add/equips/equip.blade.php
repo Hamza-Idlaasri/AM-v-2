@@ -20,6 +20,7 @@
                     </div>
                 @enderror
             </div>
+            
             {{-- Choose Site --}}
             <div class="card-body">
                 <label for="site_name"><b>Choose Site <span class="text-danger">*</span></b> </label>

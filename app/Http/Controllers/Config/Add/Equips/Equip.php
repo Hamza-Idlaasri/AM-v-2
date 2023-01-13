@@ -79,6 +79,7 @@ class Equip extends Controller
         }
 
         $add_equip = EquipsNames::create([
+            'site_name' => $request->site,
             'box_name' => $add_to_box->box_name,
             'equip_name' => $request->equipName
         ]);

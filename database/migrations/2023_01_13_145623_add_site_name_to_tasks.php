@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEquipsNamesTable extends Migration
+class AddSiteNameToTasks extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,8 @@ class CreateEquipsNamesTable extends Migration
      */
     public function up()
     {
-        Schema::create('equips_names', function (Blueprint $table) {
-            $table->id();
+        Schema::table('equips_names', function (Blueprint $table) {
             $table->string('site_name');
-            $table->string('box_name');
-            $table->string('equip_name');
-            $table->timestamps();
         });
     }
 
@@ -29,6 +25,8 @@ class CreateEquipsNamesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('equips_names');
+        Schema::table('equips_names', function (Blueprint $table) {
+            $table->string('site_name');
+        });
     }
 }

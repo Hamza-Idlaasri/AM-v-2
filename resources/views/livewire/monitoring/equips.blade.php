@@ -14,6 +14,9 @@
                     <th>Pins</th>
                     <th>Status</th>
                     <th>Salle</th>
+                    @if ($site_name == "All")
+                    <th>Site</th>
+                    @endif
                     <th>Dernier verification</th>
                     <th>Input Nbr</th>
                     <th style="width: 30%">Description</th>
@@ -31,7 +34,13 @@
                             <td></td>
                         @endif
                         {{-- Pin Name --}}
-                        <td>{{$pin->pin_name}}</td>
+                        <td> {{$pin->pin_name}}
+                            @if ($pin->is_flapping)
+                                <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
+                                    <i class="fas fa-retweet"></i>
+                                </span>
+                            @endif
+                        </td>
     
                         {{-- Status --}}
                         @switch($pin->current_state)
@@ -53,6 +62,11 @@
                         {{-- Hall Nake --}}
                         <td>{{$pin->hall_name}}</td>
     
+                        {{-- Site Name --}}
+                        @if ($site_name == "All")
+                        <td>{{$pin->site_name}}</td>
+                        @endif
+                        
                         {{-- Dernier verification --}}
                         <td>{{$pin->last_check}}</td>
     
@@ -92,6 +106,9 @@
                 <th>Pins</th>
                 <th>Status</th>
                 <th>Salle</th>
+                @if ($site_name == "All")
+                <th>Site</th>
+                @endif
                 <th>Dernier verification</th>
                 <th>Input Nbr</th>
                 <th style="width: 30%">Description</th>
@@ -109,7 +126,13 @@
                         <td></td>
                     @endif
                     {{-- Pin Name --}}
-                    <td>{{$pin->pin_name}}</td>
+                    <td>{{$pin->pin_name}}
+                        @if ($pin->is_flapping)
+                            <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
+                                <i class="fas fa-retweet"></i>
+                            </span>
+                        @endif
+                    </td>
 
                     {{-- Status --}}
                     @switch($pin->current_state)
@@ -130,6 +153,11 @@
                     
                     {{-- Hall Nake --}}
                     <td>{{$pin->hall_name}}</td>
+
+                    {{-- Site Name --}}
+                    @if ($site_name == "All")
+                    <td>{{$pin->site_name}}</td>
+                    @endif
 
                     {{-- Dernier verification --}}
                     <td>{{$pin->last_check}}</td>

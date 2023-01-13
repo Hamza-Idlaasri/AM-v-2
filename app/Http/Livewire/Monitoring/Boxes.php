@@ -30,9 +30,9 @@ class Boxes extends Component
         }
 
         return view('livewire.monitoring.boxes')
-        ->with(['boxs'=>$boxs,'search' => $this->search, 'msg' => $this->description()])
-        ->extends('layouts.app')
-        ->section('content');
+            ->with(['boxs'=>$boxs,'search' => $this->search, 'msg' => $this->description()])
+            ->extends('layouts.app')
+            ->section('content');
     }
 
     public function getBoxes()

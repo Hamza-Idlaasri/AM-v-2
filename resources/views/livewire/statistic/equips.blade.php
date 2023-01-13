@@ -77,7 +77,7 @@
 
 <!---------------------------------------- BarChart ------------------------------------------------------------------->
 <script>
-    console.log('test', {{$equips_status->equips_ok}})
+
     let ctxBarChart = document.getElementById('BarChart').getContext('2d');
     let equipsBarChart = new Chart(ctxBarChart, {
         type: 'bar',
