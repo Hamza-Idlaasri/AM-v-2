@@ -25,7 +25,7 @@ class Boxes extends Component
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         $boxes_histories = $this->getStateRanges();
-
+        // dd($this->getHistory());
         // filter by state
         if($this->status != 'all')
         {
@@ -252,4 +252,28 @@ class Boxes extends Component
     //     }
     // }
 
+    public function getHistory()
+    {
+        if ($this->site_name == "All") {
+            
+            return DB::table('nagios_statehistory')
+                ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output')
+                ->where('alias','box')
+                ->orderBy('nagios_statehistory.state_time')
+                ->get();
+
+        } else {
+
+            return DB::table('nagios_statehistory')
+                ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id') 
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output')
+                ->where('alias','box')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->orderBy('nagios_statehistory.state_time')
+                ->get();
+        }
+        
+    }
 }

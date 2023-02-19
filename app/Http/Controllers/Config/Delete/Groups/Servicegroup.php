@@ -27,7 +27,8 @@ class Servicegroup extends Controller
         $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/servicegroups/".$SG_deleted[0]->alias.".cfg", '', $nagios_file_content);
         file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return back();
     }

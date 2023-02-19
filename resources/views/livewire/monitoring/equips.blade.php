@@ -1,5 +1,6 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll>
 
+    <div class="float-left text-secondary">Monitoring > <a href="/monitoring/equipements">Equipements</a></div>
     {{-- Search-Bar --}}
     @include('inc.searchbar',['route' => 'monitoring.equips'])
 
@@ -12,13 +13,14 @@
                 <tr>
                     <th>Equipement</th>
                     <th>Pins</th>
+                    <th>Site</th>
                     <th>Status</th>
                     <th>Salle</th>
                     @if ($site_name == "All")
-                    <th>Site</th>
+                    <th>Ville</th>
                     @endif
                     <th>Dernier verification</th>
-                    <th>Input Nbr</th>
+                    {{-- <th>Input Nbr</th> --}}
                     <th style="width: 30%">Description</th>
                 </tr>
             </thead>
@@ -34,7 +36,7 @@
                             <td></td>
                         @endif
                         {{-- Pin Name --}}
-                        <td> {{$pin->pin_name}}
+                        <td> {{$pin->check_command}}
                             @if ($pin->is_flapping)
                                 <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
                                     <i class="fas fa-retweet"></i>
@@ -42,6 +44,9 @@
                             @endif
                         </td>
     
+                        {{-- Box Name AKA Site --}}
+                        <td>{{$pin->box_name}}</td>
+
                         {{-- Status --}}
                         @switch($pin->current_state)
                             @case(0)
@@ -58,7 +63,7 @@
                                 @break
                             @default
                         @endswitch
-                        
+
                         {{-- Hall Nake --}}
                         <td>{{$pin->hall_name}}</td>
     
@@ -71,10 +76,10 @@
                         <td>{{$pin->last_check}}</td>
     
                         {{-- Input Nr --}}
-                        <td>{{$pin->check_command}}</td>
+                        {{-- <td>{{$pin->check_command}}</td> --}}
     
                         {{-- Description --}}
-                        <td class="description">{{$msg[$pin->current_state]}}</td>
+                        <td class="description">{{$pin->output}}</td>
                     </tr>
                 @empty
                     <tr>
@@ -104,13 +109,14 @@
             <tr>
                 <th>Equipement</th>
                 <th>Pins</th>
+                <th>Site</th>
                 <th>Status</th>
                 <th>Salle</th>
                 @if ($site_name == "All")
-                <th>Site</th>
+                <th>Ville</th>
                 @endif
                 <th>Dernier verification</th>
-                <th>Input Nbr</th>
+                {{-- <th>Input Nbr</th> --}}
                 <th style="width: 30%">Description</th>
             </tr>
         </thead>
@@ -126,7 +132,7 @@
                         <td></td>
                     @endif
                     {{-- Pin Name --}}
-                    <td>{{$pin->pin_name}}
+                    <td>{{$pin->check_command}}
                         @if ($pin->is_flapping)
                             <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
                                 <i class="fas fa-retweet"></i>
@@ -151,6 +157,9 @@
                         @default
                     @endswitch
                     
+                    {{-- Box Name AKA Site --}}
+                    <td>{{$pin->box_name}}</td>
+
                     {{-- Hall Nake --}}
                     <td>{{$pin->hall_name}}</td>
 
@@ -163,10 +172,15 @@
                     <td>{{$pin->last_check}}</td>
 
                     {{-- Input Nr --}}
-                    <td>{{$pin->check_command}}</td>
+                    {{-- <td>{{$pin->check_command}}</td> --}}
 
                     {{-- Description --}}
-                    <td class="description">{{$msg[$pin->current_state]}}</td>
+                    @if ($pin->current_state == 0)
+                        <td class="description">fonctionnement normal</td>
+                    @else
+                        <td class="description">{{$pin->pin_name}}</td>
+                    @endif
+                    
                 </tr>
 
             @empty

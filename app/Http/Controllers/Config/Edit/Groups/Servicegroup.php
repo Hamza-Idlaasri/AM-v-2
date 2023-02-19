@@ -57,7 +57,8 @@ class Servicegroup extends Controller
             rename($path."/".$old_servicegroup[0]->servicegroup_name.'.cfg', $path."/".$request->servicegroup_name.'.cfg');
         }
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect('/config/servicegroups');
     }

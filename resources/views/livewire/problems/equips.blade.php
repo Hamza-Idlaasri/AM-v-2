@@ -40,6 +40,9 @@
                             @endif
                         </td>
     
+                        {{-- Box Name AKA Site --}}
+                        <td>{{$pin->box_name}}</td>
+                        
                         {{-- Status --}}
                         @switch($pin->current_state)
                             @case(0)
@@ -56,8 +59,8 @@
                                 @break
                             @default
                         @endswitch
-                        
-                        {{-- Hall Nake --}}
+
+                        {{-- Hall Name --}}
                         <td>{{$pin->hall_name}}</td>
     
                         {{-- Site Name --}}

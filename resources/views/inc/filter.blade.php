@@ -85,9 +85,9 @@
         
                 <optgroup label="{{ $name->box_name }}">
                 
-                    @for ($i = 0; $i < sizeof($name->equips); $i++)
+                    @for ($i = 0; $i < sizeof($name->equips_names); $i++)
 
-                        <option value="{{$name->equips[$i]}}">{{$name->equips[$i]}}</option>  
+                        <option value="{{$name->equips_names[$i]}}">{{$name->equips_names[$i]}}</option>
                         
                     @endfor
                 

@@ -25,39 +25,17 @@ class Equips extends Component
 
     public function render()
     {
-        $all_sites = Sites::all()->except(1);
-        
-        $equipements = EquipsNames::all(); 
-
-        foreach ($all_sites as $site) {
-            $boxes = DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue',$site->site_name)
-                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output','nagios_customvariables.varvalue as site_name')
-                ->orderBy('display_name')
-                ->get();
-
-            foreach ($boxes as $box) {
-                foreach ($equipements as $equip) {
-                    if ($box->display_name == $equip->box_name) {
-                        EquipsNames::where('id',$equip->id)->update(['site_name' => $box->site_name]);
-                    }
-                }
-            }
-        }        
 
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         if($this->search)
         {
             $equips = $this->getEquips()
-                ->where('nagios_services.display_name','like', '%'.$this->search.'%')
+                ->where('ed.equip_name','like', '%'.$this->search.'%')
                 ->get();
             
             $equips_problems = $this->getEquipsProblems()
-                ->where('nagios_services.display_name','like', '%'.$this->search.'%')
+                ->where('ed.equip_name','like', '%'.$this->search.'%')
                 ->get();
 
         } else {
@@ -78,7 +56,7 @@ class Equips extends Component
         $equips_problems = $this->OrganizeData($equips_problems);
 
         return view('livewire.monitoring.equips')
-            ->with(['equips' => $this->paginate($equips),'equips_problems' => $equips_problems,'msg' => $this->description(),'search' => $this->search])
+            ->with(['equips' => $this->paginate($equips),'equips_problems' => $equips_problems,'search' => $this->search])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -144,7 +122,7 @@ class Equips extends Component
     public function fixInputNbr($equips)
     {
         foreach ($equips as $equip) {
-            $equip->check_command = substr($equip->check_command,7,-2);
+            $equip->check_command = substr($equip->check_command,9,-2);
         }
     }
 
@@ -154,13 +132,10 @@ class Equips extends Component
         if ($this->site_name == "All") {
 
             $equips_names = EquipsNames::all();
+
         } else {
 
-            $equips_names = EquipsNames::join('nagios.nagios_hosts','equips_names.box_name','=','nagios_hosts.display_name')
-                ->join('nagios.nagios_customvariables','nagios.nagios_hosts.host_object_id','=','nagios.nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('equips_names.equip_name','equips_names.box_name','nagios_customvariables.varvalue as site_name')
-                ->get();
+            $equips_names = EquipsNames::where('site_name',$this->site_name)->get();
         }
 
         $equips_data = [];
@@ -170,7 +145,7 @@ class Equips extends Component
             $pins = [];
 
             foreach ($all_equips as $equip) {
-                if ($equip->equip_name == $name->equip_name && $equip->box_name == $name->box_name) {
+                if ($equip->equip_name == $name->equip_name && $equip->box_name == $name->box_name && $equip->site_name == $name->site_name) {
                     array_push($pins,$equip);
                 } else {
                     continue;
@@ -185,10 +160,10 @@ class Equips extends Component
         return $equips_data;
     }
 
-    public function description()
-    {
-        return ['fonctionne normalement','Alert!, l\'équipement ne fonctionne pas normalement','l\'équipement est OFF','difficulté à reconnaître l\'état de l\'équipement, vérifier si le box parent est ON'];
-    }
+    // public function description()
+    // {
+    //     return ['fonctionne normalement','Alert!, l\'équipement ne fonctionne pas normalement','l\'équipement est OFF','difficulté à reconnaître l\'état de l\'équipement, vérifier si le box parent est ON'];
+    // }
 
     public function paginate($items, $perPage = 30, $page = null, $options = [])
     {

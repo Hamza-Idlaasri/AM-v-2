@@ -69,7 +69,8 @@ class BF1010 extends Controller
 
         // }
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect()->route('monitoring.boxes');
     }

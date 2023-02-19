@@ -78,13 +78,15 @@ class Equip extends Controller
 
         }
 
+        // TODO : POSSIBLE TO ADD NEW PIN UNDER CONDITION IF EQUIP NAME NOT EXIST
         $add_equip = EquipsNames::create([
             'site_name' => $request->site,
             'box_name' => $add_to_box->box_name,
             'equip_name' => $request->equipName
         ]);
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect()->route('monitoring.equips');
         

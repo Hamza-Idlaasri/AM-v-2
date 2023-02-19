@@ -8,7 +8,7 @@
 
         <thead class="bg-light text-dark">
             <tr>
-                <th>Boxs</th>
+                <th>Boxes</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
                 <th>Dernier verification</th>

@@ -48,7 +48,8 @@ class Hostgroup extends Controller
             rename($path."/".$old_hostgroup[0]->alias.".cfg", $path."/".$request->hostgroup_name.".cfg");
         }
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect('/config/hostgroups');   
     }

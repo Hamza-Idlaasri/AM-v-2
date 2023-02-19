@@ -57,7 +57,8 @@ class Equipgroup extends Controller
             rename($path."/".$old_equipgroup[0]->equipgroup_name.'.cfg', $path."/".$request->equipgroup_name.'.cfg');
         }
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect('/config/equipgroups');
     }

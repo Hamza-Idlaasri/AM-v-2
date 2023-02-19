@@ -29,7 +29,7 @@ class Equips extends Component
         if($this->search)
         {   
             $equips_problems = $this->getEquipsProblems()
-                ->where('nagios_services.display_name','like', '%'.$this->search.'%')
+                ->where('ed.equip_name','like', '%'.$this->search.'%')
                 ->get();
 
         } else {
@@ -108,7 +108,7 @@ class Equips extends Component
             $pins = [];
 
             foreach ($all_equips as $equip) {
-                if ($equip->equip_name == $name->equip_name && $equip->box_name == $name->box_name) {
+                if ($equip->equip_name == $name->equip_name && $equip->box_name == $name->box_name && $equip->site_name == $name->site_name) {
                     array_push($pins,$equip);
                 } else {
                     continue;

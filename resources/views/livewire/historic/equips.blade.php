@@ -24,8 +24,8 @@
                 <th>Box</th>
                 <th>Equipement</th>
                 <th>Status</th>
-                <th>Start Time</th>
-                <th>End Time</th>
+                <th>State Time</th>
+                {{-- <th>End Time</th> --}}
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
@@ -57,8 +57,11 @@
                     
             @endswitch
             
-            <td>{{$equip_history->start_time}}</td>
-            <td>{{$equip_history->end_time}}</td>
+            {{-- State Time --}}
+            <td>{{$equip_history->state_time}}</td>
+            {{-- <td>{{$equip_history->end_time}}</td> --}}
+
+            {{-- Description --}}
             <td class="description">{{$equip_history->output}}</td>
         </tr>
  

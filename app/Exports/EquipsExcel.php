@@ -28,9 +28,10 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
     public function headings(): array
     {
         return [
-            'Box',
             'Equipement',
+            'Pin',
             'State',
+            'Site',
             'Start Time',
             'End Time',
             'Description',
@@ -48,16 +49,17 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
     public function map($equips): array
     {
         return [
-            $equips->box_name,
             $equips->equip_name,
+            substr($equip->check_command,9,-2),
             $this->convertState($equips->state),
+            $equips->box_name,
             $equips->start_time,
             $equips->end_time,
-            $equips->output
+            $this->output($equips->state, $equip->pin_name)
         ];
     }
 
-    public function convertState($state)
+    public function convertState($state,$pin_name)
     {
         switch ($state) {
             case 0:
@@ -72,6 +74,15 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
             case 3:
                 return  'Unknown';
                 break;
+        }
+    }
+
+    public function output($state,$pin_name)
+    {
+        if ($state == 0) {
+            return 'fonctionnement normal';
+        } else {
+            return $pin_name;
         }
     }
 }

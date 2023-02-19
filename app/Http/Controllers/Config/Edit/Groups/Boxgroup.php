@@ -48,7 +48,8 @@ class Boxgroup extends Controller
             rename($path."/".$old_boxgroup[0]->alias.".cfg", $path."/".$request->boxgroup_name.".cfg");
         }
 
-        shell_exec('sudo service nagios restart');
+        shell_exec('sudo service nagios stop');
+        shell_exec('sudo service nagios start');
 
         return redirect('/config/boxgroups');   
     }

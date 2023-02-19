@@ -260,4 +260,4 @@ Route::get('/addSite', [App\Http\Controllers\Config\AddSite::class,'addSite'])->
 
 /*******************************************************************************************************************/
 
-Route::view('/welcome', 'welcome');
+// Route::view('/welcome', 'welcome');
