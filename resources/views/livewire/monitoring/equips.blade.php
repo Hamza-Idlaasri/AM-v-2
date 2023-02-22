@@ -140,6 +140,9 @@
                         @endif
                     </td>
 
+                    {{-- Box Name AKA Site --}}
+                    <td>{{$pin->box_name}}</td>
+                    
                     {{-- Status --}}
                     @switch($pin->current_state)
                         @case(0)
@@ -156,9 +159,6 @@
                             @break
                         @default
                     @endswitch
-                    
-                    {{-- Box Name AKA Site --}}
-                    <td>{{$pin->box_name}}</td>
 
                     {{-- Hall Nake --}}
                     <td>{{$pin->hall_name}}</td>
@@ -194,71 +194,6 @@
                 <td colspan="7">No result found <strong>{{ $search }}</strong></td>
             </tr>
         @endforelse
-        
-
-        {{-- @forelse ($equips as $equip)        
-        
-        <tr>
-            {{-- Equipement Name 
-            @if ($check == 0 || $equip->host_object_id != $check)   
-                
-                <td>
-                    <a href="{{ route('mb-details', ['id' => 1]) }}">{{$equip->equip_name}}</a>
-                </td> 
-                
-            @else
-                <td></td>
-            @endif
-            
-            {{-- Equips Name 
-            <td>
-                <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{$equip->pin_name}}</a>
-                
-                @if ($equip->is_flapping)
-                    <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
-                        <i class="fas fa-retweet"></i>
-                    </span>
-                @endif
-            </td>
-            
-            {{-- Status 
-            @switch($equip->current_state)
-                @case(0)
-                    <td><span class="badge badge-success">Ok</span></td>
-                    @break
-                @case(1)
-                    <td><span class="badge badge-warning">Warning</span></td>
-                    @break
-                @case(2)
-                    <td><span class="badge badge-danger">Critical</span></td>
-                    @break
-                @case(3)
-                    <td><span class="badge badge-unknown">Ureachable</span></td>
-                    @break
-                @default
-                    
-            @endswitch
-            
-            {{-- Hall Nake 
-            <td>{{$equip->hall_name}}</td>
-
-            {{-- Dernier verification 
-            <td>{{$equip->last_check}}</td>
-
-            {{-- Input Nr 
-            <td>{{$equip->check_command}}</td>
-
-            {{-- Description 
-            <td class="description">{{$msg[$equip->current_state]}}</td>
-        </tr>
-            
-        @empty
-
-            <tr>
-                <td colspan="7">No result found <strong>{{ $search }}</strong></td>
-            </tr>
-
-        @endforelse --}}
 
     </table>
 

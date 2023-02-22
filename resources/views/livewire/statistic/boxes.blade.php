@@ -102,8 +102,10 @@
             scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero: true,
-                        stepSize:2,
+                        // beginAtZero: true,
+                        // stepSize:2,
+                        autoSkip: true,
+                        maxTicksLimit: 10
                     },
                     gridLines: {
                         // display:false

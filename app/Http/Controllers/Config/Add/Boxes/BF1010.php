@@ -42,9 +42,9 @@ class BF1010 extends Controller
             
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n}\n\n";
+            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n}\n\n";
         else
-            $define_host = "define host {\n\tuse\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n}\n\n";
+            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n}\n\n";
 
         file_put_contents($box_dir."/".$request->boxName.".cfg", $define_host);
 

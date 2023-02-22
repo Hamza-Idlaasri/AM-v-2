@@ -5,6 +5,8 @@ namespace App\Http\Livewire\Statistic;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\UsersSite;
+use App\Models\EquipsNames;
+use App\Models\EquipsDetail;
 
 class Equips extends Component
 {
@@ -22,7 +24,7 @@ class Equips extends Component
     {
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $this->getStateRanges();
+        $this->getHistory();
         
         $equips_status = (object)['equips_ok' => $this->equips_ok,'equips_warning' => $this->equips_warning,'equips_critical' => $this->equips_critical,'equips_unknown' => $this->equips_unknown];
 
@@ -118,7 +120,7 @@ class Equips extends Component
             
         }
 
-        return $this->SortStatus($equips_range_of_states);
+        return $equips_range_of_states;
     }
 
     public function SortStatus($ranges)
@@ -143,51 +145,86 @@ class Equips extends Component
 
     }
 
-    public function getEquipsChecks()
-    {
-        
+    public function getHistory()
+    {   
+        $collection = collect();
+        $last_state = [];
+
         if ($this->site_name == 'All') {
-            
-            $equips_histories = DB::table('nagios_servicechecks')
-                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+
+            $history = DB::table('nagios_statehistory')
+                ->join('nagios_services','nagios_statehistory.object_id','=','nagios_services.service_object_id')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as pin_name','ed.equip_name','ed.site_name','nagios_services.service_object_id','nagios_statehistory.statehistory_id','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.state_time_usec','nagios_statehistory.output')
                 ->where('alias','box')
-                ->orderBy('nagios_servicechecks.start_time');
-                
+                ->orderBy('nagios_statehistory.state_time');
+
         } else {
-
-            $equips_histories = DB::table('nagios_servicechecks')
-                ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
+            
+            $history = DB::table('nagios_statehistory')
+                ->join('nagios_services','nagios_statehistory.object_id','=','nagios_services.service_object_id')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.end_time','nagios_servicechecks.output')
+                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as pin_name','ed.equip_name','nagios_services.service_object_id','nagios_statehistory.statehistory_id','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.state_time_usec','nagios_statehistory.output')
                 ->where('alias','box')
-                ->orderBy('nagios_servicechecks.start_time');
-
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue', $this->site_name)
+                ->orderBy('nagios_statehistory.state_time');
+                
         }
-        
+
         // filter by name
         if ($this->equip_name) {
-            $equips_histories = $equips_histories->where('nagios_services.display_name',$this->equip_name);    
+            $history = $history->where('ed.equip_name', $this->equip_name);
         }
 
         // filter by Date From
         if ($this->date_from)
         {
-            $equips_histories = $equips_histories->where('nagios_servicechecks.start_time','>=',$this->date_from);
+            $history = $history->where('nagios_statehistory.state_time','>=', $this->date_from);
         }
 
         // filter by Date To
         if ($this->date_to)
         {
-            $equips_histories = $equips_histories->where('nagios_servicechecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+            $history = $history->where('nagios_statehistory.state_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
         }
 
-        $equips_histories = $equips_histories->take(20000);
+        $history = $history->chunk(1000, function ($equips_history) use (&$collection) {
 
-        return $equips_histories;
+                    $equips_names = $this->EquipsNames();
+
+                    $equips_ranges = [];
+
+                    foreach ($equips_names as $equip) {
+
+                        $checks = [];
+
+                        foreach ($equips_history as $history) {
+                            if ($history->service_object_id == $equip->service_object_id) {
+                                array_push($checks, $history);
+                            }
+                        }
+
+                        if(!empty($checks)) {
+                            array_push($equips_ranges, $checks);
+                        }
+
+                        unset($checks);
+                    }
+                    
+                    
+                    $ranges = $this->OrganizeStates($equips_ranges);
+
+                    foreach ($ranges as $range) {
+                        $collection->push($range);
+                    }
+
+                });
+    
+        return $this->SortStatus($collection);
+
     }
 
     public function EquipsNames()
@@ -216,38 +253,25 @@ class Equips extends Component
 
     public function getEquipsGroups()
     {
-        $groups = [];
-        $boxes = $this->getBoxes();
+        $equips_groups = [];
         $all_groups = [];
+        $boxes = $this->getBoxes();
     
+        $equips = EquipsNames::all();
+
         foreach ($boxes as $box) {
-    
-            $group = [];
-    
-            foreach ($this->EquipsNames() as $equip) {
-    
-                if($equip->host_object_id == $box->host_object_id)
-                {
-                    array_push($group,$equip);
+
+            foreach ($equips as $key => $equip) {
+
+                if ($equip->box_name == $box->box_name) {
+                    array_push($equips_groups, $equip->equip_name);
                 }
+
             }
-    
-            array_push($groups,$group);
-        }
-    
-        $equips = [];
-    
-        for ($i=0; $i < sizeof($groups); $i++) {
-    
-            foreach ($groups[$i] as $gp) {
-    
-                array_push($equips,$gp->equip_name);
-    
-            }
-    
-            array_push($all_groups,(object)['box_name' => $groups[$i][0]->box_name, 'equips' => $equips]);
-    
-            $equips = [];
+
+            array_push($all_groups, (object)['box_name' => $box->box_name, 'equips_names' => $equips_groups]);
+
+            $equips_groups = [];
         }
     
         return $all_groups;

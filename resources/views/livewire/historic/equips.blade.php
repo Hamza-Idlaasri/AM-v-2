@@ -21,12 +21,16 @@
 
         <thead class="bg-light text-dark">
             <tr>
-                <th>Box</th>
+                <th>Site</th>
+                @if ($site_name == "All")
+                <th>Ville</th>
+                @endif
                 <th>Equipement</th>
                 <th>Status</th>
                 <th>State Time</th>
+                <th>Durée</th>
                 {{-- <th>End Time</th> --}}
-                <th style="width: 40%">Description</th>
+                <th style="width: 30%">Description</th>
             </tr>
         </thead>
     
@@ -36,6 +40,10 @@
         <tr>        
 
             <td>{{$equip_history->box_name}}</td> 
+
+            @if ($site_name == "All")
+                <td>{{$equip_history->site_name}}</td>
+            @endif
 
             <td>{{$equip_history->equip_name}}</td>
             
@@ -61,8 +69,15 @@
             <td>{{$equip_history->state_time}}</td>
             {{-- <td>{{$equip_history->end_time}}</td> --}}
 
+            {{-- Duration --}}
+            <td>{{formatSeconds($equip_history->state_time_usec)}}</td>
+
             {{-- Description --}}
-            <td class="description">{{$equip_history->output}}</td>
+            @if ($equip_history->state == 0)
+                <td class="description">fonction normalement</td>
+            @else
+                <td class="description">{{$equip_history->pin_name}}</td>
+            @endif
         </tr>
  
         @empty
@@ -79,6 +94,37 @@
     {{-- Pagination --}}
     {{$equips_histories->links('vendor.livewire.bootstrap')}}
 </div>
+
+@php
+    function formatSeconds($seconds) {
+
+        $weeks = floor($seconds / 604800);
+        $seconds -= $weeks * 604800;
+        $days = floor($seconds / 86400);
+        $seconds -= $days * 86400;
+        $hours = floor($seconds / 3600);
+        $seconds -= $hours * 3600;
+        $minutes = floor($seconds / 60);
+        $seconds -= $minutes * 60;
+
+        $output = '';
+        if ($weeks > 0) {
+            $output .= $weeks . ' w, ';
+        }
+        if ($days > 0) {
+            $output .= $days . ' d, ';
+        }
+        if ($hours > 0) {
+            $output .= $hours . ' h, ';
+        }
+        if ($minutes > 0) {
+            $output .= $minutes . ' m, ';
+        }
+        $output .= $seconds . ' s';
+        return $output;
+    }
+
+@endphp
 
 <script>
 

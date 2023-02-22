@@ -28,12 +28,13 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
     public function headings(): array
     {
         return [
-            'Equipement',
-            'Pin',
-            'State',
             'Site',
-            'Start Time',
-            'End Time',
+            'Ville',
+            'Equipement',
+            // 'Pin',
+            'State',
+            'State Time',
+            'Durée',
             'Description',
         ];
     }
@@ -49,17 +50,19 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
     public function map($equips): array
     {
         return [
-            $equips->equip_name,
-            substr($equip->check_command,9,-2),
-            $this->convertState($equips->state),
             $equips->box_name,
-            $equips->start_time,
-            $equips->end_time,
-            $this->output($equips->state, $equip->pin_name)
+            $equips->site_name,
+            $equips->equip_name,
+            // substr($equip->check_command,9,-2),
+            $this->convertState($equips->state),
+            $equips->state_time,
+            $this->formatSeconds($equips->state_time_usec),
+            // $equips->end_time,
+            $this->output($equips->state, $equips->pin_name)
         ];
     }
 
-    public function convertState($state,$pin_name)
+    public function convertState($state)
     {
         switch ($state) {
             case 0:
@@ -80,9 +83,37 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
     public function output($state,$pin_name)
     {
         if ($state == 0) {
-            return 'fonctionnement normal';
+            return 'fonction normalement';
         } else {
             return $pin_name;
         }
+    }
+
+    function formatSeconds($seconds) {
+
+        $weeks = floor($seconds / 604800);
+        $seconds -= $weeks * 604800;
+        $days = floor($seconds / 86400);
+        $seconds -= $days * 86400;
+        $hours = floor($seconds / 3600);
+        $seconds -= $hours * 3600;
+        $minutes = floor($seconds / 60);
+        $seconds -= $minutes * 60;
+
+        $output = '';
+        if ($weeks > 0) {
+            $output .= $weeks . ' w, ';
+        }
+        if ($days > 0) {
+            $output .= $days . ' d, ';
+        }
+        if ($hours > 0) {
+            $output .= $hours . ' h, ';
+        }
+        if ($minutes > 0) {
+            $output .= $minutes . ' m, ';
+        }
+        $output .= $seconds . ' s';
+        return $output;
     }
 }
