@@ -41,24 +41,25 @@ class Equip extends Component
             ->get();
 
         if ($box->box_type == 'bf1010') {
-            $inputs_not_used = ['bf1010_IN1','bf1010_IN2','bf1010_IN3','bf1010_IN4','bf1010_IN5','bf1010_IN6','bf1010_IN7','bf1010_IN8','bf1010_IN9','bf1010_IN10'];
+            $inputs_not_used = ['1','2','3','4','5','6','7','8','9','10'];
         }
         
         if ($box->box_type == 'bf2300') {
-            $inputs_not_used = ['bf2300_IN1','bf2300_IN2','bf2300_IN3','bf2300_IN4','bf2300_IN5','bf2300_IN6','bf2300_IN7','bf2300_IN8','bf2300_IN9','bf2300_IN10','bf2300_IN11','bf2300_IN12'];
+            $inputs_not_used = ['1','2','3','4','5','6','7','8','9','10','11','12'];
         }
 
         foreach ($inputs_used as $input) {
+
+            $input->input_nbr = substr($input->input_nbr,9,-2);
         
             if(in_array($input->input_nbr, $inputs_not_used))
+            {
                 unset($inputs_not_used[array_search($input->input_nbr, $inputs_not_used)]);
-
-            $input->input_nbr = str_replace($box->box_type.'_','',$input->input_nbr);
+            }
+            
         }
 
         $inputs_not_used = array_values($inputs_not_used);
-
-        $inputs_not_used = str_replace($box->box_type.'_','',$inputs_not_used);
 
         return view('livewire.config.add.equips.equip')
             ->with(['inputs_used' => $inputs_used, 'inputs_not_used' => $inputs_not_used, 'box' => $box, 'sites' => $sites])

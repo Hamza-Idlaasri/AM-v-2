@@ -23,7 +23,7 @@ class Boxes extends Component
 
         $this->getStateRanges();
 
-        $boxes_status = (object)['boxes_up' => $this->boxes_up,'boxes_down' => $this->boxes_down,'boxes_unreachable' => $this->boxes_unreachable];
+        $boxes_status = [$this->boxes_up,$this->boxes_down,$this->boxes_unreachable];
 
         return view('livewire.statistic.boxes')
             ->with(['boxes_status' => $boxes_status, 'boxes_names' => $this->getBoxes()])
@@ -159,7 +159,7 @@ class Boxes extends Component
             
             $boxes_histories = DB::table('nagios_hostchecks')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->where('alias','host')
+                ->where('alias','box')
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
                 ->orderBy('nagios_hostchecks.start_time');
@@ -169,7 +169,7 @@ class Boxes extends Component
             $boxes_histories = DB::table('nagios_hostchecks')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('alias','host')
+                ->where('alias','box')
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
                 ->where('is_raw_check','=', 0)
@@ -204,7 +204,7 @@ class Boxes extends Component
         if ($this->site_name == 'All') {
 
             return DB::table('nagios_hosts')
-                ->where('alias','host')
+                ->where('alias','box')
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')
                 ->orderBy('display_name')
                 ->get();
@@ -212,7 +212,7 @@ class Boxes extends Component
         } else {
 
             return DB::table('nagios_hosts')
-                ->where('alias','host')
+                ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id')

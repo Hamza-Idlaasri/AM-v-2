@@ -2,25 +2,25 @@
     
     <div class="container d-flex w-50 justify-content-around mb-4 mx-auto" id="btn-list">
 
-        <button wire:click="checkNotif('hosts')" class="btn font-weight-bold position-relative @if ($hosts_activated) btn-primary @else btn-light @endif">Hosts 
+        <button  id="hosts-btn" class="btn font-weight-bold position-relative btn-primary">Hosts 
             @if ($hosts_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $hosts_not_checked }}</span>
             @endif
         </button>
 
-        <button wire:click="checkNotif('services')" class="btn font-weight-bold position-relative @if ($services_activated) btn-primary @else btn-light @endif">Services 
+        <button  id="services-btn" class="btn font-weight-bold position-relative ">Services 
             @if ($services_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $services_not_checked }}</span>   
             @endif
         </button>
 
-        <button wire:click="checkNotif('boxes')" class="btn font-weight-bold position-relative @if ($boxes_activated) btn-primary @else btn-light @endif">Boxes 
+        <button  id="boxes-btn" class="btn font-weight-bold position-relative ">Boxes 
             @if ($boxes_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $boxes_not_checked }}</span>
             @endif
         </button>
 
-        <button wire:click="checkNotif('equips')" class="btn font-weight-bold position-relative @if ($equips_activated) btn-primary @else btn-light @endif">Equipements 
+        <button  id="equips-btn" class="btn font-weight-bold position-relative ">Equipements 
             @if ($equips_not_checked)
                 <span class="badge badge-danger notif-popup">{{ $equips_not_checked }}</span>
             @endif

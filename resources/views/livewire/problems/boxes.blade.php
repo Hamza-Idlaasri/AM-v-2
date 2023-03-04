@@ -9,6 +9,9 @@
         <thead class="bg-light text-dark">
             <tr>
                 <th>Boxs</th>
+                @if ($site_name == 'All')
+                <th>Ville</th>
+                @endif
                 <th>Adresse IP</th>
                 <th>Status</th>
                 <th>Dernier verification</th>
@@ -19,6 +22,7 @@
         @forelse ($boxs as $box)
 
             <tr>
+                {{-- Box Name --}}
                 <td>
                     <a href="{{ route('mb-details', ['id' => $box->host_object_id]) }}">{{ $box->display_name }}</a>
                     
@@ -30,8 +34,15 @@
 
                 </td>
                 
+                {{-- City --}}
+                @if ($site_name == 'All')
+                <td>{{$box->site_name}}</td>
+                @endif
+
+                {{-- IP Address --}}
                 <td>{{ $box->address }}</td>
 
+                {{-- State --}}
                 @switch($box->current_state)
 
                     @case(1)
@@ -44,8 +55,11 @@
 
                 @endswitch
 
+                {{-- Dernier Verification --}}
                 <td>{{ $box->last_check }}</td>
-                <td class="description">{{ $box->output }}</td>
+
+                {{-- Description --}}
+                <td class="description">{{ $msg[$box->current_state] }}</td>
             </tr>
 
 

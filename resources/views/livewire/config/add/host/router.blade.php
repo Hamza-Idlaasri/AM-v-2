@@ -49,7 +49,25 @@
                     </div>
                 @enderror
 
-            </div>
+                <br>
+
+                {{-- Choose Site --}}
+                <div>
+                  <label for="site_name"><b>Choose Site <span class="text-danger">*</span></b> </label>
+                  @error('site')
+                  <div class="text-danger">
+                      {{ $message }}
+                  </div>
+                  @enderror
+                  <div class="p-2 rounded @error('site') border-danger @enderror" style="max-height: 120px;overflow: auto;border: 1px solid #ced4da;">
+                      @forelse ($sites as $site)
+                          <input type="radio" name="site" id="{{$site->id}}" value="{{$site->site_name}}"> <label for="{{$site->id}}">{{ $site->site_name }}</label>
+                          <br>
+                      @empty
+                          <p>No site found</p>
+                      @endforelse
+                  </div>
+                </div>
 
         </div>
           

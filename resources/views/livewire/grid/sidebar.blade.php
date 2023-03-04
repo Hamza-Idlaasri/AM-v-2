@@ -2,7 +2,7 @@
 <div class="" id="sidebar">
 
     <div class="" id="logo">
-        <img src="{{ asset('image/am-logo.png') }}" alt="am-logo">
+        <img src="{{ asset('image/net-logo.png') }}" alt="nm-logo">
     </div>
 
     {{-- Site Name --}}

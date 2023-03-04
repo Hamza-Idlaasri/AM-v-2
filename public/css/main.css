@@ -12,6 +12,7 @@
     grid-area: 1 / 1 / 6 / 2;
     /* box-shadow: 0px 70px 10px rgb(223, 223, 223); */
     box-shadow: 0px 5px 10px rgb(223, 223, 223);
+    height: 200vh;
 }
 
 .topbar {

@@ -330,7 +330,7 @@ class Equips extends Component
                 ->join('nagios_services','nagios_statehistory.object_id','=','nagios_services.service_object_id')
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as pin_name','ed.equip_name','nagios_services.service_object_id','nagios_statehistory.statehistory_id','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.state_time_usec','nagios_statehistory.output')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as pin_name','ed.equip_name','ed.site_name','nagios_services.service_object_id','nagios_statehistory.statehistory_id','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.state_time_usec','nagios_statehistory.output')
                 ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_customvariables.varvalue', $this->site_name)

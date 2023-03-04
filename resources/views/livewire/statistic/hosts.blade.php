@@ -43,7 +43,7 @@
         data:{
             labels:['Up','Down','Unreachable'],
             datasets:[{
-                data: [{{ $hosts_status->hosts_up }},{{ $hosts_status->hosts_down }},{{ $hosts_status->hosts_unreachable }}],
+                data: @json($hosts_status),
                 backgroundColor: [
                         '#38c172',
                         '#e3342f',
@@ -85,7 +85,7 @@
             labels: ['Up','Down','Unreachable'],
             datasets: [{
 
-                data: [{{$hosts_status->hosts_up}},{{$hosts_status->hosts_down}},{{$hosts_status->hosts_unreachable}}],
+                data: @json($hosts_status),
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -104,6 +104,8 @@
                     ticks: {
                         beginAtZero: true,
                         stepSize:2,
+                        autoSkip: true,
+                        maxTicksLimit: 10
                     },
                     gridLines: {
                         // display:false

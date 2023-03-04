@@ -1,4 +1,4 @@
-<div class="container w-100 bg-white shadow rounded mt-4">
+<div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
 
     <div>
         {{-- Filter --}}
@@ -6,19 +6,25 @@
             {{-- Filter --}}
             @include('inc.filter',['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
         </div>
+
+        <button id="refreshBtn">Refresh Chart</button>
+
     </div>
 
     <hr>
 
     <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
+
     <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
-        
+
+        {{-- Doughnut Chart --}}
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Porcentage des Equipements</h6>
             <canvas  id="PieChart"></canvas>     
         </div>
 
+        {{-- Bar Chart --}}
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218!important">
             <h6 class="mb-2 text-secondary">Total des Equipements</h6>
             <canvas id="BarChart"></canvas>
@@ -42,7 +48,7 @@
         data:{
             labels:['Ok','Warning','Critical','Unknown'],
             datasets:[{
-                data: [{{ $equips_status->equips_ok }},{{ $equips_status->equips_warning }},{{ $equips_status->equips_critical }},{{ $equips_status->equips_unknown }}],
+                data: @json($equips_status),
                 backgroundColor: [
                         '#38c172',
                         '#ffed4a',
@@ -85,7 +91,7 @@
             labels: ['Ok','Warning','Critical','Unknown'],
             datasets: [{
 
-                data: [{{$equips_status->equips_ok}},{{$equips_status->equips_warning}},{{$equips_status->equips_critical}},{{$equips_status->equips_unknown}}],
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -102,6 +108,8 @@
             scales: {
                 yAxes: [{
                     ticks: {
+                        beginAtZero: true,
+                        stepSize:2,
                         autoSkip: true,
                         maxTicksLimit: 10
                     },
@@ -133,6 +141,23 @@
         }
     });
     
+</script>
+
+<script>
+    
+    var refreshBtn = document.getElementById('refreshBtn');
+
+    refreshBtn.addEventListener('click', function() {
+        // update chart data and options
+        equipsBarChart.data.datasets[0].data = @json($equips_status);
+        equipsBarChart.options.title.text = 'Updated Chart Title';
+
+        // call chart update method
+        equipsBarChart.update();
+
+        console.log(ok);
+    });
+
 </script>
 
 {{-- <script type="text/javascript">

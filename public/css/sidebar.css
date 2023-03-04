@@ -19,11 +19,16 @@
 }
 
 #logo {
-    height: 12vh;
+    height: 18vh;
     background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#logo img {
+    width: 120px;
+    margin-bottom: 12px;
 }
 
 .item-container {

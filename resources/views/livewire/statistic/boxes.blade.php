@@ -43,7 +43,7 @@
         data:{
             labels:['Up','Down','Unreachable'],
             datasets:[{
-                data: [{{ $boxes_status->boxes_up }},{{ $boxes_status->boxes_down }},{{ $boxes_status->boxes_unreachable }}],
+                data: @json($boxes_status),
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -85,7 +85,7 @@
             labels: ['Up','Down','Unreachable'],
             datasets: [{
 
-                data: [{{$boxes_status->boxes_up}},{{$boxes_status->boxes_down}},{{$boxes_status->boxes_unreachable}}],
+                data: @json($boxes_status),
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -102,8 +102,8 @@
             scales: {
                 yAxes: [{
                     ticks: {
-                        // beginAtZero: true,
-                        // stepSize:2,
+                        beginAtZero: true,
+                        stepSize:2,
                         autoSkip: true,
                         maxTicksLimit: 10
                     },

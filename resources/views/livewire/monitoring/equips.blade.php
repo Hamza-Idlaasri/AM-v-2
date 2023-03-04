@@ -79,7 +79,7 @@
                         {{-- <td>{{$pin->check_command}}</td> --}}
     
                         {{-- Description --}}
-                        <td class="description">{{$pin->output}}</td>
+                        <td class="description">{{$pin->pin_name}}</td>
                     </tr>
                 @empty
                     <tr>
@@ -160,7 +160,7 @@
                         @default
                     @endswitch
 
-                    {{-- Hall Nake --}}
+                    {{-- Hall Name --}}
                     <td>{{$pin->hall_name}}</td>
 
                     {{-- Site Name --}}

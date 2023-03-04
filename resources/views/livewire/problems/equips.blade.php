@@ -32,7 +32,7 @@
                             <td></td>
                         @endif
                         {{-- Pin Name --}}
-                        <td>{{$pin->pin_name}}
+                        <td>{{$pin->check_command}}
                             @if ($pin->is_flapping)
                                 <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
                                     <i class="fas fa-retweet"></i>
@@ -72,10 +72,10 @@
                         <td>{{$pin->last_check}}</td>
     
                         {{-- Input Nr --}}
-                        <td>{{$pin->check_command}}</td>
+                        {{-- <td>{{$pin->check_command}}</td> --}}
     
                         {{-- Description --}}
-                        <td class="description">{{$msg[$pin->current_state]}}</td>
+                        <td class="description">{{$pin->pin_name}}</td>
                     </tr>
                 @empty
                     <tr>

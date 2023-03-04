@@ -1,6 +1,6 @@
 <div class="container pt-0 pr-4 pb-4 pl-4 w-25 bg-white shadow-sm rounded">
     <div class="container w-100 text-center p-4">
-        <img src="{{ asset('image/am-logo-180px.png') }}" alt="alarm manager logo" width="180px">
+        <img src="{{ asset('image/net-logo.png') }}" alt="alarm manager logo" width="120px">
     </div>
 
     <form wire:submit.prevent="login">

@@ -24,7 +24,7 @@ class Services extends Component
 
         $this->getStateRanges();
     
-        $services_status = (object)['services_ok' => $this->services_ok,'services_warning' => $this->services_warning,'services_critical' => $this->services_critical,'services_unknown' => $this->services_unknown];
+        $services_status = [$this->services_ok, $this->services_warning, $this->services_critical, $this->services_unknown];
 
         return view('livewire.statistic.services')
             ->with(['services_status' => $services_status, 'services_names' => $this->getServicesGroups()])

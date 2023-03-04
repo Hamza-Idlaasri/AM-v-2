@@ -10,15 +10,21 @@ use App\Models\EquipsDetail;
 
 class Equips extends Component
 {
+    // Site Name
+    public $site_name;
+
+    // Filter
     public $equip_name;
     public $date_from;
     public $date_to;
-    public $site_name;
 
+    // Statistics
     public $equips_ok = 0;
     public $equips_warning = 0;
     public $equips_critical = 0;
     public $equips_unknown = 0;
+
+    public $equips_status;
 
     public function render()
     {
@@ -26,10 +32,10 @@ class Equips extends Component
 
         $this->getHistory();
         
-        $equips_status = (object)['equips_ok' => $this->equips_ok,'equips_warning' => $this->equips_warning,'equips_critical' => $this->equips_critical,'equips_unknown' => $this->equips_unknown];
+        $this->equips_status = [$this->equips_ok, $this->equips_warning, $this->equips_critical, $this->equips_unknown];
 
         return view('livewire.statistic.equips')
-            ->with(['equips_status' => $equips_status, 'equips_names' => $this->getEquipsGroups()])
+            ->with(['equips_status' => $this->equips_status, 'equips_names' => $this->getEquipsGroups()])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -125,6 +131,11 @@ class Equips extends Component
 
     public function SortStatus($ranges)
     {  
+        $this->equips_ok = 0;
+        $this->equips_warning = 0;
+        $this->equips_critical = 0;
+        $this->equips_unknown = 0;
+
         foreach ($ranges as $state) {
             
             switch ($state) {

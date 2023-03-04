@@ -82,7 +82,7 @@ class Equips extends Component
     public function fixInputNbr($equips)
     {
         foreach ($equips as $equip) {
-            $equip->check_command = substr($equip->check_command,7,-2);
+            $equip->check_command = substr($equip->check_command,9,-2);
         }
     }
 

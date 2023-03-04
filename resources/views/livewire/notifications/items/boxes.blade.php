@@ -92,12 +92,12 @@
 <script>
 
 document.getElementById('boxes-btn').onclick = () => {
-    // document.getElementById('boxes-btn').classList.remove("btn-light");
-    // document.getElementById('boxes-btn').classList.add("btn-primary");
+    document.getElementById('boxes-btn').classList.remove("btn-light");
+    document.getElementById('boxes-btn').classList.add("btn-primary");
 
-    // document.getElementById('hosts-btn').classList.remove("btn-primary");
-    // document.getElementById('services-btn').classList.remove("btn-primary");
-    // document.getElementById('equips-btn').classList.remove("btn-primary");
+    document.getElementById('hosts-btn').classList.remove("btn-primary");
+    document.getElementById('services-btn').classList.remove("btn-primary");
+    document.getElementById('equips-btn').classList.remove("btn-primary");
 
     document.getElementById('boxes-notifs').style.display = 'block';
     document.getElementById('services-notifs').style.display = 'none';

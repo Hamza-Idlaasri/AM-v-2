@@ -43,7 +43,7 @@
         data:{
             labels:['Ok','Warning','Critical','Unknown'],
             datasets:[{
-                data: [{{ $services_status->services_ok }},{{ $services_status->services_warning }},{{ $services_status->services_critical }},{{ $services_status->services_unknown }}],
+                data: @json($services_status),
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -86,7 +86,7 @@
             labels: ['Ok','Warning','Critical','Unknown'],
             datasets: [{
 
-                data: [{{$services_status->services_ok}},{{$services_status->services_warning}},{{$services_status->services_critical}},{{$services_status->services_unknown}}],
+                data: @json($services_status),
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -105,6 +105,8 @@
                     ticks: {
                         beginAtZero: true,
                         stepSize:2,
+                        autoSkip: true,
+                        maxTicksLimit: 10
                     },
                     gridLines: {
                         // display:false

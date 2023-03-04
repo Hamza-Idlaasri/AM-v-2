@@ -24,58 +24,59 @@ class Notifications  extends Component
     public $total_services = 0;
     public $total_equips = 0;
 
+    // For Activating buttons
     public $hosts_activated = true; 
     public $services_activated = false; 
     public $boxes_activated = false; 
     public $equips_activated = false;
 
-    public function checkNotif($val)
-    {
-        $user = Notif::where('user_id',auth()->user()->id);
+    // public function checkNotif($val)
+    // {
+    //     $user = Notif::where('user_id',auth()->user()->id);
 
-        switch ($val) {
+    //     switch ($val) {
 
-            case 'hosts':
-                // Update number of notifs readed
-                $user->update(['hosts' => $this->total_hosts]);
-                // Toggle button
-                $this->hosts_activated = true;
-                $this->services_activated = false; 
-                $this->boxes_activated = false; 
-                $this->equips_activated = false;
-                break;
+    //         case 'hosts':
+    //             // Update number of notifs readed
+    //             $user->update(['hosts' => $this->total_hosts]);
+    //             // Toggle button
+    //             $this->hosts_activated = true;
+    //             $this->services_activated = false; 
+    //             $this->boxes_activated = false; 
+    //             $this->equips_activated = false;
+    //             break;
 
-            case 'services':
-                // Update number of notifs readed
-                $user->update(['services' => $this->total_services]);
-                // Toggle button
-                $this->hosts_activated = false;
-                $this->services_activated = true; 
-                $this->boxes_activated = false; 
-                $this->equips_activated = false;
-                break;
+    //         case 'services':
+    //             // Update number of notifs readed
+    //             $user->update(['services' => $this->total_services]);
+    //             // Toggle button
+    //             $this->hosts_activated = false;
+    //             $this->services_activated = true; 
+    //             $this->boxes_activated = false; 
+    //             $this->equips_activated = false;
+    //             break;
 
-            case 'boxes':
-                // Update number of notifs readed
-                $user->update(['boxes' => $this->total_boxes]);
-                // Toggle button
-                $this->hosts_activated = false;
-                $this->services_activated = false;
-                $this->boxes_activated = true;
-                $this->equips_activated = false;
-                break;
+    //         case 'boxes':
+    //             // Update number of notifs readed
+    //             $user->update(['boxes' => $this->total_boxes]);
+    //             // Toggle button
+    //             $this->hosts_activated = false;
+    //             $this->services_activated = false;
+    //             $this->boxes_activated = true;
+    //             $this->equips_activated = false;
+    //             break;
 
-            case 'equips':
-                // Update number of notifs readed
-                $user->update(['equips' => $this->total_equips]);
-                // Toggle button
-                $this->hosts_activated = false;
-                $this->services_activated = false;
-                $this->boxes_activated = false;
-                $this->equips_activated = true;
-                break;
-        }
-    }
+    //         case 'equips':
+    //             // Update number of notifs readed
+    //             $user->update(['equips' => $this->total_equips]);
+    //             // Toggle button
+    //             $this->hosts_activated = false;
+    //             $this->services_activated = false;
+    //             $this->boxes_activated = false;
+    //             $this->equips_activated = true;
+    //             break;
+    //     }
+    // }
 
     public function render()
     {
@@ -94,7 +95,7 @@ class Notifications  extends Component
         $total = $this->hosts_not_checked + $this->services_not_checked + $this->equips_not_checked + $this->boxes_not_checked;
 
         return view('livewire.notifications.notifications')
-            ->with(['hosts_not_checked' => $this->hosts_not_checked, 'services_not_checked' => $this->services_not_checked, 'boxes_not_checked' => $this->boxes_not_checked, 'equips_not_checked' => $this->equips_not_checked,'total' => $total,'hosts_activated' => $this->hosts_activated,'services_activated' => $this->services_activated,'boxes_activated' => $this->boxes_activated,'equips_activated' => $this->equips_activated])
+            ->with(['hosts_not_checked' => $this->hosts_not_checked, 'services_not_checked' => $this->services_not_checked, 'boxes_not_checked' => $this->boxes_not_checked, 'equips_not_checked' => $this->equips_not_checked,'total' => $total, 'hosts_activated' => $this->hosts_activated,'services_activated' => $this->services_activated,'boxes_activated' => $this->boxes_activated,'equips_activated' => $this->equips_activated])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -108,6 +109,7 @@ class Notifications  extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
                 ->where('nagios_hosts.alias','host')
                 ->select('nagios_hosts.display_name as host_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         } else {
@@ -117,6 +119,7 @@ class Notifications  extends Component
                 ->where('nagios_hosts.alias','host')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_hosts.display_name as host_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         }
@@ -138,6 +141,7 @@ class Notifications  extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->where('nagios_hosts.alias','host')
                 ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         } else {
@@ -148,6 +152,7 @@ class Notifications  extends Component
                 ->where('nagios_hosts.alias','host')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         }
@@ -168,6 +173,7 @@ class Notifications  extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
                 ->where('nagios_hosts.alias','box')
                 ->select('nagios_hosts.display_name as box_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         } else {
@@ -177,6 +183,7 @@ class Notifications  extends Component
                 ->where('nagios_hosts.alias','box')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_hosts.display_name as box_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         }
@@ -198,6 +205,7 @@ class Notifications  extends Component
                 ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->where('nagios_hosts.alias','box')
                 ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         } else {
@@ -208,6 +216,7 @@ class Notifications  extends Component
                 ->where('nagios_hosts.alias','box')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.*')
+                ->where('nagios_notifications.start_time','>', date('Y-m-d H:i:s', strtotime("-1 day")))
                 ->orderByDesc('start_time')
                 ->get();
         }

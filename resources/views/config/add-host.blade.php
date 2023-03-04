@@ -4,6 +4,7 @@
     
 <div class="container w-100 p-4 my-4 d-flex justify-content-around align-items-center" style="height: 60vh">
 
+    {{-- Windows --}}
     <a href="/config/add-host/windows" class="w-25 bg-white text-center  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="windows">
         <div>
 
@@ -13,7 +14,7 @@
             
             <br>
             
-            <h5>windows</h5>
+            <h5 class="font-weight-bold mt-1">windows</h5>
 
             <br>
 
@@ -24,6 +25,7 @@
         </div>
     </a>
 
+    {{-- Linux --}}
     <a href="/config/add-host/linux" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="linux">
         <div>
             <span>
@@ -32,7 +34,7 @@
             
             <br>
             
-            <h5>linux</h5>
+            <h5 class="font-weight-bold mt-1">linux</h5>
 
             <br>
 
@@ -42,16 +44,19 @@
         </div>
     </a>
 
-
+    {{-- Switch --}}
     <a href="/config/add-host/switch" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="switch">   
         <div>
-            <span>
-                <i class="fa-solid fa-router"></i>
+            <span class="py-1 px-2 border border-primary rounded" style="border-width: 2px!important">
+                <i class="fa-solid fa-ethernet"></i>
+                <i class="fa-solid fa-ethernet"></i>
+                <i class="fa-solid fa-ethernet"></i>
+                <i class="fa-solid fa-ethernet"></i>
             </span>
             
             <br>
             
-            <h5>switch</h5>
+            <h5 class="font-weight-bold mt-2">switch</h5>
 
             <br>
 
@@ -60,9 +65,16 @@
         </div>
     </a>    
         
+    {{-- Router --}}
     <a href="/config/add-host/router" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="router">
         <div>
-            <h5>router</h5>
+            <span>
+                <i class="fa-solid fa-wifi fa-3x"></i>
+            </span>
+            
+            <br>
+
+            <h5 class="font-weight-bold mt-1">router</h5>
 
             <br>
 
@@ -71,6 +83,7 @@
         </div>
     </a>
     
+    {{-- Printer --}}
     <a href="/config/add-host/printer" class="w-25 text-center bg-white  shadow p-4 m-2" style="text-decoration: none;border-radius:12px" id="printer">
         <div>
             <span class="bg-white rounde-circle p-2">
@@ -79,7 +92,7 @@
             
             <br>
             
-            <h5>printer</h5>
+            <h5 class="font-weight-bold mt-1">printer</h5>
 
             <br>
 

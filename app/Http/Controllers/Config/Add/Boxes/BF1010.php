@@ -52,23 +52,14 @@ class BF1010 extends Controller
         $cfg_file = "\n\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$request->boxName}.cfg";
         file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
 
-        // Define services
-        // for ($i=0; $i < sizeof($equipNames); $i++) {
+        // Make the path of json file
+        $json_file ='/usr/local/nagios/etc/objects/boxes/'.$request->boxName.'/inputs.json';
 
-        //     $define_service = "define service {\n\tuse\t\t\tbox-service\n\thost_name\t\t".$request->boxName."\n\tservice_description\t".$equipNames[$i]."\n\tcheck_command\t\tbf1010_IN".$equiINnbr[$i]."\n}\n\n"; 
- 
-        //     $equip_file = fopen($box_dir."/".$equipNames[$i].".cfg", "w");
- 
-        //     fwrite($equip_file, $define_service);
-            
-        //     fclose($equip_file);
+        // Create json file
+        shell_exec('sudo touch '.$json_file);
+        shell_exec('sudo chmod 777 '.$json_file);
 
-        //     // Add equip path to nagios.cfg file
-        //     $cfg_file = "\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$equipNames[$i]}.cfg";
-        //     file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
-
-        // }
-
+        // Restart nagios
         shell_exec('sudo service nagios stop');
         shell_exec('sudo service nagios start');
 

@@ -23,7 +23,7 @@ class Hosts extends Component
 
         $this->getStateRanges();
 
-        $hosts_status = (object)['hosts_up' => $this->hosts_up,'hosts_down' => $this->hosts_down,'hosts_unreachable' => $this->hosts_unreachable];
+        $hosts_status = [$this->hosts_up,$this->hosts_down,$this->hosts_unreachable];
 
         return view('livewire.statistic.hosts')
             ->with(['hosts_status' => $hosts_status, 'hosts_names' => $this->getHosts()])
