@@ -190,6 +190,16 @@
 
 <script>
 
+window.addEventListener('load', function() {
+    document.getElementById('config').style.display = 'block';
+    document.getElementById('config-btn').classList.toggle("active-btn");
+    document.getElementById('c-hosts').classList.toggle("active-link");
+});
+    
+</script>
+
+<script>
+
 (function($) {
     $.fn.uncheckableRadio = function() {
     var $root = this;

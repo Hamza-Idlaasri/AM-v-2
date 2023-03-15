@@ -13,7 +13,7 @@
         <thead class="bg-light text-dark">
             <tr>
                 <th>Box</th>
-                <th>Equipement</th>
+                <th>Pin</th>
                 <th>Input Nbr</th>
                 <th>Check Interval</th>
                 <th>Retry Interval</th>
@@ -42,7 +42,7 @@
 
                 <td>{{ $equip->check_command }}</td>
 
-                <td>{{ $equip->normal_check_interval }}</td>
+                <td>{{ $equip->normal_check_interval }}s</td>
                 
                 <td>{{ $equip->retry_check_interval }}s</td>
                 

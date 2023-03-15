@@ -24,8 +24,8 @@
                 <th>Boxes</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
-                <th>Start Time</th>
-                <th>End Time</th>
+                <th>State Time</th>
+                {{-- <th>End Time</th> --}}
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
@@ -53,9 +53,9 @@
                         
                 @endswitch
                 
-                <td>{{$box_history->start_time}}</td>
-                <td>{{$box_history->end_time}}</td>
-                <td class="description">{{$box_history->output}}</td>
+                <td>{{$box_history->state_time}}</td>
+                {{-- <td>{{$box_history->end_time}}</td> --}}
+                <td class="description">{{$msg[$box_history->state]}}</td>
             </tr>
 
         @empty

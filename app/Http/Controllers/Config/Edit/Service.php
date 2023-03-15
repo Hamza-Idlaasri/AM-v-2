@@ -30,7 +30,8 @@ class Service extends Controller
             ->where('nagios_services.service_object_id', $service_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
             ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-            ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_services.*','nagios_servicestatus.check_command','nagios_customvariables.varvalue as site_name')
             ->first();
 
         $define_service = "define service {\n\tuse\t\t\t\t\tgeneric-service\n\thost_name\t\t\t\t".$old_service_details->host_name."\n\tservice_description\t\t\t".$request->serviceName."\n\tcheck_command\t\t\t\t".$old_service_details->check_command;
@@ -66,17 +67,17 @@ class Service extends Controller
 
         if($old_service_details->service_name == $request->serviceName)
         {
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$request->serviceName.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/{$old_service_details->site_name}/".$old_service_details->host_name."/".$request->serviceName.".cfg";
 
             file_put_contents($path, $define_service);
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/{$old_service_details->site_name}/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg";
 
             file_put_contents($path, $define_service);
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$request->serviceName.".cfg");
+            rename("/usr/local/nagios/etc/objects/hosts/{$old_service_details->site_name}/".$old_service_details->host_name."/".$old_service_details->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_service_details->host_name."/".$request->serviceName.".cfg");
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");

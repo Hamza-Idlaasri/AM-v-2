@@ -52,13 +52,6 @@ class BF1010 extends Controller
         $cfg_file = "\n\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$request->boxName}.cfg";
         file_put_contents("/usr/local/nagios/etc/nagios.cfg", $cfg_file, FILE_APPEND);
 
-        // Make the path of json file
-        $json_file ='/usr/local/nagios/etc/objects/boxes/'.$request->boxName.'/inputs.json';
-
-        // Create json file
-        shell_exec('sudo touch '.$json_file);
-        shell_exec('sudo chmod 777 '.$json_file);
-
         // Restart nagios
         shell_exec('sudo service nagios stop');
         shell_exec('sudo service nagios start');

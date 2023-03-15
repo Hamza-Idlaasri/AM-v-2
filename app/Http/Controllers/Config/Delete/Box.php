@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Config\Delete;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\EquipsDetail;
+use App\Models\EquipsNames;
 
 class Box extends Controller
 {
@@ -55,6 +57,11 @@ class Box extends Controller
         } else {
             return 'WORNING: No box found';
         }
+
+        //-------------------------------- Edit name of the box in equips_names & equips_details tables -------------------------//
+        
+        EquipsDetail::where(['box_name' => $box_deleted->box_name])->delete(); 
+        EquipsNames::where(['box_name' => $box_deleted->box_name])->delete(); 
 
         //-------------------------------------- Remove the Box as member in boxgroups ----------------------------//
         $boxgroup_member_on = DB::table('nagios_hostgroup_members')

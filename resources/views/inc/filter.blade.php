@@ -62,9 +62,9 @@
         
                     <optgroup label="{{ $name->host_name }}">
                     
-                        @for ($i = 0; $i < sizeof($name->services); $i++)
+                        @for ($i = 0; $i < sizeof($name->services_names); $i++)
 
-                            <option value="{{$name->services[$i]}}">{{$name->services[$i]}}</option>  
+                            <option value="{{$name->services_names[$i]}}">{{$name->services_names[$i]}}</option>  
                             
                         @endfor
                     
@@ -78,7 +78,7 @@
         @if ($type == 'equip')
             {{-- Equips Names --}}
             <label class="font-weight-bold ml-4 mr-2" for="equips_names">Equipement :</label>
-            <select wire:model.debounce.500ms="equip_name" name="equips_names" id="equips_names" class="form-control" style="width: 20%">
+            <select wire:model="equip_name" name="equips_names" id="equips_names" class="form-control" style="width: 20%">
                 <option value="">All</option>
 
                 @foreach ($names as $name)

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Config\Delete;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\EquipsDetail;
 
 class Equip extends Controller
 {
@@ -35,6 +36,10 @@ class Equip extends Controller
         } else
             return 'WORNING: No equipment found';
         
+        //-------------------------------- Edit pin name in equips_details table -------------------------------------//
+
+        EquipsDetail::where(['box_name' => $equip_deleted->box_name])->where(['pin_name' => $equip_deleted->equip_name])->delete();
+
         //------------------------------------------- Remove from equipgroup -----------------------------------------//
         $equipgroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$equip_object_id)

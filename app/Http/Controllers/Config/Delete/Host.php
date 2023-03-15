@@ -17,7 +17,9 @@ class Host extends Controller
     {
         $host_deleted = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $host_object_id)
-            ->select('nagios_hosts.display_name as host_name')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varname','SITE')
+            ->select('nagios_hosts.display_name as host_name','nagios_customvariables.varvalue as site_name')
             ->first();
 
         $host_services = DB::table('nagios_hosts')
@@ -26,7 +28,7 @@ class Host extends Controller
             ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name')
             ->get();
 
-        $path = "/usr/local/nagios/etc/objects/hosts/".$host_deleted->host_name;
+        $path = "/usr/local/nagios/etc/objects/hosts/{$host_deleted->site_name}/".$host_deleted->host_name;
 
         if(is_dir($path))
         {
@@ -42,13 +44,13 @@ class Host extends Controller
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$host_deleted->host_name}/{$host_deleted->host_name}.cfg", '', $nagios_file_content);
+            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$host_deleted->site_name}/{$host_deleted->host_name}/{$host_deleted->host_name}.cfg", '', $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
             // Remove host services
             foreach ($host_services as $service) {
                 $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-                $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$service->host_name}/{$service->service_name}.cfg", '', $nagios_file_content);
+                $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$host_deleted->site_name}/{$service->host_name}/{$service->service_name}.cfg", '', $nagios_file_content);
                 file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
             }
 
@@ -203,14 +205,14 @@ class Host extends Controller
                 $directory = "boxes";
             }
 
-            $myFile = "/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg";
+            $myFile = "/usr/local/nagios/etc/objects/{$directory}/{$host_deleted->site_name}/{$host->host_name}/{$host->host_name}.cfg";
             $lines = file($myFile);
             $parents_line = $lines[5];
 
             // Editing in host .cfg file
-            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg");
+            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/{$directory}/{$host_deleted->site_name}/".$host->host_name."/".$host->host_name.".cfg");
             $host_file_content = str_replace($lines[5], '', $host_file_content);
-            file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
+            file_put_contents("/usr/local/nagios/etc/objects/{$directory}/{$host_deleted->site_name}/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
         
         }
         

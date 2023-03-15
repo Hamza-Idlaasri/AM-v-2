@@ -31,8 +31,8 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             'Box',
             'Address IP',
             'State',
-            'Start Time',
-            'End Time',
+            'State Time',
+            // 'End Time',
             'Description',
         ];
     }
@@ -51,9 +51,9 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             $boxes->box_name,
             $boxes->address,
             $this->convertState($boxes->state),
-            $boxes->start_time,
-            $boxes->end_time,
-            $boxes->output
+            $boxes->state_time,
+            // $boxes->end_time,
+            $this->description($boxes->state)
         ];
     }
 
@@ -68,6 +68,21 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
                 break;
             case 2:
                 return  'Unreachable';
+                break;
+        }
+    }
+
+    public function description($state)
+    {
+        switch ($state) {
+            case 0:
+                return 'fonction normalement';
+                break;
+            case 1:
+                return 'le box est OFF';
+                break;
+            case 2:
+                return 'difficulté à reconnaître l\'état du box, vérifier si le box est ON';
                 break;
         }
     }

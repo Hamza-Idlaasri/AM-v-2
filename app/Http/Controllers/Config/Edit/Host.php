@@ -16,7 +16,6 @@ class Host extends Controller
     
     public function editHost(Request $request, $host_object_id)
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
         // validation
         $this->validate($request,[
@@ -34,6 +33,9 @@ class Host extends Controller
         
         $old_host_details = DB::table('nagios_hosts')
             ->where('nagios_hosts.host_object_id', $host_object_id)
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varname','SITE')
+            ->select('nagios_hosts.*','nagios_customvariables.varvalue as site_name')
             ->first();
         
         $services = DB::table('nagios_hosts')
@@ -44,9 +46,9 @@ class Host extends Controller
 
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$site_name;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$old_host_details->site_name;
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$old_host_details->site_name;
 
         // Normal Check Interval
         if($old_host_details->check_interval != $request->check_interval)
@@ -80,7 +82,7 @@ class Host extends Controller
 
         if($old_host_details->display_name == $request->hostName) {
 
-            $path = "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg";  
+            $path = "/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$request->hostName}/{$request->hostName}.cfg";  
             
             $file = fopen($path, 'w');
 
@@ -90,30 +92,30 @@ class Host extends Controller
 
         } else {
 
-            $path = "/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg";
+            $path = "/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$old_host_details->display_name}/{$old_host_details->display_name}.cfg";
             
             file_put_contents($path, $define_host);
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$request->hostName.".cfg");
+            rename("/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$old_host_details->display_name}/{$old_host_details->display_name}.cfg", "/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$old_host_details->display_name}/{$request->hostName}.cfg");
 
-            rename("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name, "/usr/local/nagios/etc/objects/hosts/".$request->hostName);
+            rename("/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$old_host_details->display_name}", "/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/{$request->hostName}");
           
             foreach ($services as $service) {
             
-                $content = file_get_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg");
+                $content = file_get_contents("/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/".$request->hostName."/".$service->service_name.".cfg");
                 $content = str_replace($old_host_details->display_name, $request->hostName, $content);
                 file_put_contents("/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $content);
 
                 // Editing in nagios.cfg file
                 $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$service->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $nagios_file_content);
+                $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/".$old_host_details->display_name."/".$service->service_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$service->service_name.".cfg", $nagios_file_content);
                 file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
     
             }
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg", $nagios_file_content);
+            $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/hosts/{$old_host_details->site_name}/".$old_host_details->display_name."/".$old_host_details->display_name.".cfg", "/usr/local/nagios/etc/objects/hosts/".$request->hostName."/".$request->hostName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
         }
@@ -245,14 +247,14 @@ class Host extends Controller
                 $directory = "boxes";
             }
 
-            $myFile = "/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg";
+            $myFile = "/usr/local/nagios/etc/objects/{$directory}/{$old_host_details->site_name}/".$host->host_name."/".$host->host_name.".cfg";
             $lines = file($myFile);
             $parents_line = $lines[5];
 
             // Editing in host .cfg file
-            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg");
+            $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/{$directory}/{$old_host_details->site_name}/".$host->host_name."/".$host->host_name.".cfg");
             $host_file_content = str_replace($lines[5], "\tparents\t\t\t".$request->hostName."\n", $host_file_content);
-            file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
+            file_put_contents("/usr/local/nagios/etc/objects/{$directory}/{$old_host_details->site_name}/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
         
         }
 

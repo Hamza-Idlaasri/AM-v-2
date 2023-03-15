@@ -24,8 +24,8 @@
                 <th>Host</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
-                <th>Start Time</th>
-                <th>End Time</th>
+                <th>State Time</th>
+                {{-- <th>End Time</th> --}}
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
@@ -53,8 +53,8 @@
                         
                 @endswitch
                 
-                <td>{{$host_history->start_time}}</td>
-                <td>{{$host_history->end_time}}</td>
+                <td>{{$host_history->state_time}}</td>
+                {{-- <td>{{$host_history->end_time}}</td> --}}
                 <td class="description">{{$host_history->output}}</td>
             </tr>
 

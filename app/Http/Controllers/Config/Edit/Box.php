@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\UsersSite;
+use App\Models\EquipsDetail;
+use App\Models\EquipsNames;
 
 class Box extends Controller
 {
@@ -48,11 +50,13 @@ class Box extends Controller
 
         // Parent relationship
         if($request->input('boxes'))
-            //TODO : CHANGE linux_server !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
+            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\tparents\t\t\t".$request->input('boxes')."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
+            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t\t\t".$request->boxName."\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\t".$old_box_details->box_type;
 
+        // Normal Check Interval
+        // Convert Time
+        $request->normal_interval = floatval(round($request->normal_interval/60,2));
         // Normal Check Interval
         if($old_box_details->check_interval != $request->check_interval)
             $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
@@ -115,9 +119,15 @@ class Box extends Controller
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
             $nagios_file_content = str_replace("/usr/local/nagios/etc/objects/boxes/".$old_box_details->display_name."/".$old_box_details->display_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$request->boxName."/".$request->boxName.".cfg", $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
-        }
+        }        
+
+        //-------------------------------- Edit name of the box in equips_names & equips_details tables -------------------------//
+        
+        EquipsDetail::where(['box_name' => $old_box_details->display_name])->update(['box_name' => $request->boxName]); 
+        EquipsNames::where(['box_name' => $old_box_details->display_name])->update(['box_name' => $request->boxName]); 
 
         //-------------------------------- Edit box_name on boxgroups ----------------------------------------------//
+
         $boxgroup_member_on = DB::table('nagios_hostgroup_members')
             ->where('nagios_hostgroup_members.host_object_id',$box_object_id)
             ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')

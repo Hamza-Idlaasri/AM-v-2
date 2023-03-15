@@ -24,8 +24,8 @@ class Boxes extends Component
     {
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $boxes_histories = $this->getStateRanges();
-        // dd($this->getHistory());
+        $boxes_histories = $this->getHistory();
+
         // filter by state
         if($this->status != 'all')
         {
@@ -33,39 +33,37 @@ class Boxes extends Component
                 if ($box->state == $this->status) {
                     continue;
                 } else {
-                    unset($boxes_histories[$key]);
+                    $boxes_histories->forget($key);
                 }
             }
-
-            $boxes_histories = array_values($boxes_histories);
 
         }    
 
         return view('livewire.historic.boxes')
-            ->with(['boxes_histories' => $this->paginate($boxes_histories), 'boxes_names' => $this->getBoxes(),'download' => $boxes_histories])
+            ->with(['boxes_histories' => $this->paginate($boxes_histories), 'boxes_names' => $this->getBoxesNames(),'download' => $boxes_histories, "msg" => $this->description()])
             ->extends('layouts.app')
             ->section('content');
     }
 
-    public function getStateRanges()
-    {
-        $boxes_names = $this->getBoxes();
+    // public function getStateRanges()
+    // {
+    //     $boxes_names = $this->getBoxes();
 
-        $boxes_ranges = [];
+    //     $boxes_ranges = [];
 
-        foreach ($boxes_names as $equip) {
+    //     foreach ($boxes_names as $box) {
 
-            $checks = $this->getBoxesChecks()->where('nagios_hosts.host_object_id', $equip->host_object_id)->get();
+    //         $checks = $this->getBoxesChecks()->where('nagios_hosts.host_object_id', $box->host_object_id)->get();
 
-            if(!empty($checks)) {
-                array_push($boxes_ranges, $checks);
-            }
+    //         if(!empty($checks)) {
+    //             array_push($boxes_ranges, $checks);
+    //         }
 
-            unset($checks);
-        }
+    //         unset($checks);
+    //     }
         
-        return $this->OrganizeStates($boxes_ranges);
-    }
+    //     return $this->OrganizeStates($boxes_ranges);
+    // }
 
     public function OrganizeStates($boxes_ranges)
     {
@@ -84,8 +82,9 @@ class Boxes extends Component
                 //$checks_of_box[0]->state = $this->convertState($checks_of_box[0]->state);
                 // push the range in table
                 array_push($boxes_range_of_states, $checks_of_box[0]);
+
             } else {
-                // Search on single equipements checks ranges
+                // Search on single box checks ranges
                 for ($i=0; $i < sizeof($checks_of_box); $i++) {
                     
                     if ($i < (sizeof($checks_of_box)-1)) {
@@ -97,8 +96,8 @@ class Boxes extends Component
 
                             $end_index = $i;
 
-                            // set end_time of equip check to the last end_time of state
-                            $checks_of_box[$start_index]->end_time = $checks_of_box[$end_index]->end_time;
+                            // set state_time of $box check to the last state_time of state
+                            $checks_of_box[$start_index]->state_time = $checks_of_box[$end_index]->state_time;
 
                             // Convert State
                             //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
@@ -113,8 +112,8 @@ class Boxes extends Component
                     } else {
                         if ($checks_of_box[$i]->state == $checks_of_box[$i-1]->state) {
 
-                            // set end_time of equip check to the last end_time of state
-                            $checks_of_box[$start_index]->end_time = $checks_of_box[$i]->end_time;
+                            // set state_time of $box check to the last state_time of state
+                            $checks_of_box[$start_index]->state_time = $checks_of_box[$i]->state_time;
                             
                             // Convert State
                             //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
@@ -124,14 +123,14 @@ class Boxes extends Component
 
                         } else {
                             /**** BEFOR LAST INDEX */
-                            // set end_time of equip check to the last end_time of state
-                            $checks_of_box[$start_index]->end_time = $checks_of_box[$i-1]->end_time;
+                            // set state_time of $box check to the last state_time of state
+                            $checks_of_box[$start_index]->state_time = $checks_of_box[$i-1]->state_time;
                             
                             // Convert State
                             //$checks_of_box[$start_index]->state = $this->convertState($checks_of_box[$start_index]->state);
 
                             // push the range in table
-                            array_push($boxes_range_of_states, $checks_of_box[$start_index]);
+                            // array_push($boxes_range_of_states, $checks_of_box[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
@@ -153,60 +152,60 @@ class Boxes extends Component
     public function OrderRanges($ranges)
     {
         usort($ranges, function ($item1, $item2) {
-            return $item2->hostcheck_id <=> $item1->hostcheck_id;
+            return $item2->statehistory_id <=> $item1->statehistory_id;
         });    
         
         return $ranges;
     }
 
-    public function getBoxesChecks()
-    {
+    // public function getBoxesChecks()
+    // {
         
-        if ($this->site_name == 'All') {
+    //     if ($this->site_name == 'All') {
             
-            $boxes_histories = DB::table('nagios_hostchecks')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->where('alias','box')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time');
+    //         $boxes_histories = DB::table('nagios_hostchecks')
+    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+    //             ->where('alias','box')
+    //             ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.statehistory_id','nagios_hostchecks.state','nagios_hostchecks.state_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
+    //             ->where('is_raw_check','=', 0)
+    //             ->orderBy('nagios_hostchecks.state_time');
                 
-        } else {
+    //     } else {
 
-            $boxes_histories = DB::table('nagios_hostchecks')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('alias','box')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time');
+    //         $boxes_histories = DB::table('nagios_hostchecks')
+    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //             ->where('alias','box')
+    //             ->where('nagios_customvariables.varvalue',$this->site_name)
+    //             ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.statehistory_id','nagios_hostchecks.state','nagios_hostchecks.state_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
+    //             ->where('is_raw_check','=', 0)
+    //             ->orderBy('nagios_hostchecks.state_time');
                 
-        }   
+    //     }   
 
-        // filter by name
-        if ($this->box_name) {
-            $boxes_histories = $boxes_histories->where('nagios_hosts.display_name',$this->box_name);
-        }
+    //     // filter by name
+    //     if ($this->box_name) {
+    //         $boxes_histories = $boxes_histories->where('nagios_hosts.display_name',$this->box_name);
+    //     }
 
-        // filter by Date From
-        if ($this->date_from)
-        {
-            $boxes_histories = $boxes_histories->where('nagios_hostchecks.start_time','>=',$this->date_from);
-        }
+    //     // filter by Date From
+    //     if ($this->date_from)
+    //     {
+    //         $boxes_histories = $boxes_histories->where('nagios_hostchecks.state_time','>=',$this->date_from);
+    //     }
 
-        // filter by Date To
-        if ($this->date_to)
-        {
-            $boxes_histories = $boxes_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
-        }
+    //     // filter by Date To
+    //     if ($this->date_to)
+    //     {
+    //         $boxes_histories = $boxes_histories->where('nagios_hostchecks.state_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+    //     }
 
-        $boxes_histories = $boxes_histories->take(20000);
+    //     $boxes_histories = $boxes_histories->take(20000);
 
-        return $boxes_histories;
-    }
+    //     return $boxes_histories;
+    // }
 
-    public function getBoxes()
+    public function getBoxesNames()
     {
 
         if ($this->site_name == 'All') {
@@ -230,50 +229,93 @@ class Boxes extends Component
 
     }
 
-    public function paginate($items, $perPage = 15, $page = null, $options = [])
+    public function paginate($items, $perPage = 20, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    // public function convertState($state)
-    // {
-    //     switch ($state) {
-    //         case 0:
-    //             return  $state = 'Up';
-    //             break;
-    //         case 1:
-    //             return  $state = 'Down';
-    //             break;
-    //         case 2:
-    //             return  $state = 'Unreachable';
-    //             break;
-    //     }
-    // }
-
     public function getHistory()
     {
-        if ($this->site_name == "All") {
-            
-            return DB::table('nagios_statehistory')
+        $collection = collect();
+        $last_state = [];
+
+        if ($this->site_name == 'All') {
+
+            $history = DB::table('nagios_statehistory')
                 ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output','nagios_statehistory.statehistory_id')
                 ->where('alias','box')
-                ->orderBy('nagios_statehistory.state_time')
-                ->get();
+                ->orderBy('nagios_statehistory.state_time');
 
         } else {
-
-            return DB::table('nagios_statehistory')
+            
+            $history = DB::table('nagios_statehistory')
                 ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id') 
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output','nagios_statehistory.statehistory_id')
                 ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->orderBy('nagios_statehistory.state_time')
-                ->get();
+                ->orderBy('nagios_statehistory.state_time');
+                
         }
+
+        // filter by name
+        if ($this->box_name) {
+            $history = $history->where('nagios_hosts.display_name', $this->box_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $history = $history->where('nagios_statehistory.state_time','>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $history = $history->where('nagios_statehistory.state_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        $history = $history->chunk(1000, function ($boxes_history) use (&$collection) {
+
+                    $boxes_names = $this->getBoxesNames();
+
+                    $boxes_ranges = [];
+
+                    foreach ($boxes_names as $box) {
+
+                        $checks = [];
+
+                        foreach ($boxes_history as $history) {
+                            if ($history->host_object_id == $box->host_object_id) {
+                                array_push($checks, $history);
+                            }
+                        }
+
+                        if(!empty($checks)) {
+                            array_push($boxes_ranges, $checks);
+                        }
+
+                        unset($checks);
+                    }
+                    
+                    
+                    $ranges = $this->OrganizeStates($boxes_ranges);
+
+                    foreach ($ranges as $range) {
+                        $collection->push($range);
+                    }
+
+                });
+    
+        return $collection;
         
+    }
+
+    public function description()
+    {
+        return ['fonction normalement','le box est OFF','difficulté à reconnaître l\'état du box, vérifier si le box est ON'];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Config\Edit;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\EquipsDetail;
 
 class Equip extends Component
 {
@@ -19,8 +20,10 @@ class Equip extends Component
     {
         $equip = DB::table('nagios_services')
             ->where('service_id', $this->equip_id)
+            ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
             ->first();
 
+        $equip->check_interval = round($equip->check_interval * 60);
         $equip->retry_interval = round($equip->retry_interval * 60);
         
         return view('livewire.config.edit.equip')

@@ -116,6 +116,7 @@ Route::get('/config/hosts',App\Http\Livewire\Config\Display\Hosts::class)->name(
 Route::get('/config/boxes',App\Http\Livewire\Config\Display\Boxes::class)->name('config-boxes')->middleware('super_admin');
 Route::get('/config/services',App\Http\Livewire\Config\Display\Services::class)->name('config-services')->middleware('super_admin');
 Route::get('/config/equipements',App\Http\Livewire\Config\Display\Equips::class)->name('config-equips')->middleware('super_admin');
+Route::get('/config/all-sites',App\Http\Livewire\Config\Display\AllSites::class)->name('config-all-sites')->middleware('super_admin');
 /***************/
 
 /*** Add *******************************************/
@@ -176,6 +177,11 @@ Route::get('/config/edited-service/{id}',[App\Http\Controllers\Config\Edit\Servi
 // Equip :
 Route::get('/config/edit/equip/{id}',App\Http\Livewire\Config\Edit\Equip::class)->name('edit-equip')->middleware('super_admin');
 Route::get('/config/edited-equip/{id}',[App\Http\Controllers\Config\Edit\Equip::class, 'editEquip'])->name('save-equip-edits');
+
+// Site :
+// Route::get('/config/edit/site/{id}',App\Http\Livewire\Config\Edit\Site::class)->name('edit-site')->middleware('super_admin');
+Route::get('/config/edit-site/{id}',[App\Http\Controllers\Config\Edit\Site::class, 'editEquip'])->name('edit-site');
+
 /*****************************************************/
 
 /*** Delete *******************************************/
@@ -183,6 +189,7 @@ Route::get('/config/delete-host/{id}',[App\Http\Controllers\Config\Delete\Host::
 Route::get('/config/delete-box/{id}',[App\Http\Controllers\Config\Delete\Box::class, 'deleteBox'])->name('delete-box');
 Route::get('/config/delete-service/{id}',[App\Http\Controllers\Config\Delete\Service::class, 'deleteService'])->name('delete-service');
 Route::get('/config/delete-equip/{id}',[App\Http\Controllers\Config\Delete\Equip::class, 'deleteEquip'])->name('delete-equip');
+Route::get('/config/delete-site/{id}',[App\Http\Controllers\Config\Delete\Site::class, 'deleteSite'])->name('delete-site');
 /******************************************************/
 
 /******************************************************************************************************************/

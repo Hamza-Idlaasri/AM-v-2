@@ -6,15 +6,11 @@
             {{-- Filter --}}
             @include('inc.filter',['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
         </div>
-
-        <button id="refreshBtn">Refresh Chart</button>
-
     </div>
 
     <hr>
 
     <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
-
 
     <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
 
@@ -38,6 +34,13 @@
 
     </div>
 </div>
+
+<script>
+    let ok = @json($equips_status[0]);
+    let warning = @json($equips_status[1]);
+    let critical = @json($equips_status[2]);
+    let unknown = @json($equips_status[3]);
+</script>
 
 {{------------------------------------------ Piechart -----------------------------------------------------------}}
 <script>
@@ -91,7 +94,7 @@
             labels: ['Ok','Warning','Critical','Unknown'],
             datasets: [{
 
-                data: data,
+                data: @json($equips_status),
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -143,7 +146,7 @@
     
 </script>
 
-<script>
+{{-- <script>
     
     var refreshBtn = document.getElementById('refreshBtn');
 
@@ -158,7 +161,7 @@
         console.log(ok);
     });
 
-</script>
+</script> --}}
 
 {{-- <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});

@@ -24,7 +24,7 @@ class Hosts extends Component
     {
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $hosts_histories = $this->getStateRanges();
+        $hosts_histories = $this->getHistory();
 
         // filter by state
         if($this->status != 'all')
@@ -33,39 +33,37 @@ class Hosts extends Component
                 if ($host->state == $this->status) {
                     continue;
                 } else {
-                    unset($hosts_histories[$key]);
+                    $hosts_histories->forget($key);
                 }
             }
-
-            $hosts_histories = array_values($hosts_histories);
 
         }    
 
         return view('livewire.historic.hosts')
-            ->with(['hosts_histories' => $this->paginate($hosts_histories), 'hosts_names' => $this->getHosts(),'download' => $hosts_histories])
+            ->with(['hosts_histories' => $this->paginate($hosts_histories), 'hosts_names' => $this->getHostsNames(),'download' => $hosts_histories])
             ->extends('layouts.app')
             ->section('content');
     }
 
-    public function getStateRanges()
-    {
-        $hosts_names = $this->getHosts();
+    // public function getStateRanges()
+    // {
+    //     $hosts_names = $this->getHostsNames();
 
-        $hostes_ranges = [];
+    //     $hostes_ranges = [];
 
-        foreach ($hosts_names as $equip) {
+    //     foreach ($hosts_names as $equip) {
 
-            $checks = $this->getHostsChecks()->where('nagios_hosts.host_object_id', $equip->host_object_id)->get();
+    //         $checks = $this->getHostsChecks()->where('nagios_hosts.host_object_id', $equip->host_object_id)->get();
 
-            if(!empty($checks)) {
-                array_push($hostes_ranges, $checks);
-            }
+    //         if(!empty($checks)) {
+    //             array_push($hostes_ranges, $checks);
+    //         }
 
-            unset($checks);
-        }
+    //         unset($checks);
+    //     }
         
-        return $this->OrganizeStates($hostes_ranges);
-    }
+    //     return $this->OrganizeStates($hostes_ranges);
+    // }
 
     public function OrganizeStates($hostes_ranges)
     {
@@ -73,7 +71,7 @@ class Hosts extends Component
 
         foreach ($hostes_ranges as $host) {
             
-            // Get a single box checks
+            // Get a single host checks
             $checks_of_host = $host;
             
             $start_index = 0;
@@ -97,8 +95,8 @@ class Hosts extends Component
 
                             $end_index = $i;
 
-                            // set end_time of host check to the last end_time of state
-                            $checks_of_host[$start_index]->end_time = $checks_of_host[$end_index]->end_time;
+                            // set state_time of host check to the last state_time of state
+                            $checks_of_host[$start_index]->state_time = $checks_of_host[$end_index]->state_time;
 
                             // Convert State
                             //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
@@ -113,8 +111,8 @@ class Hosts extends Component
                     } else {
                         if ($checks_of_host[$i]->state == $checks_of_host[$i-1]->state) {
 
-                            // set end_time of host check to the last end_time of state
-                            $checks_of_host[$start_index]->end_time = $checks_of_host[$i]->end_time;
+                            // set state_time of host check to the last state_time of state
+                            $checks_of_host[$start_index]->state_time = $checks_of_host[$i]->state_time;
                             
                             // Convert State
                             //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
@@ -124,14 +122,14 @@ class Hosts extends Component
 
                         } else {
                             /**** BEFOR LAST INDEX */
-                            // set end_time of host check to the last end_time of state
-                            $checks_of_host[$start_index]->end_time = $checks_of_host[$i-1]->end_time;
+                            // set state_time of host check to the last state_time of state
+                            $checks_of_host[$start_index]->state_time = $checks_of_host[$i-1]->state_time;
                             
                             // Convert State
                             //$checks_of_host[$start_index]->state = $this->convertState($checks_of_host[$start_index]->state);
 
                             // push the range in table
-                            array_push($hostes_range_of_states, $checks_of_host[$start_index]);
+                            // array_push($hostes_range_of_states, $checks_of_host[$start_index]);
 
                             /**** LAST INDEX */
                             // Convert State
@@ -153,59 +151,59 @@ class Hosts extends Component
     public function OrderRanges($ranges)
     {
         usort($ranges, function ($item1, $item2) {
-            return $item2->hostcheck_id <=> $item1->hostcheck_id;
+            return $item2->statehistory_id <=> $item1->statehistory_id;
         });    
         
         return $ranges;
     }
 
-    public function getHostsChecks()
-    {
-        
-        if ($this->site_name == 'All') {
+    // public function getHostsChecks()
+    // {
+
+    //     if ($this->site_name == 'All') {
             
-            $hosts_histories = DB::table('nagios_hostchecks')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->where('alias','host')
-                ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time');
+    //         $hosts_histories = DB::table('nagios_hostchecks')
+    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+    //             ->where('alias','host')
+    //             ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
+    //             ->where('is_raw_check','=', 0)
+    //             ->orderBy('nagios_hostchecks.start_time');
                 
-        } else {
+    //     } else {
 
-            $hosts_histories = DB::table('nagios_hostchecks')
-                ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->where('alias','host')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.end_time','nagios_hostchecks.output')
-                ->where('is_raw_check','=', 0)
-                ->orderBy('nagios_hostchecks.start_time');
-        }   
+    //         $hosts_histories = DB::table('nagios_hostchecks')
+    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
+    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //             ->where('alias','host')
+    //             ->where('nagios_customvariables.varvalue',$this->site_name)
+    //             ->select('nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.hostcheck_id','nagios_hostchecks.state','nagios_hostchecks.start_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
+    //             ->where('is_raw_check','=', 0)
+    //             ->orderBy('nagios_hostchecks.start_time');
+    //     }   
 
-        // filter bu name
-        if ($this->host_name) {
-            $hosts_histories = $hosts_histories->where('nagios_hosts.display_name',$this->host_name);    
-        }
+    //     // filter bu name
+    //     if ($this->host_name) {
+    //         $hosts_histories = $hosts_histories->where('nagios_hosts.display_name',$this->host_name);    
+    //     }
 
-        // filter by Date From
-        if ($this->date_from)
-        {
-            $hosts_histories = $hosts_histories->where('nagios_hostchecks.start_time','>=',$this->date_from);
-        }
+    //     // filter by Date From
+    //     if ($this->date_from)
+    //     {
+    //         $hosts_histories = $hosts_histories->where('nagios_hostchecks.start_time','>=',$this->date_from);
+    //     }
 
-        // filter by Date To
-        if ($this->date_to)
-        {
-            $hosts_histories = $hosts_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
-        }
+    //     // filter by Date To
+    //     if ($this->date_to)
+    //     {
+    //         $hosts_histories = $hosts_histories->where('nagios_hostchecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+    //     }
 
-        $hosts_histories = $hosts_histories->take(20000);
+    //     $hosts_histories = $hosts_histories->take(20000);
 
-        return $hosts_histories;
-    }
+    //     return $hosts_histories;
+    // }
 
-    public function getHosts()
+    public function getHostsNames()
     {
 
         if ($this->site_name == 'All') {
@@ -229,25 +227,89 @@ class Hosts extends Component
 
     }
 
-    public function paginate($items, $perPage = 15, $page = null, $options = [])
+    public function paginate($items, $perPage = 20, $page = null, $options = [])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 
-    // public function convertState($state)
-    // {
-    //     switch ($state) {
-    //         case 0:
-    //             return  $state = 'Up';
-    //             break;
-    //         case 1:
-    //             return  $state = 'Down';
-    //             break;
-    //         case 2:
-    //             return  $state = 'Unreachable';
-    //             break;
-    //     }
-    // }
+    public function getHistory()
+    {
+        $collection = collect();
+        $last_state = [];
+
+        if ($this->site_name == 'All') {
+
+            $history = DB::table('nagios_statehistory')
+                ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id')
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output','nagios_statehistory.statehistory_id')
+                ->where('alias','host')
+                ->orderBy('nagios_statehistory.state_time');
+
+        } else {
+            
+            $history = DB::table('nagios_statehistory')
+                ->join('nagios_hosts','nagios_statehistory.object_id','=','nagios_hosts.host_object_id') 
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_hosts.address','nagios_statehistory.last_state','nagios_statehistory.state','nagios_statehistory.state_time','nagios_statehistory.output','nagios_statehistory.statehistory_id')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->orderBy('nagios_statehistory.state_time');
+                
+        }
+
+        // filter by name
+        if ($this->host_name) {
+            $history = $history->where('nagios_hosts.display_name', $this->host_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $history = $history->where('nagios_statehistory.state_time','>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $history = $history->where('nagios_statehistory.state_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        $history = $history->chunk(1000, function ($hosts_history) use (&$collection) {
+
+                    $hosts_names = $this->getBoxesNames();
+
+                    $hosts_ranges = [];
+
+                    foreach ($hosts_names as $host) {
+
+                        $checks = [];
+
+                        foreach ($hosts_history as $history) {
+                            if ($history->host_object_id == $host->host_object_id) {
+                                array_push($checks, $history);
+                            }
+                        }
+
+                        if(!empty($checks)) {
+                            array_push($hosts_ranges, $checks);
+                        }
+
+                        unset($checks);
+                    }
+                    
+                    
+                    $ranges = $this->OrganizeStates($hosts_ranges);
+
+                    foreach ($ranges as $range) {
+                        $collection->push($range);
+                    }
+
+                });
+    
+        return $collection;
+        
+    }
+
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Config\Edit;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\EquipsDetail;
 
 class Equip extends Controller
 {
@@ -17,9 +18,8 @@ class Equip extends Controller
     {
         // validation
         $this->validate($request,[
-            
-            // 'equipName' => 'required|min:2|max:20|unique:nagios_services,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
-            'equipName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
+            // 'pinName' => 'required|min:2|max:20|unique:nagios_services,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            'pinName' => 'required|min:2|max:200|regex:/^[a-zA-Z0-9-_+ ]/',
             'check_interval' => 'required|min:1|max:20',
             'retry_interval' => 'required|min:1|max:1200',
             'max_attempts' => 'required|min:1|max:100',
@@ -34,7 +34,7 @@ class Equip extends Controller
             ->select('nagios_hosts.display_name as box_name','nagios_services.display_name as equip_name','nagios_services.*','nagios_servicestatus.check_command')
             ->first();
 
-        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\thost_name\t\t\t\t".$old_equip_details->box_name."\n\tservice_description\t\t\t".$request->equipName."\n\tcheck_command\t\t\t\t".$old_equip_details->check_command;
+        $define_service = "define service {\n\tuse\t\t\t\t\tbox-service\n\thost_name\t\t\t\t".$old_equip_details->box_name."\n\tservice_description\t\t\t".$request->pinName."\n\tcheck_command\t\t\t\t".$old_equip_details->check_command."!".$request->query('working_state');
 
         // Normal Check Interval
         if($old_equip_details->check_interval != $request->check_interval)
@@ -65,9 +65,9 @@ class Equip extends Controller
 
         $define_service = $define_service."\n}\n\n";
 
-        if($old_equip_details->equip_name == $request->equipName)
+        if($old_equip_details->equip_name == $request->pinName)
         {
-            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->equipName.".cfg";
+            $path = "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->pinName.".cfg";
 
             $file = fopen($path, 'w');
 
@@ -85,15 +85,20 @@ class Equip extends Controller
 
             fclose($file);
 
-            rename("/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$old_equip_details->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->equipName.".cfg");
+            rename("/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$old_equip_details->equip_name.".cfg", "/usr/local/nagios/etc/objects/boxes/".$old_equip_details->box_name."/".$request->pinName.".cfg");
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace($old_equip_details->equip_name, $request->equipName, $nagios_file_content);
+            $nagios_file_content = str_replace($old_equip_details->equip_name, $request->pinName, $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
         }
 
-        //-------------------------------- Edit equip name on equipgroups --------------------------------------------// 
+        //-------------------------------- Edit pin name in equips_details table -------------------------------------//
+
+        EquipsDetail::where(['box_name' => $old_equip_details->box_name])->where(['pin_name' => $old_equip_details->equip_name])->update(['pin_name' => $request->pinName]);
+
+        //-------------------------------- Edit equip name on equipgroups --------------------------------------------//
+
         $equipgroup_member_on =  DB::table('nagios_servicegroup_members')
             ->where('nagios_servicegroup_members.service_object_id',$equip_object_id)
             ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
@@ -126,7 +131,7 @@ class Equip extends Controller
 
         for ($i=0; $i < sizeof($groups); $i++) {
 
-            $groups[$i]['members'] = str_replace($old_equip_details->box_name.",".$old_equip_details->equip_name,$old_equip_details->box_name.",".$request->equipName, $groups[$i]['members']);
+            $groups[$i]['members'] = str_replace($old_equip_details->box_name.",".$old_equip_details->equip_name,$old_equip_details->box_name.",".$request->pinName, $groups[$i]['members']);
 
             if (sizeof($groups[$i]['members'])) {
             

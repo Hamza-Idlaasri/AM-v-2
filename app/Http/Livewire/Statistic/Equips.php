@@ -23,6 +23,7 @@ class Equips extends Component
     public $equips_warning = 0;
     public $equips_critical = 0;
     public $equips_unknown = 0;
+    
 
     public $equips_status;
 

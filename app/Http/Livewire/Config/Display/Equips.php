@@ -67,9 +67,11 @@ class Equips extends Component
     {
         foreach ($equips as $equip) {
             $equip->retry_check_interval = round($equip->retry_check_interval * 60,2);
+            $equip->normal_check_interval = round($equip->normal_check_interval * 60,2);
         }
     }
 
+    
     public function fixInputNbr($equips)
     {
         foreach ($equips as $equip) {

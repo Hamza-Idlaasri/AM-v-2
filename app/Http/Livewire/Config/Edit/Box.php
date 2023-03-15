@@ -20,7 +20,8 @@ class Box extends Component
     {
         $box = $this->getBox($this->box_id);
 
-        $box->retry_interval = round($box->retry_interval * 60);
+        $box->retry_check_interval = round($box->retry_check_interval * 60,2);
+        $box->normal_check_interval = round($box->normal_check_interval * 60,2);
 
         $parent = $this->Parent_Child();
 
@@ -52,12 +53,20 @@ class Box extends Component
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        return DB::table('nagios_hosts')
-            ->where('alias','host')
-            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
-            ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
-            ->get();
+        if ($site_name == "All") {
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->get();
+        } else {
+            return DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue',$site_name)
+                ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
+                ->get();
+        }
+        
     }
 
     public function Parent_Child()

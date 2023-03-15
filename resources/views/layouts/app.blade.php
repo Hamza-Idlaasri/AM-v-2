@@ -18,7 +18,7 @@
     <script src="{{ asset('js/chart-2.8.0.js') }}"></script>
     <script src="{{ asset('js/jquery-2.2.4.min.js') }}"></script>
     <script type="text/javascript" src="{{ asset('js/g-charts.js') }}"></script>
-    <title>Alarm Manager</title>
+    <title>Net Monitor</title>
     @livewireStyles
 </head>
 <body style="overflow: hidden;">

@@ -18,10 +18,12 @@ class Service extends Controller
         $service_deleted = DB::table('nagios_services')
             ->where('nagios_services.service_object_id',$service_object_id)
             ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
-            ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name')
+            ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+            ->where('nagios_customvariables.varname','SITE')
+            ->select('nagios_hosts.display_name as host_name','nagios_services.display_name as service_name','nagios_customvariables.varvalue as site_name')
             ->first();
 
-        $path = "/usr/local/nagios/etc/objects/hosts/".$service_deleted->host_name."/".$service_deleted->service_name.".cfg";
+        $path = "/usr/local/nagios/etc/objects/hosts/{$service_deleted->site_name}/".$service_deleted->host_name."/".$service_deleted->service_name.".cfg";
 
         if (is_file($path)) 
         {
@@ -29,7 +31,7 @@ class Service extends Controller
 
             // Editing in nagios.cfg file
             $nagios_file_content = file_get_contents("/usr/local/nagios/etc/nagios.cfg");
-            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$service_deleted->host_name}/{$service_deleted->service_name}.cfg", '', $nagios_file_content);
+            $nagios_file_content = str_replace("cfg_file=/usr/local/nagios/etc/objects/hosts/{$service_deleted->site_name}/{$service_deleted->host_name}/{$service_deleted->service_name}.cfg", '', $nagios_file_content);
             file_put_contents("/usr/local/nagios/etc/nagios.cfg", $nagios_file_content);
 
         } else
