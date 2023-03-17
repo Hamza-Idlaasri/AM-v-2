@@ -90,7 +90,7 @@
                 <a href="/config/boxgroups" class="sub-item" id="c-bg"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxgroups</span></a>
                 <a href="/config/equipgroups" class="sub-item" id="c-eg"><i class="fa-solid fa-server"></i><span class="item-title"> Equipgroups</span></a>
                 <a href="/config/users" class="sub-item" id="c-users"><i class="fa-solid fa-users"></i><span class="item-title"> Users</span></a>
-                {{-- <a href="/config/all-sites" class="sub-item" id="c-all-sites"><i class="fa-solid fa-map-location-dot"></i><span class="item-title"> Sites</span></a> --}}
+                <a href="/config/all-sites" class="sub-item" id="c-all-sites"><i class="fa-solid fa-map-location-dot"></i><span class="item-title"> Sites</span></a>
             </div>
         </div>
 

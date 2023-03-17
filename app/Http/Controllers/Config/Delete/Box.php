@@ -215,11 +215,11 @@ class Box extends Controller
 
             $myFile = "/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg";
             $lines = file($myFile);
-            $parents_line = $lines[5];
+            $parents_line = $lines[7];
 
             // Editing in host .cfg file
             $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg");
-            $host_file_content = str_replace($lines[5], '', $host_file_content);
+            $host_file_content = str_replace($lines[7], '', $host_file_content);
             file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
         
         }

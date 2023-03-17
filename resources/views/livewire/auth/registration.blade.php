@@ -40,7 +40,7 @@
 
         {{-- Password --}}
         <div class="form-group">
-            <input type="password" wire:model="password" class="form-control @error('password') border-danger @enderror" placeholder="Password" pattern="[a-zA-Z0-9-_().@$=%&#+{}*ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]{5,12}" title="Password must be between 6 & 12 charcarters in length and containes only letters, numbers, and these symbols -_().@$=%&#+{}*">
+            <input type="password" wire:model="password" class="form-control @error('password') border-danger @enderror" placeholder="Password" pattern="[a-zA-Z0-9-_().@$=%&#+{}*ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]{5,16}" title="Password must be between 6 & 12 charcarters in length and containes only letters, numbers, and these symbols -_().@$=%&#+{}*">
             @error('password')
             <div class="text-danger">
                     {{ $message }}

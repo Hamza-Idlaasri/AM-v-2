@@ -32,7 +32,7 @@ class Windows extends Controller
         
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\twindows-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tcheck_command\t\t\tcheck_ncpa!-t '' -P 5693 -M system/agent_version\n\tparents\t\t\t".$request->input('hosts')."\n\t_site\t\t\t".$request->site."\n}\n\n";
+            $define_host = "define host {\n\tuse\t\t\twindows-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tcheck_command\t\t\tcheck_ncpa!-t '' -P 5693 -M system/agent_version\n\t_site\t\t\t".$request->site."\n\tparents\t\t\t".$request->input('hosts')."\n}\n\n";
         else
             $define_host = "define host {\n\tuse\t\t\twindows-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\tcheck_command\t\t\tcheck_ncpa!-t '' -P 5693 -M system/agent_version\n\t_site\t\t\t".$request->site."\n}\n\n";
 

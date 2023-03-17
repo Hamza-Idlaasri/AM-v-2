@@ -28,7 +28,7 @@ class Registration extends Component
         'name' => 'required|min:3|max:15|unique:am.users|regex:/^[a-zA-Z][a-zA-Z0-9-_(). ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]/',
         'email' => 'required|email|max:100|unique:am.users',
         'phone_number' => 'required|regex:/[0-9]{9}/',
-        'password' => 'required|string|confirmed|min:5|max:12|regex:/^[a-zA-Z0-9-_().@$=%&#+{}*ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]/|unique:am.users',
+        'password' => 'required|string|confirmed|min:5|max:16|regex:/^[a-zA-Z0-9-_().@$=%&#+{}*ÀÂÇÉÈÊÎÔÛÙàâçéèêôûù]/|unique:am.users',
         'site' => 'required'
     ];
 
