@@ -43,7 +43,6 @@ class Boxes extends Component
 
         if($this->site_name == "All")
         {
-
             return DB::table('nagios_hosts')
                 ->where('alias','box')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')

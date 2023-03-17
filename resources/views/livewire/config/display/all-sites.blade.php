@@ -14,7 +14,7 @@
             @forelse ($sites as $site)
                 <tr>
                     {{-- Site Name --}}
-                    <td>{{ $site->site_name }}</td>
+                    <td class="text-left">{{ $site->site_name }}</td>
 
                     {{-- Elelemnts --}}
                     <td>
@@ -64,13 +64,15 @@
 
                             {{-- Edit Popup --}}
                             <div id="edit-popup-{{$site->id}}" style="position: absolute;top:50%;left:55%;transform:translate(-50%,-55%);display:none" class="w-25 bg-light rounded shadow p-4">
-                                <label id="{{$site->id}}" class="font-weight-bold">Edit the name of "{{$site->site_name}}" site :</label>
-                                <input type="text" name="site_name" id="{{$site->id}}" value="{{$site->site_name}}" class="form-control">
+                                <form action="{{ route('edit-site', ['id' => $site->id]) }}" method="get" id="edit-{{$site->id}}">
+                                    <label id="{{$site->id}}" class="font-weight-bold">Edit the name of "{{$site->site_name}}" site :</label>
+                                    <input type="text" name="site_name" id="{{$site->id}}" value="{{$site->site_name}}" class="form-control">
+                                </form>
                                 <br>
 
                                 <div class="px-4 d-flex justify-content-around align-items-center">
                                     <button class="btn btn-outline-secondary" onclick="cancel('edit-popup-{{$site->id}}')">Cancel</button>
-                                    <a href="{{ route('edit-site', ['id' => $site->id]) }}" class="btn btn-primary">Edit</a>
+                                    <button class="btn btn-primary" form="edit-{{$site->id}}">Edit</button>
                                 </div>
                             </div>
 

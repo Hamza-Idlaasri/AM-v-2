@@ -58,7 +58,7 @@ class Box extends Controller
             return 'WORNING: No box found';
         }
 
-        //-------------------------------- Edit name of the box in equips_names & equips_details tables -------------------------//
+        //-------------------------------- Delete name of the box in equips_names & equips_details tables -------------------------//
         
         EquipsDetail::where(['box_name' => $box_deleted->box_name])->delete(); 
         EquipsNames::where(['box_name' => $box_deleted->box_name])->delete(); 

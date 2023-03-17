@@ -180,7 +180,7 @@ Route::get('/config/edited-equip/{id}',[App\Http\Controllers\Config\Edit\Equip::
 
 // Site :
 // Route::get('/config/edit/site/{id}',App\Http\Livewire\Config\Edit\Site::class)->name('edit-site')->middleware('super_admin');
-Route::get('/config/edit-site/{id}',[App\Http\Controllers\Config\Edit\Site::class, 'editEquip'])->name('edit-site');
+Route::get('/config/edit-site/{id}',[App\Http\Controllers\Config\Edit\Site::class, 'editSite'])->name('edit-site');
 
 /*****************************************************/
 

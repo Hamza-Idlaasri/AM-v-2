@@ -146,16 +146,12 @@ class Boxes extends Component
             
         }
 
-        return $this->OrderRanges($boxes_range_of_states);
+        return $boxes_range_of_states;
     }
 
     public function OrderRanges($ranges)
     {
-        usort($ranges, function ($item1, $item2) {
-            return $item2->statehistory_id <=> $item1->statehistory_id;
-        });    
-        
-        return $ranges;
+        return $ranges->sortByDesc('state_time');
     }
 
     // public function getBoxesChecks()
@@ -310,7 +306,7 @@ class Boxes extends Component
 
                 });
     
-        return $collection;
+        return $this->OrderRanges($collection);
         
     }
 
