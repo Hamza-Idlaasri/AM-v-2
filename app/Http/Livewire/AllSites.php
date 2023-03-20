@@ -54,7 +54,7 @@ class AllSites extends Component
         $summary = $this->SummaryOfAllSites();
 
         $all_sites = Sites::all();
-        dd($sites_details);
+        
         return view('livewire.all-sites')
             ->with(['all_sites' => $all_sites, 'summary' => $summary, 'sites_details' => $sites_details])
             ->extends('layouts.template')
