@@ -46,7 +46,7 @@
 
                         {{-- Pins --}}
                         <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des Pins : {{$site->pins}}">{{$site->pins}}</span>
-                        <span class="m-1 badge" title="Pins"><i class="fa-solid fa-server fa-lg"></i></span>
+                        <span class="m-1 badge" title="Pins"><i class="fa-solid fa-hard-drive"></i></span>
 
                     </td>
 
