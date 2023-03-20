@@ -238,53 +238,53 @@
                         </path>
 
                         {{-- Tanger --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="235" cy="80" r="4" fill="#38c172" stroke="black" stroke-width="1"/>    
                         @else
                             <circle id="danger-site" cx="235" cy="80" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
 
                         {{-- Oujda --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="315" cy="108" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="315" cy="108" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
                         
                         {{-- Fes --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="252" cy="123" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="252" cy="123" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
                         
                         {{-- Rabat --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="215" cy="125" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="215" cy="125" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
 
                         {{-- Casa --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="200" cy="135" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="200" cy="135" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
                         
                         {{-- Kech --}}
-                        @if (1 == 1)
+                        {{-- @if (1 == 1)
                             <circle cx="190" cy="175" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="190" cy="175" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
                         
                         {{-- Agadir --}}
-                        @if (1 == 1)         
+                        {{-- @if (1 == 1)         
                             <circle cx="158" cy="215" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
                         @else
                             <circle id="danger-site" cx="158" cy="215" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif
+                        @endif --}}
 
                     </g>
                 </svg>
