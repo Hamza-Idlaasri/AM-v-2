@@ -32,7 +32,7 @@ class Site extends Controller
         // Remove the files from nagios 
         $this->deleteTheElements($site->site_name);
 
-        return redirect()->back();
+        return redirect('sites');
     }
 
     public function deleteTheElements($site_name)
@@ -88,7 +88,7 @@ class Site extends Controller
 
             //-------------------------------------- Remove the Box as member in boxgroups ----------------------------//
             $boxgroup_member_on = DB::table('nagios_hostgroup_members')
-                ->where('nagios_hostgroup_members.host_object_id',$box_object_id)
+                ->where('nagios_hostgroup_members.host_object_id',$box_deleted->box_object_id)
                 ->join('nagios_hosts','nagios_hostgroup_members.host_object_id','=','nagios_hosts.host_object_id')
                 ->join('nagios_hostgroups','nagios_hostgroup_members.hostgroup_id','=','nagios_hostgroups.hostgroup_id')
                 ->select('nagios_hostgroups.alias as boxgroup_name','nagios_hostgroups.hostgroup_object_id','nagios_hosts.display_name as box_name')
@@ -154,7 +154,7 @@ class Site extends Controller
                 ->join('nagios_services','nagios_servicegroup_members.service_object_id','=','nagios_services.service_object_id')
                 ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
                 ->join('nagios_servicegroups','nagios_servicegroup_members.servicegroup_id','=','nagios_servicegroups.servicegroup_id')
-                ->where('nagios_hosts.host_object_id',$box_object_id)
+                ->where('nagios_hosts.host_object_id',$box_deleted->box_object_id)
                 ->select('nagios_servicegroups.alias as equipgroup_name','nagios_servicegroups.servicegroup_object_id','nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name')
                 ->get();
 
@@ -220,7 +220,7 @@ class Site extends Controller
 
             //--------------------------------- Remove the Host as parrent of another Host ------------------------------//
             $parent_host = DB::table('nagios_host_parenthosts')
-                ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
+                ->where('nagios_host_parenthosts.parent_host_object_id',$box_deleted->box_object_id)
                 ->join('nagios_hosts','nagios_host_parenthosts.host_id','=','nagios_hosts.host_id')
                 ->select('nagios_hosts.display_name as host_name','nagios_hosts.alias as host_type')
                 ->get();
@@ -242,7 +242,7 @@ class Site extends Controller
 
                 // Editing in host .cfg file
                 $host_file_content = file_get_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg");
-                $host_file_content = str_replace($lines[5], '', $host_file_content);
+                $host_file_content = str_replace($lines[7], '', $host_file_content);
                 file_put_contents("/usr/local/nagios/etc/objects/".$directory."/".$host->host_name."/".$host->host_name.".cfg", $host_file_content);
             
             }

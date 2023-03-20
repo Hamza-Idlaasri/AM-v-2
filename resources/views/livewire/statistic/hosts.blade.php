@@ -17,12 +17,12 @@
         
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Porcentage des Hosts</h6>
-            <canvas id="PieChart"></canvas>
+            <canvas id="PieChart" wire:ignore></canvas>
         </div>
 
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Total des Hosts</h6>
-            <canvas id="BarChart"></canvas>
+            <canvas id="BarChart" wire:ignore></canvas>
         </div>
 
         {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
@@ -37,13 +37,15 @@
 {{----------------------------------- Piechart ----------------------------------------------------------------------}}
 <script>
 
+    let data = @json($hosts_status);
+
     let ctxPie = document.getElementById('PieChart').getContext('2d');
-    let PieChart = new Chart(ctxPie, {
+    let hostsPieChart = new Chart(ctxPie, {
         type: 'doughnut',
         data:{
             labels:['Up','Down','Unreachable'],
             datasets:[{
-                data: @json($hosts_status),
+                data: data,
                 backgroundColor: [
                         '#38c172',
                         '#e3342f',
@@ -79,13 +81,13 @@
 <script>
 
     let ctxBar = document.getElementById('BarChart').getContext('2d');
-    let BarChart = new Chart(ctxBar, {
+    let hostsBarChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
             labels: ['Up','Down','Unreachable'],
             datasets: [{
 
-                data: @json($hosts_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -152,6 +154,17 @@
             // }
         }
     });
+</script>
+
+<script>
+    
+    document.addEventListener('livewire:update', function () {
+        hostsPieChart.data.datasets[0].data = @this.hosts_status
+        hostsPieChart.update()
+        hostsBarChart.data.datasets[0].data = @this.hosts_status
+        hostsBarChart.update()
+    })
+
 </script>
 
 <!---------------------------------------- floating BarChart ---------------------------------------------------------->

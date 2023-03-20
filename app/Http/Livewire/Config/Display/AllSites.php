@@ -99,7 +99,6 @@ class AllSites extends Component
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
                 ->where('nagios_customvariables.varvalue',$site_name)
                 ->select('nagios_hosts.host_object_id')
-                ->orderBy('display_name')
                 ->get();
     }
 

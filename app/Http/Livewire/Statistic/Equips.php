@@ -24,7 +24,6 @@ class Equips extends Component
     public $equips_critical = 0;
     public $equips_unknown = 0;
     
-
     public $equips_status;
 
     public function render()
@@ -41,25 +40,25 @@ class Equips extends Component
             ->section('content');
     }
 
-    public function getStateRanges()
-    {
-        $equips_names = $this->EquipsNames();
+    // public function getStateRanges()
+    // {
+    //     $equips_names = $this->EquipsNames();
 
-        $equips_ranges = [];
+    //     $equips_ranges = [];
 
-        foreach ($equips_names as $equip) {
+    //     foreach ($equips_names as $equip) {
 
-            $checks = $this->getEquipsChecks()->where('nagios_services.service_object_id', $equip->service_object_id)->get();
+    //         $checks = $this->getEquipsChecks()->where('nagios_services.service_object_id', $equip->service_object_id)->get();
 
-            if(!empty($checks)) {
-                array_push($equips_ranges, $checks);
-            }
+    //         if(!empty($checks)) {
+    //             array_push($equips_ranges, $checks);
+    //         }
 
-            unset($checks);
-        }
+    //         unset($checks);
+    //     }
         
-        $this->OrganizeStates($equips_ranges);
-    }
+    //     $this->OrganizeStates($equips_ranges);
+    // }
 
     public function OrganizeStates($equips_ranges)
     {
@@ -241,7 +240,6 @@ class Equips extends Component
 
     public function EquipsNames()
     {
-        
         if ($this->site_name == 'All') {
 
             return DB::table('nagios_services')

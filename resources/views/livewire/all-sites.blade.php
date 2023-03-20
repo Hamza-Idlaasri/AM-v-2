@@ -1,4 +1,4 @@
-<div class="container w-100 my-4 p-2 bg-white shadow rounded" wire:poll>
+<div class="container w-100 my-4 p-2 bg-white shadow rounded">
 
     <style>
         #danger-site{

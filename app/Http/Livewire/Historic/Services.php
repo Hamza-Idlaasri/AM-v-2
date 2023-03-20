@@ -155,7 +155,6 @@ class Services extends Component
 
     // public function getServicesChecks()
     // {
-        
     //     if ($this->site_name == 'All') {
             
     //         $services_histories = DB::table('nagios_servicechecks')

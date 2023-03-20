@@ -4,25 +4,25 @@
 
         <button  id="hosts-btn" class="btn font-weight-bold position-relative btn-primary">Hosts 
             @if ($hosts_not_checked)
-                <span class="badge badge-danger notif-popup">{{ $hosts_not_checked }}</span>
+                <span class="badge badge-danger notif-popup"></span>
             @endif
         </button>
 
         <button  id="services-btn" class="btn font-weight-bold position-relative ">Services 
             @if ($services_not_checked)
-                <span class="badge badge-danger notif-popup">{{ $services_not_checked }}</span>   
+                <span class="badge badge-danger notif-popup"></span>   
             @endif
         </button>
 
         <button  id="boxes-btn" class="btn font-weight-bold position-relative ">Boxes 
             @if ($boxes_not_checked)
-                <span class="badge badge-danger notif-popup">{{ $boxes_not_checked }}</span>
+                <span class="badge badge-danger notif-popup"></span>
             @endif
         </button>
 
         <button  id="equips-btn" class="btn font-weight-bold position-relative ">Equipements 
             @if ($equips_not_checked)
-                <span class="badge badge-danger notif-popup">{{ $equips_not_checked }}</span>
+                <span class="badge badge-danger notif-popup"></span>
             @endif
         </button>
 

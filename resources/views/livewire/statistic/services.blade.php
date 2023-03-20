@@ -17,12 +17,12 @@
         
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Porcentage des Services</h6>
-            <canvas  id="PieChart"></canvas>     
+            <canvas  id="PieChart" wire:ignore></canvas>     
         </div>
 
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Total des Services</h6>
-            <canvas id="BarChart"></canvas>
+            <canvas id="BarChart" wire:ignore></canvas>
         </div>
         
         {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
@@ -37,13 +37,15 @@
 {{---------------------------------------- Piechart ------------------------------------------------------------------}}
 <script>
 
+    let data = @json($services_status);
+
     let ctxServicesPie = document.getElementById('PieChart').getContext('2d');
     let servicesPieChart = new Chart(ctxServicesPie, {
         type: 'doughnut',
         data:{
             labels:['Ok','Warning','Critical','Unknown'],
             datasets:[{
-                data: @json($services_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -86,7 +88,7 @@
             labels: ['Ok','Warning','Critical','Unknown'],
             datasets: [{
 
-                data: @json($services_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -153,6 +155,17 @@
             // }
         }
     });
+</script>
+
+<script>
+    
+    document.addEventListener('livewire:update', function () {
+        servicesPieChart.data.datasets[0].data = @this.services_status
+        servicesPieChart.update()
+        servicesBarChart.data.datasets[0].data = @this.services_status
+        servicesBarChart.update()
+    })
+
 </script>
 
 <!---------------------------------------- floating BarChart ---------------------------------------------------------->

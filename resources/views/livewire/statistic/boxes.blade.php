@@ -1,5 +1,3 @@
-<script src="{{ asset('js/chartjs-plugin.js') }}"></script>
-
 <div class="container w-100 bg-white shadow rounded mt-4">
 
     {{-- Filter --}}
@@ -12,17 +10,19 @@
 
     <hr>
 
+    <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
+
     {{-- Charts --}}
     <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">
         
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Porcentage des Boxes</h6>
-            <canvas id="PieChart"></canvas>     
+            <canvas id="PieChart" wire:ignore></canvas>     
         </div>
         
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Total des Boxes</h6>
-            <canvas id="BarChart"></canvas>
+            <canvas id="BarChart" wire:ignore></canvas>
         </div>
         
         {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
@@ -37,13 +37,15 @@
 {{-- Boxes Pie chart --}}
 <script>
 
+    let data = @json($boxes_status);
+
     let ctxBoxPie = document.getElementById('PieChart').getContext('2d');
-    let boxPieChart = new Chart(ctxBoxPie, {
+    let boxesPieChart = new Chart(ctxBoxPie, {
         type: 'doughnut',
         data:{
             labels:['Up','Down','Unreachable'],
             datasets:[{
-                data: @json($boxes_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -79,13 +81,13 @@
 <script>
 
     let ctxBar = document.getElementById('BarChart').getContext('2d');
-    let BarChart = new Chart(ctxBar, {
+    let boxesBarChart = new Chart(ctxBar, {
         type: 'bar',
         data: {
             labels: ['Up','Down','Unreachable'],
             datasets: [{
 
-                data: @json($boxes_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#e3342f',
@@ -154,6 +156,17 @@
     });
 </script>
 
+<script>
+    
+    document.addEventListener('livewire:update', function () {
+        boxesPieChart.data.datasets[0].data = @this.boxes_status
+        boxesPieChart.update()
+        boxesBarChart.data.datasets[0].data = @this.boxes_status
+        boxesBarChart.update()
+        console.log(@this.boxes_status)
+    })
+
+</script>
 <!---------------------------------------- floating BarChart ---------------------------------------------------------->
 {{-- <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});

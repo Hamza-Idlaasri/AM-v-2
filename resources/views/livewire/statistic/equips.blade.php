@@ -17,13 +17,13 @@
         {{-- Doughnut Chart --}}
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218)!important">
             <h6 class="mb-2 text-secondary">Porcentage des Equipements</h6>
-            <canvas  id="PieChart"></canvas>     
+            <canvas id="PieChart" wire:ignore></canvas>     
         </div>
 
         {{-- Bar Chart --}}
         <div class="bg-white border py-3 px-4 m-3" style="position: relative; width:32vw;border-radius: 12px;border-color:rgb(218, 218, 218!important">
             <h6 class="mb-2 text-secondary">Total des Equipements</h6>
-            <canvas id="BarChart"></canvas>
+            <canvas id="BarChart" wire:ignore></canvas>
         </div>
         
         {{-- <div class="bg-white shadow py-3 px-4 m-3" id="timeline" style="width:66vw;border-radius: 12px;">
@@ -35,15 +35,10 @@
     </div>
 </div>
 
-<script>
-    let ok = @json($equips_status[0]);
-    let warning = @json($equips_status[1]);
-    let critical = @json($equips_status[2]);
-    let unknown = @json($equips_status[3]);
-</script>
-
 {{------------------------------------------ Piechart -----------------------------------------------------------}}
 <script>
+
+    let data = @json($equips_status);
 
     let ctxPieChart = document.getElementById('PieChart').getContext('2d');
     let equipsPieChart = new Chart(ctxPieChart, {
@@ -51,7 +46,7 @@
         data:{
             labels:['Ok','Warning','Critical','Unknown'],
             datasets:[{
-                data: @json($equips_status),
+                data: data,
                 backgroundColor: [
                         '#38c172',
                         '#ffed4a',
@@ -94,7 +89,7 @@
             labels: ['Ok','Warning','Critical','Unknown'],
             datasets: [{
 
-                data: @json($equips_status),
+                data: data,
                 backgroundColor: [
                     '#38c172',
                     '#ffed4a',
@@ -146,22 +141,16 @@
     
 </script>
 
-{{-- <script>
+<script>
     
-    var refreshBtn = document.getElementById('refreshBtn');
+    document.addEventListener('livewire:update', function () {
+        equipsPieChart.data.datasets[0].data = @this.equips_status
+        equipsPieChart.update()
+        equipsBarChart.data.datasets[0].data = @this.equips_status
+        equipsBarChart.update()
+    })
 
-    refreshBtn.addEventListener('click', function() {
-        // update chart data and options
-        equipsBarChart.data.datasets[0].data = @json($equips_status);
-        equipsBarChart.options.title.text = 'Updated Chart Title';
-
-        // call chart update method
-        equipsBarChart.update();
-
-        console.log(ok);
-    });
-
-</script> --}}
+</script>
 
 {{-- <script type="text/javascript">
     google.charts.load("current", {packages:["timeline"]});
@@ -226,7 +215,6 @@
     }
   
 </script> --}}
-
 <script>
 
 window.addEventListener('load', function() {

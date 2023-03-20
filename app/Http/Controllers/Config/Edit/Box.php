@@ -234,7 +234,7 @@ class Box extends Controller
             }
         }
 
-        //---------------------------------- Remove the Host as parrent of another Host ------------------------------//
+        //---------------------------------- Edit the Host as parrent of another Host ------------------------------//
 
         $parent_host = DB::table('nagios_host_parenthosts')
             ->where('nagios_host_parenthosts.parent_host_object_id',$box_object_id)
