@@ -10,10 +10,22 @@ use Illuminate\Support\Facades\DB;
 
 class AllSites extends Component
 {
+    public $search;
+ 
+    protected $queryString = ['search'];
+
     public function render()
     {
-        $all_sites = Sites::all()->except(1);
+        if($this->search)
+        {
+            $all_sites = Sites::where('site_name','like', '%'.$this->search.'%')->get();
 
+        } else {
+
+            $all_sites = Sites::all()->except(1);
+
+        }
+        
         $sites = [];
 
         foreach ($all_sites as $site) {
