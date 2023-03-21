@@ -1,5 +1,8 @@
 <div class="container w-100 bg-white shadow rounded mt-4">
 
+    {{-- Loader --}}
+    @include('inc.loading')
+    
     {{-- Filter --}}
     <div>
         <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">

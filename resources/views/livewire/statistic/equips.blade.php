@@ -1,7 +1,10 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2">
 
+    {{-- Loader --}}
+    @include('inc.loading')
+
+    {{-- Filter --}}
     <div>
-        {{-- Filter --}}
         <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
             {{-- Filter --}}
             @include('inc.filter',['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
