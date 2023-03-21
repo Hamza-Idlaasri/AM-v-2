@@ -8,11 +8,15 @@ use App\Models\UsersSite;
 
 class Hosts extends Component
 {
+    // Site Name
+    public $site_name;
+
+    // Filter
     public $host_name;
     public $date_from;
     public $date_to;
-    public $site_name;
 
+    // Statistics
     public $hosts_up = 0;
     public $hosts_down = 0;
     public $hosts_unreachable = 0;
@@ -25,7 +29,7 @@ class Hosts extends Component
 
         $this->getHistory();
 
-        $this->hosts_status = [$this->hosts_up,$this->hosts_down,$this->hosts_unreachable];
+        $this->hosts_status = [$this->hosts_up, $this->hosts_down, $this->hosts_unreachable];
 
         return view('livewire.statistic.hosts')
             ->with(['hosts_status' => $this->hosts_status, 'hosts_names' => $this->getHosts()])
@@ -143,7 +147,7 @@ class Hosts extends Component
         $this->hosts_unreachable = 0;
         
         foreach ($ranges as $state) {
-            
+           
             switch ($state) {
                 case 0:
                     $this->hosts_up++;
@@ -301,8 +305,58 @@ class Hosts extends Component
 
                 });
     
+        // $collection = clone $this->OrderRanges($collection);
+
+        $hosts_current_state = $this->hostsCurrentState();
+        
+        foreach ($hosts_current_state as $host) {
+            $collection->prepend($host->state);
+        }
+    
         return $this->SortStatus($collection);
         
+    }
+
+    public function hostsCurrentState()
+    {
+        if($this->site_name == "All")
+        {
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varname','SITE')
+                ->select('nagios_hoststatus.current_state as state');
+        }
+        else 
+        {
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hoststatus.current_state as state');
+        }
+
+        // filter by name
+        if ($this->host_name) 
+        {
+            $current_state = $current_state->where('nagios_hosts.display_name', $this->host_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $current_state = $current_state->where('nagios_hoststatus.last_check','>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $current_state = $current_state->where('nagios_hoststatus.last_check','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        return $current_state->get();
     }
 
 }

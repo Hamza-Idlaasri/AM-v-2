@@ -304,8 +304,58 @@ class Hosts extends Component
 
                 });
     
-        return $this->OrderRanges($collection);
+        $collection = clone $this->OrderRanges($collection);
+
+        $hosts_current_state = $this->hostsCurrentState();
+
+        foreach ($hosts_current_state as $host) {
+            $collection->prepend($host);
+        }
+
+        return $collection;
         
     }
 
+    public function hostsCurrentState()
+    {
+        if($this->site_name == "All")
+        {
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varname','SITE')
+                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hoststatus.current_state as state','nagios_hoststatus.last_check as state_time','nagios_hoststatus.output','nagios_customvariables.varvalue as site_name')
+                ->orderBy('last_check');
+        }
+        else 
+        {
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name as host_name','nagios_hosts.address','nagios_hoststatus.current_state as state','nagios_hoststatus.last_check as state_time','nagios_hoststatus.output')
+                ->orderBy('last_check');
+        }
+
+        // filter by name
+        if ($this->host_name) {
+            $current_state = $current_state->where('nagios_hosts.display_name', $this->host_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $current_state = $current_state->where('nagios_hoststatus.last_check','>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $current_state = $current_state->where('nagios_hoststatus.last_check','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        return $current_state->get();
+    }
 }

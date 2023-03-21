@@ -26,9 +26,10 @@
                 <th>Ville</th>
                 @endif
                 <th>Equipement</th>
+                <th>Pin</th>
                 <th>Status</th>
                 <th>State Time</th>
-                <th>Durée</th>
+                {{-- <th>Durée</th> --}}
                 {{-- <th>End Time</th> --}}
                 <th style="width: 30%">Description</th>
             </tr>
@@ -46,6 +47,8 @@
             @endif
 
             <td>{{$equip_history->equip_name}}</td>
+
+            <td>{{substr($equip_history->input_nbr,9,-2);}}</td>
             
             @switch($equip_history->state)
                 
@@ -70,7 +73,7 @@
             {{-- <td>{{$equip_history->end_time}}</td> --}}
 
             {{-- Duration --}}
-            <td>{{formatSeconds($equip_history->state_time_usec)}}</td>
+            {{-- <td>{{formatSeconds($equip_history->state_time_usec)}}</td> --}}
 
             {{-- Description --}}
             @if ($equip_history->state == 0)

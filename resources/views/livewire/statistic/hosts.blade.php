@@ -1,5 +1,3 @@
-<script src="{{ asset('js/chartjs-plugin.js') }}"></script>
-
 <div class="container w-100 bg-white shadow rounded mt-4">
 
     {{-- Filter --}}
@@ -11,6 +9,8 @@
     </div>
 
     <hr>
+
+    <script src="{{ asset('js/chartjs-plugin.js') }}"></script>
 
     {{-- Chart --}}
     <div class="container m-2 d-flex justify-content-center align-items-center flex-wrap">

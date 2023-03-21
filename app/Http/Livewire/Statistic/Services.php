@@ -371,7 +371,57 @@ class Services extends Component
 
                 });
     
+        $services_current_state = $this->servicesCurrentState();
+
+        foreach ($services_current_state as $service) {
+            $collection->prepend($service->state);
+        }
+
         return $this->SortStatus($collection);
 
+    }
+
+    public function servicesCurrentState()
+    {
+        if ($this->site_name == 'All') {
+
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->select('nagios_servicestatus.current_state as state')
+                ->orderBy('last_check');
+
+        }
+        else
+        {
+            $current_state = DB::table('nagios_hosts')
+                ->where('alias','host')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
+                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
+                ->select('nagios_servicestatus.current_state as state')
+                ->where('nagios_customvariables.varvalue',$this->site_name)
+                ->orderBy('last_check');
+        }
+
+        // filter by name
+        if ($this->service_name) {
+            $current_state = $current_state->where('nagios_services.display_name', $this->service_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from)
+        {
+            $current_state = $current_state->where('nagios_servicestatus.last_check','>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to)
+        {
+            $current_state = $current_state->where('nagios_servicestatus.last_check','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        }
+
+        return $current_state->get();
     }
 }

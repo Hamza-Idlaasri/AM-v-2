@@ -24,8 +24,8 @@
                 <th>Host</th>
                 <th>Service</th>
                 <th>Status</th>
-                <th>Start Time</th>
-                <th>End Time</th>
+                <th>State Time</th>
+                {{-- <th>End Time</th> --}}
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
@@ -56,8 +56,8 @@
                     
             @endswitch
             
-            <td>{{$service_history->start_time}}</td>
-            <td>{{$service_history->end_time}}</td>
+            <td>{{$service_history->state_time}}</td>
+            {{-- <td>{{$service_history->end_time}}</td> --}}
             <td class="description">{{$service_history->output}}</td>
         </tr>
  
