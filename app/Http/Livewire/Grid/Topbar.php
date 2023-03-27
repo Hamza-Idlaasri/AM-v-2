@@ -259,21 +259,26 @@ class Topbar extends Component
 
         if (SITE_NAME == 'All') {
             
-            $equips_summary = DB::table('nagios_hosts')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->where('nagios_hosts.alias','box')
+            $equips_summary = DB::table('nagios_services')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('am.equips_details as ed', function ($join) {
+                    $join->on('nagios_services.display_name','=','ed.pin_name')
+                        ->on('nagios_hosts.display_name','=','ed.box_name');
+                })
+                ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
                 ->select('nagios_servicestatus.current_state')
                 ->get();
         }
         else
         {
-            $equips_summary = DB::table('nagios_hosts')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->where('nagios_hosts.alias','box')
-                ->where('nagios_customvariables.varvalue',SITE_NAME)
+            $equips_summary = DB::table('nagios_services')
+                ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
+                ->join('am.equips_details as ed', function ($join) {
+                    $join->on('nagios_services.display_name','=','ed.pin_name')
+                        ->on('nagios_hosts.display_name','=','ed.box_name');
+                })
+                ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
+                ->where('ed.site_name',SITE_NAME)
                 ->select('nagios_servicestatus.current_state')
                 ->get();
         }

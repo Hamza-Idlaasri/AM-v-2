@@ -51,7 +51,7 @@
 
             <td>{{$equip_history->equip_name}}</td>
 
-            <td>{{substr($equip_history->input_nbr,9,-2);}}</td>
+            <td>{{substr($equip_history->input_nbr,9,-2)}}</td>
             
             @switch($equip_history->state)
                 

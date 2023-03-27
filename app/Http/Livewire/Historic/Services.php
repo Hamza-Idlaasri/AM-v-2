@@ -326,7 +326,7 @@ class Services extends Component
 
         $history = $history->chunk(1000, function ($services_history) use (&$collection) {
 
-                    $services_names = $this->EquipsNames();
+                    $services_names = $this->getServicesNames();
 
                     $services_ranges = [];
 

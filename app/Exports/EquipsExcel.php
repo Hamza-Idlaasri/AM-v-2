@@ -31,10 +31,10 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
             'Site',
             'Ville',
             'Equipement',
-            // 'Pin',
+            'Pin',
             'State',
             'State Time',
-            'Durée',
+            // 'Durée',
             'Description',
         ];
     }
@@ -53,10 +53,10 @@ class EquipsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  With
             $equips->box_name,
             $equips->site_name,
             $equips->equip_name,
-            // substr($equip->check_command,9,-2),
+            substr($equips->input_nbr,9,-2),
             $this->convertState($equips->state),
             $equips->state_time,
-            $this->formatSeconds($equips->state_time_usec),
+            // $this->formatSeconds($equips->state_time_usec),
             // $equips->end_time,
             $this->output($equips->state, $equips->pin_name)
         ];

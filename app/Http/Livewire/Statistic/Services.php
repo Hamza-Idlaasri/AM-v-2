@@ -120,7 +120,7 @@ class Services extends Component
             
         }
 
-        return $this->SortStatus($services_range_of_states);
+        return $services_range_of_states;
     }
 
     public function SortStatus($ranges)
@@ -341,7 +341,7 @@ class Services extends Component
 
         $history = $history->chunk(1000, function ($services_history) use (&$collection) {
 
-                    $services_names = $this->EquipsNames();
+                    $services_names = $this->ServicesNames();
 
                     $services_ranges = [];
 
