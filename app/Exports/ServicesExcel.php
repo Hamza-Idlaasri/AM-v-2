@@ -33,6 +33,7 @@ class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  Wi
             'State',
             'Start Time',
             'End Time',
+            'Duration',
             'Description',
         ];
     }
@@ -53,6 +54,7 @@ class ServicesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  Wi
             $this->convertState($services->state),
             $services->start_time,
             $services->end_time,
+            $services->duration,
             $services->output
         ];
     }

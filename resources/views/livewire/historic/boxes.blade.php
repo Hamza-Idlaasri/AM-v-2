@@ -24,20 +24,25 @@
     
         <thead class="bg-light text-dark">
             <tr>
-                <th>Boxes</th>
+                <th>Box</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
-                <th>State Time</th>
-                {{-- <th>End Time</th> --}}
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
     
         @forelse ($boxes_histories as $box_history)
             <tr>
+                {{-- Box Name --}}
                 <td>{{$box_history->box_name}}</td>
+
+                {{-- IP Address  --}}
                 <td>{{$box_history->address}}</td>
                 
+                {{-- Status --}}
                 @switch($box_history->state)
                 
                     @case(0)
@@ -56,15 +61,23 @@
                         
                 @endswitch
                 
-                <td>{{$box_history->state_time}}</td>
-                {{-- <td>{{$box_history->end_time}}</td> --}}
+                {{-- Start Time --}}
+                <td>{{$box_history->start_time}}</td>
+
+                {{-- End Time --}}
+                <td>{{$box_history->end_time}}</td>
+
+                {{-- Duration --}}
+                <td>{{$box_history->duration}}</td>
+                
+                {{-- Description --}}
                 <td class="description">{{$msg[$box_history->state]}}</td>
             </tr>
 
         @empty
 
             <tr>
-                <td colspan="6">No result found {{-- <strong>{{ request()->query('search') }}</strong> --}}</td>
+                <td colspan="7">No result found {{-- <strong>{{ request()->query('search') }}</strong> --}}</td>
             </tr>
 
         @endforelse

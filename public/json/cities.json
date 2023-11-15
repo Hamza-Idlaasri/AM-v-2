@@ -1,0 +1,64 @@
+{
+    "city": [{
+        "name": "Casablanca",
+        "cx": "200",
+        "cy": "135"
+    }, {
+        "name": "Rabat",
+        "cx": "215",
+        "cy": "125"
+    }, {
+        "name": "Tanger",
+        "cx": "235",
+        "cy": "80"
+    }, {
+        "name": "Fes",
+        "cx": "252",
+        "cy": "123"
+    }, {
+        "name": "Marrakech",
+        "cx": "190",
+        "cy": "175"
+    }, {
+        "name": "Oujda",
+        "cx": "315",
+        "cy": "108"
+    }, {
+        "name": "Agadir",
+        "cx": "158",
+        "cy": "215"
+    }, {
+        "name": "Berkan",
+        "cx": "308",
+        "cy": "102"
+    }, {
+        "name": "Dakhla",
+        "cx": "20",
+        "cy": "385"
+    }, {
+        "name": "El Jadida",
+        "cx": "188",
+        "cy": "140"
+    }, {
+        "name": "Khouribga",
+        "cx": "220",
+        "cy": "150"
+    }, {
+        "name": "Laayoune",
+        "cx": "80",
+        "cy": "300"
+    }, {
+        "name": "Mohammedia",
+        "cx": "208",
+        "cy": "130"
+    }, {
+        "name": "Salé",
+        "cx": "220",
+        "cy": "120"
+    }, {
+        "name": "Tétouan",
+        "cx": "246",
+        "cy": "87"
+    }]
+
+}

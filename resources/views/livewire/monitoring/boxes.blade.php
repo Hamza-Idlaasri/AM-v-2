@@ -1,5 +1,9 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll>
 
+    {{-- Link --}}
+    <div class="float-left text-secondary mt-2">Monitoring <i class="fa-solid fa-angle-right fa-xs"></i> <a href="/monitoring/boxes">Boxes</a></div>
+
+    {{-- Search-Bar --}}
     @include('inc.searchbar',['route' => 'monitoring.boxes'])
 
     <div class="float-none mt-4" style="font-size: 90%">

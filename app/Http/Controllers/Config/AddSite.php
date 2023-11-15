@@ -17,6 +17,7 @@ class AddSite extends Controller
     {
         $this->validate($request,[
             'site_name' => 'required|min:2|max:100|unique:am.all_sites,site_name|regex:/^[a-zA-Z0-9-_+ ]/',
+            // 'city' => 'required'
         ]);
 
         $add_site = Sites::create([

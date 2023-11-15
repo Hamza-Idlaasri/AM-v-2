@@ -16,6 +16,7 @@ class Host extends Controller
     
     public function editHost(Request $request, $host_object_id)
     {
+        $site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
 
         // validation
         $this->validate($request,[
@@ -26,9 +27,11 @@ class Host extends Controller
             'retry_interval' => 'required|min:1|max:100',
             'max_attempts' => 'required|min:1|max:100',
             'notif_interval' => 'required|min:1|max:1000',
+            'site' => 'required_unless:site,!=,specific'
 
         ],[
             'addressIP.required' => 'the IP address field is empty',
+            'site.required_unless' => 'Please choose a site'
         ]);
         
         $old_host_details = DB::table('nagios_hosts')
@@ -46,28 +49,29 @@ class Host extends Controller
 
         // Parent relationship
         if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$old_host_details->site_name."\n\tparents\t\t\t".$request->input('hosts');
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t".$request->hostName."\n\talias\t\t\thost\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t". $request->site == 'specific' ? $site_name : $request->site . "\n\tparents\t\t\t".$request->input('hosts');
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t".$old_host_details->site_name;
+            $define_host = "define host {\n\tuse\t\t\t\t\tlinux-server\n\thost_name\t\t\t\t".$request->hostName."\n\talias\t\t\t\t\thost\n\taddress\t\t\t\t\t".$request->addressIP."\n\t_site\t\t\t". $request->site == 'specific' ? $site_name : $request->site ;
 
         // Normal Check Interval
-        if($old_host_details->check_interval != $request->check_interval)
-            $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
+        // Convert Time
+        $request->check_interval = floatval(round($request->check_interval / 60, 2));
+        // if($old_host_details->check_interval != $request->check_interval)
+        $define_host = $define_host."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-            // Convert Time
-        $request->retry_interval = floatval(round($request->retry_interval/60.2));
-            // Check Time
-        if($old_host_details->retry_interval != $request->retry_interval)
-            $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
+        // Convert Time
+        $request->retry_interval = floatval(round($request->retry_interval/ 60, 2));
+        // if($old_host_details->retry_interval != $request->retry_interval)
+        $define_host = $define_host."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_host_details->max_check_attempts != $request->max_attempts)
-            $define_host = $define_host."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
+        // if($old_host_details->max_check_attempts != $request->max_attempts)
+        $define_host = $define_host."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_host_details->notification_interval != $request->notif_interval)
-            $define_host = $define_host."\n\tnotification_interval\t\t\t".$request->notif_interval;
+        // if($old_host_details->notification_interval != $request->notif_interval)
+        $define_host = $define_host."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
         if($request->query('check'))

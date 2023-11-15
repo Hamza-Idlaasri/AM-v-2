@@ -48,8 +48,11 @@
 
     <div class="card-header position-relative">
         <h4>My profile</h4>
+        
         <a href="{{ route('edit-user-info') }}" class="text-primary icons" id="edit-btn" style=""><i class="fas fa-pen"></i></a>
+        @if (auth()->user()->hasRole('super_admin'))
         <a href="{{ route('change-password') }}" class="text-primary icons" id="key-btn" style=""><i class="fas fa-key"></i></a>
+        @endif
     </div>
 
     <div class="card-body">

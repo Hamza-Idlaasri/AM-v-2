@@ -1,5 +1,9 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll>
 
+    {{-- Link --}}
+    <div class="float-left text-secondary mt-2">Monitoring <i class="fa-solid fa-angle-right fa-xs"></i> <a href="/monitoring/services">Services</a></div>
+
+    {{-- Search-Bar --}}
     @include('inc.searchbar',['route' => 'monitoring.services'])
 
     <div class="float-none mt-4" style="font-size: 90%">
@@ -11,6 +15,9 @@
                 <th>Host</th>
                 <th>Service</th>
                 <th>Status</th>
+                @if ($site_name == "All")
+                <th>Ville</th>
+                @endif
                 <th>Dernier verification</th>
                 <th style="width: 40%">Description</th>
             </tr>
@@ -62,6 +69,11 @@
                     @break
                     
             @endswitch
+            
+            {{-- City --}}
+            @if ($site_name == "All")
+            <td>{{ $service->site_name }}</td>
+            @endif
             
             {{-- Dernier verification --}}
             <td>{{$service->last_check}}</td>

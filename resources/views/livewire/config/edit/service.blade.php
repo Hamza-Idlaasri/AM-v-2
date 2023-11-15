@@ -62,7 +62,7 @@
                 <label for="CheckInterval"><b>Check Interval <!--<span class="text-danger">*</span>--></b></label>
                 <div class="d-flex">
                     <input  type="number" min="1" max="100" name="check_interval" class="form-control p-unity @error('check_interval') border-danger @enderror" id="CheckInterval" value="{{ $service->check_interval }}">
-                    <span class="unity">min</span>
+                    <span class="unity">sec</span>
                 </div>
                 @error('check_interval')
                     <div class="text-danger">

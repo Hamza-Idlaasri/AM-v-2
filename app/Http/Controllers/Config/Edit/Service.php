@@ -37,23 +37,24 @@ class Service extends Controller
         $define_service = "define service {\n\tuse\t\t\t\t\tgeneric-service\n\thost_name\t\t\t\t".$old_service_details->host_name."\n\tservice_description\t\t\t".$request->serviceName."\n\tcheck_command\t\t\t\t".$old_service_details->check_command;
 
         // Normal Check Interval
-        if($old_service_details->check_interval != $request->check_interval)
-            $define_service = $define_service."\n\tcheck_interval\t\t\t\t".$request->check_interval;
+        $request->check_interval = floatval(round($request->check_interval / 60, 2));
+        // if($old_service_details->check_interval != $request->check_interval)
+        $define_service = $define_service."\n\tcheck_interval\t\t\t\t".$request->check_interval;
         
         // Retry Check Interval
-            // Convert Time
-        $request->retry_interval = floatval(round($request->retry_interval/60,2));
+        // Convert Time
+        $request->retry_interval = floatval(round($request->retry_interval / 60, 2));
             // Check Time
-        if($old_service_details->retry_interval != $request->retry_interval)
-            $define_service = $define_service."\n\tretry_interval\t\t\t\t".$request->retry_interval;
+        // if($old_service_details->retry_interval != $request->retry_interval)
+        $define_service = $define_service."\n\tretry_interval\t\t\t\t".$request->retry_interval;
 
         // Max Check Attempts
-        if($old_service_details->max_check_attempts != $request->max_attempts)
-            $define_service = $define_service."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
+        // if($old_service_details->max_check_attempts != $request->max_attempts)
+        $define_service = $define_service."\n\tmax_check_attempts\t\t\t".$request->max_attempts;
         
         // Notification Interval
-        if($old_service_details->notification_interval != $request->notif_interval)
-            $define_service = $define_service."\n\tnotification_interval\t\t\t".$request->notif_interval;
+        // if($old_service_details->notification_interval != $request->notif_interval)
+        $define_service = $define_service."\n\tnotification_interval\t\t\t".$request->notif_interval;
 
         // Check this host
         if($request->query('check'))

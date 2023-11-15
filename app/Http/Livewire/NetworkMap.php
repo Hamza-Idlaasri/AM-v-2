@@ -8,6 +8,10 @@ use App\Models\UsersSite;
 
 class NetworkMap extends Component
 {
+    // Filter
+    public $status;
+    public $box_name;
+
     public function render()
     {
         $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
@@ -22,6 +26,10 @@ class NetworkMap extends Component
                 $hosts = $hosts->where('nagios_hosts.alias','box');
             }
             
+            if ($this->status) {
+                $hosts = $hosts->where('nagios_hoststatus.current_state', $this->status);  
+            }
+
             $hosts = $hosts->get();
 
             $parent_hosts = DB::table('nagios_hosts')

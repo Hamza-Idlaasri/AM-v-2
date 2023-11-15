@@ -10,9 +10,21 @@ use Illuminate\Support\Facades\DB;
 
 class AllSites extends Component
 {
-    public $search;
+    public $search, $site_name, $city;
  
     protected $queryString = ['search'];
+
+    // protected $rules = [
+    //     'site_name' => 'required|min:2|max:100|unique:am.all_sites,site_name|regex:/^[a-zA-Z0-9-_+ ]/',
+    //     'city' => 'required'
+    // ];
+
+    // public function updated()
+    // {
+    //     $this->validate();
+
+    //     dd($this->site_name, $this->city);
+    // }
 
     public function render()
     {

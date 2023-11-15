@@ -45,11 +45,11 @@ class Equips extends Component
 
         }
 
-        if(!empty($equips))
-            $this->fixInputNbr($equips);
+        // if(!empty($equips))
+        //     $this->fixInputNbr($equips);
 
-        if(!empty($equips_problems))
-            $this->fixInputNbr($equips_problems);
+        // if(!empty($equips_problems))
+        //     $this->fixInputNbr($equips_problems);
 
         $equips = $this->OrganizeData($equips);
 
@@ -72,7 +72,7 @@ class Equips extends Component
                         ->on('nagios_hosts.display_name','=','ed.box_name');
                 })
                 ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','ed.input_nbr','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
                 ->orderBy('nagios_hosts.display_name')
                 ->orderBy('nagios_services.display_name');
 
@@ -86,7 +86,7 @@ class Equips extends Component
                 })
                 ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
                 ->where('ed.site_name',$this->site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','ed.input_nbr','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
                 ->orderBy('nagios_hosts.display_name')
                 ->orderBy('nagios_services.display_name');
         }
@@ -104,7 +104,7 @@ class Equips extends Component
                 })
                 ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
                 ->where('current_state','<>','0')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','ed.input_nbr','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
                 ->orderBy('nagios_hosts.display_name')
                 ->orderBy('nagios_services.display_name');
         }
@@ -119,18 +119,18 @@ class Equips extends Component
                 ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
                 ->where('ed.site_name',$this->site_name)
                 ->where('current_state','<>','0')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','ed.input_nbr','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
                 ->orderBy('nagios_hosts.display_name')
                 ->orderBy('nagios_services.display_name');
         }
     }
 
-    public function fixInputNbr($equips)
-    {
-        foreach ($equips as $equip) {
-            $equip->check_command = substr($equip->check_command,9,-2);
-        }
-    }
+    // public function fixInputNbr($equips)
+    // {
+    //     foreach ($equips as $equip) {
+    //         $equip->check_command = substr($equip->check_command,9,-2);
+    //     }
+    // }
 
     public function OrganizeData($all_equips)
     {

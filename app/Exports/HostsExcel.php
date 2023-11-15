@@ -31,8 +31,9 @@ class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             'Host',
             'Address IP',
             'State',
-            'State Time',
-            // 'End Time',
+            'Start Time',
+            'End Time',
+            'Duration',
             'Description',
         ];
     }
@@ -51,8 +52,9 @@ class HostsExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             $hosts->host_name,
             $hosts->address,
             $this->convertState($hosts->state),
-            $hosts->state_time,
-            // $hosts->end_time,
+            $hosts->start_time,
+            $hosts->end_time,
+            $hosts->duration,
             $hosts->output
         ];
     }

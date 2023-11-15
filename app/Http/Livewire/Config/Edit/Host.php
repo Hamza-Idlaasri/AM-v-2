@@ -6,10 +6,12 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\UsersSite;
+use App\Models\Sites;
 
 class Host extends Component
 {
     public $host_id;
+    public $site_name;
 
     public function mount(Request $request)
     {
@@ -18,14 +20,19 @@ class Host extends Component
 
     public function render()
     {
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $host = $this->getHost($this->host_id);
 
-        $host->retry_interval = round($host->retry_interval * 60);
+        $host->retry_check_interval = round($host->retry_check_interval * 60, 2);
+        $host->normal_check_interval = round($host->normal_check_interval * 60, 2);
         
         $parent = $this->Parent_Child();
 
+        $sites = Sites::all()->except(1);
+
         return view('livewire.config.edit.host')
-            ->with(['host' => $host, 'parent' => $parent])
+            ->with(['host' => $host, 'parent' => $parent, 'sites' => $sites])
             ->extends('layouts.app')
             ->section('content');
     }
@@ -50,12 +57,10 @@ class Host extends Component
 
     public function getAllHosts($host_id)
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
         return DB::table('nagios_hosts')
             ->where('alias','host')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-            ->where('nagios_customvariables.varvalue',$site_name)
+            ->where('nagios_customvariables.varvalue',$this->site_name)
             ->where('host_id','!=',$host_id)
             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id')
             ->get();

@@ -54,9 +54,11 @@ class AllSites extends Component
         $summary = $this->SummaryOfAllSites();
 
         $all_sites = Sites::all();
-        
+
+        $show_sites = $this->showSites($sites_details);
+
         return view('livewire.all-sites')
-            ->with(['all_sites' => $all_sites, 'summary' => $summary, 'sites_details' => $sites_details])
+            ->with(['all_sites' => $all_sites, 'summary' => $summary, 'sites_details' => $sites_details, 'show_sites' => $show_sites])
             ->extends('layouts.template')
             ->section('content');
     }
@@ -353,6 +355,36 @@ class AllSites extends Component
             "total_hosts" => $total_hosts, "total_boxes" => $total_boxes, "total_boxes", "total_services" => $total_services, "total_equips" => $total_equips,
         ];
 
+    }
+
+    public function showSites($sites) {
+
+        $cities = json_decode(file_get_contents(public_path('json/cities.json')), true);
+        
+        $cities = $cities["city"];
+
+        foreach ($sites as $site) {
+            foreach ($cities as $city) {
+
+                // Pass The coordinates of the city to the site property
+                if (strcasecmp($city['name'], $site->site_name) == 0) {
+                    $site->cx = $city['cx'];
+                    $site->cy = $city['cy'];
+                }
+
+                // Get The state of the site:
+                $site->ok = $site->services_ok + $site->equips_ok;
+                $site->warning = $site->services_warning + $site->equips_warning;
+                $site->critical = $site->services_critical + $site->equips_critical;
+                $site->unknown = $site->services_unknown + $site->equips_unknown;
+
+                $values = [$site->ok, $site->warning, $site->critical, $site->unknown];
+
+                $site->state = array_keys($values, max($values))[0];
+            }
+        }
+
+        return $sites;
     }
 
 }

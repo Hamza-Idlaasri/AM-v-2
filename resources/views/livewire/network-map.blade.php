@@ -1,9 +1,19 @@
-<script src="{{ asset('js/vis.js') }}"></script>
+<div class="" style="height: 100%">
 
-<div class="container p-3" style="height: 100%;">
+    {{-- Filter --}}
+    {{-- <div class="bg-white mt-4">
+        @include('inc.network-filter')
+    </div> --}}
 
-    <div class="network bg-white shadow-sm rounded" style="height: 100%"></div>
-
+    {{-- Library --}}
+    <script src="{{ asset('js/vis.js') }}"></script>
+    
+    {{-- Network Map --}}
+    <div class="container p-3" style="height: 100%;">
+        
+        <div class="network bg-white shadow-sm rounded" style="height: 100%"></div>
+        
+    </div>
 </div>
 
 <script>
@@ -19,7 +29,7 @@
     let fontColor;
 
    
-    // Create Nodes :
+    // Create Nodes : -----------------------------------------------------------------------------------------------------//
 
     {!!$hosts!!}.forEach(function(host) {
 
@@ -38,6 +48,7 @@
                     label = 'Unreachable';
                     fontColor = 'rgb(151, 4, 230)';
                     break;
+
                 default:
                     break;
         };
@@ -54,7 +65,7 @@
 
         });
 
-
+        
     });
 
     // Center of Network :
@@ -62,19 +73,17 @@
     node.push({
 
             id: 0,
-            label: 'AM',
+            label: 'Net Monitor',
             font:{
-                color:'blue',
+                color:'#132043',
             },
-            shape:'circule',
-            
+            shape:'box',
 
     });
-    
 
     let nodes = new vis.DataSet(node);
 
-    // End Create Nodes
+    // End Create Nodes ------------------------------------------------------------------------------------------------------------//
     
 
     // Create Edges (Relationship between nodes) :
@@ -109,8 +118,6 @@
 
     let edges = new vis.DataSet(edge);
 
-    
-
     const container = document.querySelector('.network');
 
     let data = {
@@ -129,9 +136,10 @@
                 },
                 borderWidth: 0,
                 color: {
-                    background: 'white',
+                    background: '#D2E0FB',
                     border: "1",
                 },
+                shape:'box',
 
 
             },
@@ -169,12 +177,11 @@
                 randomSeed: 0,
                 hierarchical: {
                     enabled: true,
-                    nodeSpacing: 100,
+                    nodeSpacing: 200,
                     treeSpacing: 500,
                     // direction: 'LR'
                     parentCentralization: true,
                     // levelSeparation: 500
-
                 }
             }
         };
@@ -184,6 +191,14 @@
         let Automap = new vis.Network(container, data, options);
 
 </script>
+
+{{-- <script>
+document.addEventListener('livewire:update', function () {
+    
+        data.update()
+        network.setData(data);
+    })
+</script> --}}
 
 <script>
 

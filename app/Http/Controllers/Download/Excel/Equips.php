@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exports\EquipsExcel;
 use Excel;
-use App\Models\UsersSite;
 
 class Equips extends Controller
 {

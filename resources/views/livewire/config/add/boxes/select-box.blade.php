@@ -2,7 +2,7 @@
             
     @forelse ($boxes as $box)
         
-        <a href="{{ route('add-equip', $box->host_object_id) }}" class="m-2 pt-4 pb-2 px-1 bg-white shadow text-center" style="text-decoration: none;min-width:150px;border-radius: 12px">
+        <a href="{{ route('add-pin', $box->host_object_id) }}" class="m-2 pt-4 pb-2 px-1 bg-white shadow text-center" style="text-decoration: none;min-width:150px;border-radius: 12px">
             <h1>
                 <i class="fa-solid fa-microchip"></i>
             </h1>
@@ -17,3 +17,13 @@
     @endforelse
 
 </div>
+
+<script>
+
+    window.addEventListener('load', function() {
+        document.getElementById('config').style.display = 'block';
+        document.getElementById('config-btn').classList.toggle("active-btn");
+        document.getElementById('c-equips').classList.toggle("active-link");
+    });
+        
+</script>

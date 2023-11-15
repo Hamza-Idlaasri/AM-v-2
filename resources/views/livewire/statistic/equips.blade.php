@@ -5,9 +5,9 @@
 
     {{-- Filter --}}
     <div>
-        <div class="container bg-white w-75 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
+        <div class="container bg-white w-100 p-0 my-3 mx-auto d-flex justify-content-between align-items-center">
             {{-- Filter --}}
-            @include('inc.filter',['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
+            @include('inc.filter', ['names' => $equips_names,'type' => 'equip','from' => 'statistic'])
         </div>
     </div>
 

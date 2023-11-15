@@ -54,4 +54,14 @@
 
 </div>
 
+<script>
+
+    window.addEventListener('load', function() {
+        document.getElementById('config').style.display = 'block';
+        document.getElementById('config-btn').classList.toggle("active-btn");
+        document.getElementById('c-boxes').classList.toggle("active-link");
+    });
+        
+</script>
+
 @endsection

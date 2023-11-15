@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Config\Add\Boxes;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UsersSite;
-use App\Models\EquipsDetail;
 
 class BF1010 extends Controller
 {
@@ -13,40 +12,35 @@ class BF1010 extends Controller
     {
         $this->middleware(['super_admin']);
     }
-    
+
     public function createBox(Request $request)
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+        $site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
 
-        // $equipNames = $request->input('equipName');
-        // $equiINnbr = $request->input('inputNbr');
-        
         // validation
-        $this->validate($request,[
+        $this->validate($request, [
 
             'boxName' => 'required|min:2|max:200|unique:nagios_hosts,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
             'addressIP' => 'required',
-            // 'equipName.*' => 'required|min:2|max:20|unique:nagios_services,display_name|regex:/^[a-zA-Z0-9-_+ ]/',
-            // 'inputNbr.*' => 'required',
-            
-        ],[
+            'site' => 'required_unless:site,!=,specific'
+
+        ], [
             'addressIP.required' => 'the IP address field is empty',
-            // 'equipName.*.required' => 'the equipement name field is empty',
-            // 'inputNbr.*.required' => 'the input number field is empty',
+            'site.required_unless' => 'Please choose a site'
         ]);
 
-        $box_dir = "/usr/local/nagios/etc/objects/boxes/".$request->boxName;
+        $box_dir = "/usr/local/nagios/etc/objects/boxes/" . $request->boxName;
 
-        if(!is_dir($box_dir))
+        if (!is_dir($box_dir))
             mkdir($box_dir);
-            
-        // Parent relationship
-        if($request->input('hosts'))
-            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n\tparents\t\t\t".$request->input('hosts')."\n}\n\n";
-        else
-            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t".$request->boxName."\n\talias\t\t\tbox\n\taddress\t\t\t".$request->addressIP."\n\t_site\t\t\t".$site_name."\n\t_boxType\t\t\tbf1010\n}\n\n";
 
-        file_put_contents($box_dir."/".$request->boxName.".cfg", $define_host);
+        // Parent relationship
+        if ($request->input('hosts'))
+            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t" . $request->boxName . "\n\talias\t\t\tbox\n\taddress\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site == 'specific' ? $site_name : '' . "\n\t_boxType\t\t\tbf1010\n\tparents\t\t\t" . $request->input('hosts') . "\n}\n\n";
+        else
+            $define_host = "define host {\n\tuse\t\t\tbox-server\n\thost_name\t\t" . $request->boxName . "\n\talias\t\t\tbox\n\taddress\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site == 'specific' ? $site_name : '' . "\n\t_boxType\t\t\tbf1010\n}\n\n";
+
+        file_put_contents($box_dir . "/" . $request->boxName . ".cfg", $define_host);
 
         // Add box path to nagios.cfg file
         $cfg_file = "\n\ncfg_file=/usr/local/nagios/etc/objects/boxes/{$request->boxName}/{$request->boxName}.cfg";
@@ -58,5 +52,4 @@ class BF1010 extends Controller
 
         return redirect()->route('monitoring.boxes');
     }
-
 }

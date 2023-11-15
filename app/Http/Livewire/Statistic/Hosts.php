@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Statistic;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\UsersSite;
+use Carbon\Carbon;
 
 class Hosts extends Component
 {
@@ -27,7 +28,8 @@ class Hosts extends Component
     {
         $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
 
-        $this->getHistory();
+        // $this->getHistory();
+        $this->getBySQL();
 
         $this->hosts_status = [$this->hosts_up, $this->hosts_down, $this->hosts_unreachable];
 
@@ -140,27 +142,27 @@ class Hosts extends Component
         return $hostes_range_of_states;
     }
 
-    public function SortStatus($ranges)
-    {
-        $this->hosts_up = 0;
-        $this->hosts_down = 0;
-        $this->hosts_unreachable = 0;
+    // public function SortStatus($ranges)
+    // {
+    //     $this->hosts_up = 0;
+    //     $this->hosts_down = 0;
+    //     $this->hosts_unreachable = 0;
         
-        foreach ($ranges as $state) {
+    //     foreach ($ranges as $state) {
            
-            switch ($state) {
-                case 0:
-                    $this->hosts_up++;
-                    break;
-                case 1:
-                    $this->hosts_down++;
-                    break;
-                case 2:
-                    $this->hosts_unreachable++;
-                    break;
-            }
-        }
-    }
+    //         switch ($state) {
+    //             case 0:
+    //                 $this->hosts_up++;
+    //                 break;
+    //             case 1:
+    //                 $this->hosts_down++;
+    //                 break;
+    //             case 2:
+    //                 $this->hosts_unreachable++;
+    //                 break;
+    //         }
+    //     }
+    // }
 
     // public function getHostsChecks()
     // {
@@ -317,46 +319,244 @@ class Hosts extends Component
         
     }
 
+    // public function hostsCurrentState()
+    // {
+    //     if($this->site_name == "All")
+    //     {
+    //         $current_state = DB::table('nagios_hosts')
+    //             ->where('alias','host')
+    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+    //             ->where('nagios_customvariables.varname','SITE')
+    //             ->select('nagios_hoststatus.current_state as state');
+    //     }
+    //     else 
+    //     {
+    //         $current_state = DB::table('nagios_hosts')
+    //             ->where('alias','host')
+    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+    //             ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+    //             ->where('nagios_customvariables.varvalue',$this->site_name)
+    //             ->select('nagios_hoststatus.current_state as state');
+    //     }
+
+    //     // filter by name
+    //     if ($this->host_name) 
+    //     {
+    //         $current_state = $current_state->where('nagios_hosts.display_name', $this->host_name);
+    //     }
+
+    //     // filter by Date From
+    //     if ($this->date_from)
+    //     {
+    //         $current_state = $current_state->where('nagios_hoststatus.last_check','>=', $this->date_from);
+    //     }
+
+    //     // filter by Date To
+    //     if ($this->date_to)
+    //     {
+    //         $current_state = $current_state->where('nagios_hoststatus.last_check','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+    //     }
+
+    //     return $current_state->get();
+    // }
+
+    // Update
+
     public function hostsCurrentState()
     {
-        if($this->site_name == "All")
-        {
+        if ($this->site_name == "All") {
             $current_state = DB::table('nagios_hosts')
-                ->where('alias','host')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->where('nagios_customvariables.varname','SITE')
-                ->select('nagios_hoststatus.current_state as state');
-        }
-        else 
-        {
+                ->where('alias', 'host')
+                ->join('nagios_customvariables', 'nagios_hosts.host_object_id', '=', 'nagios_customvariables.object_id')
+                ->join('nagios_hoststatus', 'nagios_hosts.host_object_id', '=', 'nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varname', 'SITE')
+                ->select('nagios_hosts.host_object_id', 'nagios_hosts.display_name as host_name', 'nagios_hosts.address', 'nagios_hoststatus.current_state as state', 'nagios_hoststatus.last_check as start_time', 'nagios_hoststatus.output', 'nagios_customvariables.varvalue as site_name')
+                ->orderBy('last_check');
+        } else {
             $current_state = DB::table('nagios_hosts')
-                ->where('alias','host')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('nagios_hoststatus.current_state as state');
+                ->where('alias', 'host')
+                ->join('nagios_customvariables', 'nagios_hosts.host_object_id', '=', 'nagios_customvariables.object_id')
+                ->join('nagios_hoststatus', 'nagios_hosts.host_object_id', '=', 'nagios_hoststatus.host_object_id')
+                ->where('nagios_customvariables.varvalue', $this->site_name)
+                ->select('nagios_hosts.host_object_id', 'nagios_hosts.display_name as host_name', 'nagios_hosts.address', 'nagios_hoststatus.current_state as state', 'nagios_hoststatus.last_check as start_time', 'nagios_hoststatus.output')
+                ->orderBy('last_check');
         }
 
         // filter by name
-        if ($this->host_name) 
-        {
+        if ($this->host_name) {
             $current_state = $current_state->where('nagios_hosts.display_name', $this->host_name);
         }
 
         // filter by Date From
-        if ($this->date_from)
-        {
-            $current_state = $current_state->where('nagios_hoststatus.last_check','>=', $this->date_from);
+        if ($this->date_from) {
+            $current_state = $current_state->where('nagios_hoststatus.last_check', '>=', $this->date_from);
         }
 
         // filter by Date To
-        if ($this->date_to)
-        {
-            $current_state = $current_state->where('nagios_hoststatus.last_check','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
+        if ($this->date_to) {
+            $current_state = $current_state->where('nagios_hoststatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
         }
 
         return $current_state->get();
     }
 
+    public function getBySQL()
+    {
+
+        if ($this->site_name == 'All') {
+
+            $history = DB::table('nagios_statehistory')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name as box_name', 'nagios_hosts.address')
+                ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
+                ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
+                ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
+                ->selectRaw('@group_number := @group_number + IF(@prev_state = nagios_statehistory.state, 0, 1) AS state_group')
+                ->selectRaw('@prev_state := nagios_statehistory.state')
+                ->join('nagios_hosts', 'nagios_statehistory.object_id', '=', 'nagios_hosts.host_object_id')
+                ->where('nagios_hosts.alias', 'host')
+                ->orderBy('nagios_statehistory.object_id')
+                ->orderBy('nagios_statehistory.state_time')
+                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name', 'nagios_hosts.address');
+        } else {
+
+            $history = DB::table('nagios_statehistory')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name as host_name', 'nagios_hosts.address')
+                ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
+                ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
+                ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
+                ->selectRaw('@group_number := @group_number + IF(@prev_state = nagios_statehistory.state, 0, 1) AS state_group')
+                ->selectRaw('@prev_state := nagios_statehistory.state')
+                ->join('nagios_hosts', 'nagios_statehistory.object_id', '=', 'nagios_hosts.host_object_id')
+                ->join('nagios_customvariables', 'nagios_hosts.host_object_id', '=', 'nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varvalue', $this->site_name)
+                ->where('nagios_hosts.alias', 'host')
+                ->orderBy('nagios_statehistory.object_id')
+                ->orderBy('nagios_statehistory.state_time')
+                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name', 'nagios_hosts.address');
+        }
+
+        // filter by name
+        if ($this->host_name) {
+            $history = $history->where('nagios_hosts.display_name', $this->host_name);
+        }
+
+        // filter by Date From
+        if ($this->date_from) {
+            $history = $history->where('nagios_statehistory.state_time', '>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to) {
+            $history = $history->where('nagios_statehistory.state_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+        }
+
+
+        $history = $history->get();
+
+        // Get Current State
+        $current_state = $this->hostsCurrentState();
+
+        // Add Current state to the historical data
+        foreach ($current_state as $element) {
+
+            // Get the last state of the element from statehistory table
+            $last_state = $this->getStateHistory($element->host_object_id);
+
+            // if the element has a historical data
+            if ($last_state) {
+
+                // if the current state is like the last historical state of the element
+                if ($element->state == $last_state->state) {
+                    // Last historical state
+                    $last_historcal_state = $history->where('object_id', $element->host_object_id)->first();
+
+                    // set the start and end time
+                    $start_time = Carbon::parse($last_historcal_state->start_time);
+                    $end_time = Carbon::parse($element->start_time);
+
+                    // Calcule duration
+                    $duration = $start_time->diff($end_time);
+
+                    // Update the end_time of the historical data
+                    $last_historcal_state->end_time = $element->start_time;
+
+                    // Update the duration of the last historical state
+                    $last_historcal_state->duration = $duration->format('%H:%i:%s');
+                } else {
+                    // Get the last historical state
+                    $last_historcal_state = $history->where('object_id', $element->host_object_id)->first();
+
+                    // Give the end_time to the current_state
+                    $element->end_time = $element->start_time;
+
+                    // Give the start_time of the current_state the end_time of the historical state
+                    $element->start_time = $last_historcal_state->end_time;
+
+                    // Calculate the duration
+                    $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+
+                    // Push at the top of the $history collection
+                    $history->prepend($element);
+                }
+            } else {
+
+                // Get the first check's start_time
+                $first_check = $this->getTheFirstCheck($element->host_object_id);
+
+                // Give the end_time of checking to the current_state element
+                $element->end_time = $element->start_time;
+
+                // Give the start_time of checking to the current_state element
+                $element->start_time = $first_check->start_time;
+
+                // Calcule the duration
+                $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+
+                $history->prepend($element);
+            }
+        }
+
+        $this->SortStatus($history);
+    }
+
+    public function getStateHistory($object_id)
+    {
+        return DB::table('nagios_statehistory')
+            ->where('object_id', $object_id)
+            ->select('state', 'state_time')
+            ->orderByDesc('state_time')
+            ->first();
+    }
+
+    public function getTheFirstCheck($host_object_id)
+    {
+        return DB::table('nagios_hostchecks')
+            ->where('host_object_id', $host_object_id)
+            ->select('state', 'start_time')
+            ->orderBy('start_time')
+            ->first();
+    }
+
+    public function SortStatus($hosts)
+    {
+        $this->hosts_up = 0;
+        $this->hosts_down = 0;
+        $this->hosts_unreachable = 0;
+        
+        foreach ($hosts as $host) {
+           
+            switch ($host->state) {
+                case 0:
+                    $this->hosts_up++;
+                    break;
+                case 1:
+                    $this->hosts_down++;
+                    break;
+                case 2:
+                    $this->hosts_unreachable++;
+                    break;
+            }
+        }
+    }
 }

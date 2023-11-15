@@ -1,4 +1,4 @@
-<div class="container w-50 my-auto">
+<div class="container w-50 my-auto pt-2 pb-4">
     
     <form action="{{ route('create-box-BF1010') }}" method="get">
         
@@ -10,6 +10,7 @@
 
                 <div class="card-body">
                     
+                    {{-- Box Name --}}
                     <label for="box_name"><b>Box name <span class="text-danger">*</span></b> </label>
                     <input type="text" name="boxName" class="form-control @error('boxName') border-danger @enderror" id="box_name" value="{{ old('boxName') }}" pattern="[a-zA-Z][a-zA-Z0-9-_+ ]{2,200}" title="Box name must be between 2 & 200 charcarters in length and containes only letters, numbers, and these symbols -_+">
                     @error('boxName')
@@ -19,6 +20,8 @@
                     @enderror
     
                     <br>
+
+                    {{-- IP Address --}}
                     <label for="ip"><b>IP Address <span class="text-danger">*</span></b></label>
                     <input type="text" name="addressIP" class="form-control @error('addressIP') border-danger @enderror" id="ip" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$" value="{{ old('addressIP') }}" title="Please enter the IP address correctly e.g. 192.168.1.1">
                     @error('addressIP')
@@ -26,6 +29,30 @@
                             {{ $message }}
                         </div>
                     @enderror
+
+                    <br>
+
+                    {{-- Box Site --}}
+                    @if ($site_name == "All")
+                    <label for="box-site"><b>Box Site <span class="text-danger">*</span></b></label>
+                    @error('site')
+                        <div class="text-danger">
+                            {{ $message }}
+                        </div>
+                    @enderror
+                    <div class="sizing border p-1 rounded @error('site') border-danger @enderror" style="max-height:200px;overflow: auto">
+                        
+                        @forelse ($sites as $site)
+                            <input type="radio" name="site" id="{{$site->id}}" value="{{$site->site_name}}" {{ old('site') == $site->site_name ? 'checked' : '' }}> <label for="{{$site->id}}">{{$site->site_name}}</label>
+                            <br>
+                        @empty
+                            <i>No Site found</i>
+                        @endforelse
+                        
+                    </div>
+                    @else
+                        <input type="hidden" name="site" value="specific">
+                    @endif
 
                 </div>
         
@@ -52,77 +79,6 @@
                 </div>
             </div>
         
-        {{-- Define Equipement --}}
-        {{-- <div class="card rounded bg-white shadow-sm">
-            <div class="card-header">Define Equipements :</div>
-            <div class="card-body  defineEquip">
-                <div class="equip1 d-flex w-100 my-3">
-                    <div class="w-25 mx-1">
-                        <label for="equip_name"><b>Equipement name <span class="text-danger">*</span></b></label>
-                        <input type="text" name="equipName[]" class="eqName1 form-control @error('equipName.*') border-danger @enderror" id="equip_name" value="{{ old('equipName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
-                        @error('equipName.*')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    
-                    <div class="w-25 mx-1">
-                        <label for="pin_name"><b>Pin name <span class="text-danger">*</span></b></label>
-                        <input type="text" name="pinName[]" class="pinName1 form-control @error('pinName.*') border-danger @enderror" id="pin_name" value="{{ old('pinName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
-                        @error('pinName.*')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
-                    <div class="w-25 mx-1">
-                        <label for="input"><b>Input Number <!--<span class="text-danger">*</span>--></b></label>
-                        <input  type="number" min="1" max="10" name="inputNbr[]" class="iNbr1 form-control @error('inputNbr.*') border-danger @enderror" id="input" value="1">
-                        @error('inputNbr.*')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-
-                    <div class="w-25 mx-1">
-                        <label for="hall_name"><b>Hall name <span class="text-danger">*</span></b></label>
-                        <input type="text" name="hallName[]" class="hallName1 form-control @error('hallName.*') border-danger @enderror" id="hall_name" value="{{ old('hallName.*')}}"  pattern="[a-zA-Z][a-zA-Z0-9-_+\s]{4,20}" title="Equip. name must be between 4 & 20 charcarters in length and containes only letters, numbers, and periodes (-_+)">
-                        @error('hallName.*')
-                            <div class="text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
-                    
-                    <div class="w-25 mx-1">
-                        <label for="working_state"><b>Working State <span class="text-danger">*</span></b></label>
-                        @error('workingState.*')
-                        <div class="text-danger">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                        <br>
-                        <div class="form-check">
-                            <input type="radio" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="{{ old('workingState.*')}}">
-                            <label for="" class="form-check-label">H </label>
-                            <br>
-                            <input type="radio" name="workingState[]" class="workingState1 form-check-input" id="working_state" value="{{ old('workingState.*')}}">
-                            <label for="" class="form-check-label">L </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="float-right">
-                {{-- Add Equip 
-                <span class="btn text-primary bg-white float-right add" title="Add another equipement for monitoring"><i class="fas fa-plus"></i></span>
-                {{-- Remove Equip 
-                <span class="btn text-primary bg-white float-right shadow-sm" id="rmv" title="Remove last equipement" style="display: none"><i class="fas fa-minus"></i></span>            
-            </div>
-
-        </div> --}}
         <br>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
@@ -205,4 +161,14 @@ rmv.onclick = () => {
 
 }
 
+</script>
+
+<script>
+
+    window.addEventListener('load', function() {
+        document.getElementById('config').style.display = 'block';
+        document.getElementById('config-btn').classList.toggle("active-btn");
+        document.getElementById('c-boxes').classList.toggle("active-link");
+    });
+        
 </script>

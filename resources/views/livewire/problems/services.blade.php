@@ -11,6 +11,9 @@
                 <th>Host</th>
                 <th>Service</th>
                 <th>Status</th>
+                @if ($site_name == "All")
+                <th>Ville</th>
+                @endif
                 <th>Dernier verification</th>
                 <th style="width: 45%">Description</th>
             </tr>
@@ -22,6 +25,7 @@
         
         <tr>
 
+            {{-- Host Name --}}
             @if ($check == 0 || $service->host_object_id != $check)       
                 
                     <td>
@@ -34,7 +38,7 @@
                 <td></td>
             @endif
             
-
+            {{-- Service Name --}}
             <td>
                 <a href="{{ route('ms-details', ['id' => $service->service_object_id]) }}">{{$service->service_name}}</a>
                 
@@ -45,6 +49,7 @@
                 @endif
             </td>
             
+            {{-- Status --}}
             @switch($service->current_state)
                 
                 @case(1)
@@ -59,7 +64,15 @@
                     
             @endswitch
             
+            {{-- City --}}
+            @if ($site_name == "All")
+                <td>{{ $service->site_name }}</td>
+            @endif
+            
+            {{-- Last Check --}}
             <td>{{$service->last_check}}</td>
+
+            {{-- Description --}}
             <td class="description">{{$service->output}}</td>
         </tr>
             

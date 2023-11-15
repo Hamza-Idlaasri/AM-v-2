@@ -27,17 +27,22 @@
                 <th>Host</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
-                <th>State Time</th>
-                {{-- <th>End Time</th> --}}
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
     
         @forelse ($hosts_histories as $host_history)
             <tr>
+                {{-- Host Name --}}
                 <td>{{$host_history->host_name}}</td>
+
+                {{-- IP Address  --}}
                 <td>{{$host_history->address}}</td>
                 
+                {{-- Status --}}
                 @switch($host_history->state)
                 
                     @case(0)
@@ -56,15 +61,23 @@
                         
                 @endswitch
                 
-                <td>{{$host_history->state_time}}</td>
-                {{-- <td>{{$host_history->end_time}}</td> --}}
+                {{-- Start Time --}}
+                <td>{{$host_history->start_time}}</td>
+
+                {{-- End Time --}}
+                <td>{{$host_history->end_time}}</td>
+
+                {{-- Duration --}}
+                <td>{{$host_history->duration}}</td>
+
+                {{-- Description --}}
                 <td class="description">{{$host_history->output}}</td>
             </tr>
 
         @empty
 
             <tr>
-                <td colspan="6">No result found {{-- <strong>{{ request()->query('search') }}</strong> --}}</td>
+                <td colspan="7">No result found {{-- <strong>{{ request()->query('search') }}</strong> --}}</td>
             </tr>
 
         @endforelse

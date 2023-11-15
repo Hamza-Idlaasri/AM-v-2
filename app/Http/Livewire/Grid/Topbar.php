@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Notif;
 use App\Models\UsersSite;
 
-define('SITE_NAME',UsersSite::where('user_id',auth()->user()->id)->first()->current_site);
-
 class Topbar extends Component
 {
     // For Summary
@@ -50,8 +48,12 @@ class Topbar extends Component
     public $total_services_notifs = 0;
     public $total_equips_notifs = 0;
 
+    public $site_name;
+
     public function render()
     {
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         $this->getHosts();
         $this->getBoxes();
         $this->getServices();
@@ -101,7 +103,7 @@ class Topbar extends Component
     public function getHosts()
     {
 
-        if (SITE_NAME == 'All') {
+        if ($this->site_name == 'All') {
             
             $hosts_summary = DB::table('nagios_hoststatus')
                 ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
@@ -115,7 +117,7 @@ class Topbar extends Component
                 ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_hosts.alias','host')
-                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hoststatus.current_state')
                 ->get();
         }
@@ -153,7 +155,7 @@ class Topbar extends Component
     public function getServices()
     {
 
-        if (SITE_NAME == 'All') {
+        if ($this->site_name == 'All') {
             
             $services_summary = DB::table('nagios_hosts')
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
@@ -169,7 +171,7 @@ class Topbar extends Component
                 ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
                 ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
                 ->where('nagios_hosts.alias','host')
-                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_servicestatus.current_state')
                 ->get();
         }
@@ -209,7 +211,7 @@ class Topbar extends Component
     public function getBoxes()
     {
 
-        if (SITE_NAME == 'All') {
+        if ($this->site_name == 'All') {
             
             $boxes_summary = DB::table('nagios_hoststatus')
                 ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
@@ -223,7 +225,7 @@ class Topbar extends Component
                 ->join('nagios_hosts','nagios_hoststatus.host_object_id','=','nagios_hosts.host_object_id')
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_hosts.alias','box')
-                ->where('nagios_customvariables.varvalue',SITE_NAME)
+                ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hoststatus.current_state')
                 ->get();
         }
@@ -257,7 +259,7 @@ class Topbar extends Component
     public function getEquips()
     {
 
-        if (SITE_NAME == 'All') {
+        if ($this->site_name == 'All') {
             
             $equips_summary = DB::table('nagios_services')
                 ->join('nagios_hosts','nagios_services.host_object_id','=','nagios_hosts.host_object_id')
@@ -278,7 +280,7 @@ class Topbar extends Component
                         ->on('nagios_hosts.display_name','=','ed.box_name');
                 })
                 ->join('nagios_servicestatus','nagios_services.service_object_id','nagios_servicestatus.service_object_id')
-                ->where('ed.site_name',SITE_NAME)
+                ->where('ed.site_name', $this->site_name)
                 ->select('nagios_servicestatus.current_state')
                 ->get();
         }
@@ -321,7 +323,7 @@ class Topbar extends Component
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->where('nagios_customvariables.varvalue', $this->site_name)
             ->select('nagios_hosts.display_name as host_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();   
@@ -341,7 +343,7 @@ class Topbar extends Component
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','host')
-            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->where('nagios_customvariables.varvalue', $this->site_name)
             ->select('nagios_services.display_name as service_name','nagios_hosts.display_name as host_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();
@@ -360,7 +362,7 @@ class Topbar extends Component
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_notifications.object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->where('nagios_customvariables.varvalue', $this->site_name)
             ->select('nagios_hosts.display_name as box_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();
@@ -380,7 +382,7 @@ class Topbar extends Component
             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_hosts.alias','box')
-            ->where('nagios_customvariables.varvalue',SITE_NAME)
+            ->where('nagios_customvariables.varvalue', $this->site_name)
             ->select('nagios_services.display_name as equip_name','nagios_hosts.display_name as box_name','nagios_notifications.notification_id')
             ->orderByDesc('start_time')
             ->get();

@@ -1,4 +1,4 @@
-<div class="container w-100 my-4 p-2 bg-white shadow rounded">
+<div class="container w-100 my-4 p-2 bg-white shadow rounded" wire:poll>
 
     <style>
         #danger-site{
@@ -10,7 +10,7 @@
                 r:4
             }
             50% {
-                r:6
+                r:5
             }
             100% {
                 r:4
@@ -193,10 +193,7 @@
                     <defs>
                         
                         <amcharts:ammap projection="mercator" leftLongitude="-17.105673" topLatitude="35.899081" rightLongitude="-0.997997" bottomLatitude="20.777959"></amcharts:ammap>
-                
-                        <!-- All areas are listed in the line below. You can use this list in your script. -->
-                        <!--{id:"MA-01"},{id:"MA-02"},{id:"MA-03"},{id:"MA-04"},{id:"MA-05"},{id:"MA-06"},{id:"MA-07"},{id:"MA-08"},{id:"MA-09"},{id:"MA-10"},{id:"MA-11"},{id:"MA-12"}-->
-                
+                                
                     </defs>
                     <g>
                         <path id="MA-01" title="Tanger-Tétouan-Al Hoceïma" class="land" d="M505.349,171.903L505.659,173.213L505.15,176.163L505.516,177.798L505.521,180.199L505.849,181.31L505.605,183.176L505.683,186.205L506.222,186.508L506.297,187.363L506.45,187.429L503.967,188.387L502.521,189.44L500.133,190.054L496.227,190.142L495.286,191.369L494.708,192.859L493.623,193.999L492.176,194.612L490.223,194.086L489.138,192.246L488.342,191.895L487.184,193.123L486.533,194.787L485.159,196.451L483.134,197.501L480.963,198.114L479.661,197.501L476.406,197.151L474.02,195.925L470.619,195.4L469.39,194.437L469.101,192.771L468.305,190.492L466.656,189.605L465.985,189.707L464.526,190.471L464.254,191.281L462.3,192.421L459.479,192.684L455.414,192.561L454.394,193.738L453.946,195.228L453.938,196.883L453.372,199.445L454.005,200.256L454.14,202.601L453.651,203.716L452.078,203.978L450.938,204.83L449.474,204.896L448.606,205.419L447.762,206.51L447.621,205.802L444.804,203.935L444.601,202.542L444.601,200.657L443.583,199.345L442.633,198.853L440.599,197.047L438.972,196.063L438.021,195.734L437.344,194.831L436.19,194.174L435.445,194.256L435.038,195.488L434.36,196.555L433.139,196.227L432.528,195.652L431.579,193.188L431.443,190.805L431.443,186.037L430.814,185.34L429.117,185.092L428.943,184.759L427.307,185.21L425.069,184.881L423.713,184.058L423.146,182.941L419.654,182.404L418.619,182.089L416.087,182.237L413.552,181.881L412.459,181.887L413.104,180.061L413.886,177.005L414.688,174.988L415.511,172.328L416.26,171.878L417.632,167.708L418.857,163.302L419.385,162.22L420.166,159.937L420.873,159.395L421.653,156.917L421.813,155.664L423.142,150.182L424.44,145.613L424.62,144.693L425.496,144.098L427.649,144.253L429.297,144.608L429.934,145.631L431.562,146.38L433.461,145.881L435.088,143.8L438.344,144.133L439.699,143.883L440.717,142.717L442.276,140.552L443.633,139.968L445.512,139.559L447.227,139.635L447.769,140.385L449.804,140.552L450.482,141.052L449.397,141.718L449.193,143.3L448.244,144.632L448.632,149.49L449.563,149.471L449.163,150.545L450.102,154.075L450.894,155.87L451.41,155.767L453.385,156.646L454.061,157.781L455.95,159.188L457.522,162.349L458.821,162.8L459.339,162.606L460.426,163.973L461.059,164.397L462.705,166.549L463.867,167.168L465.007,167.322L466.621,169.138L467.763,169.704L468.227,170.283L469.557,170.939L472.036,171.826L473.241,171.415L473.99,172.264L475.457,172.417L478.181,173.202L479.32,173.138L480.229,173.677L481.748,174.166L482.593,173.96L484.324,174.423L486.952,173.317L488.378,172.585L489.687,172.739L490.721,172.135L492.02,172.122L493.635,171.813L494.31,171.234L497.076,170.244L497.614,170.54L498.732,170.347L500.738,169.163L500.949,170.553L501.498,171.389L503.694,172.187z">
@@ -234,58 +231,28 @@
                             <title>Laâyoune-Sakia El Hamra</title>
                         </path>
                         <path id="MA-12" title="Dakhla-Oued Ed-Dahab" class="land" d="M83.519,632.018L84.939,635.332L89.46,634.343L91.721,635.827L93.077,640.027L95.79,642.004L100.537,638.793L103.023,640.521L105.962,638.546L108.901,638.546L112.066,636.321L115.23,638.052L117.717,637.804L123.821,639.533L132.863,641.757L140.322,636.321L143.939,637.063L149.365,637.558L158.181,636.816L166.771,639.781L173.101,641.757L177.169,641.016L181.69,638.793L186.89,638.052L193.22,639.533L193.835,639.835L193.771,644.66L193.845,650.431L193.81,655.989L193.958,660.344L193.958,682.858L191.065,683.278L189.244,683.287L189.15,683.569L180.334,688.223L171.518,689.691L155.469,700.692L150.967,709.195L150.458,711.717L150.419,712.563L150.712,715.956L151.921,728.749L152.458,733.906L153.874,748.961L154.179,752.865L154.76,759.018L155.413,764.793L155.891,769.65L151.807,769.567L139.631,769.413L122.408,769.264L109.496,769.182L109.118,769.227L95.289,769.131L93.191,769.199L86.482,769.132L66.072,769.15L46.626,769.229L30.211,769.399L10.469,769.66L7.021,769.669L6.245,769.82L5.084,774.112L4.436,776.188L3.835,778.819L2.439,781.423L2.099,783.855L1.431,786.168L1.425,789.531L1.721,792L0.707,789.989L0,789.687L0.981,787.698L0.306,786.193L0.813,784.43L1.51,783.025L1.478,779.843L2.27,776.489L2.027,776.028L2.132,774.531L2.597,771.931L2.892,771.243L2.702,770.095L2.924,768.473L3.462,766.748L3.536,765.012L4.212,762.857L4.223,761.718L4.634,760.354L4.497,758.649L4.919,756.876L4.634,753.895L5.5,752.924L5.848,751.873L5.268,751.692L5.204,750.731L5.658,749.239L7.347,747.282L7.991,745.688L7.854,744.816L8.508,743.673L9.3,741.161L9.659,740.595L10.144,738.851L10.64,737.831L11.285,735.826L12.72,734.976L12.477,734.205L13.173,733.207L13.965,732.708L16.056,730.384L17.143,730.452L17.776,731.473L18.853,731.37L20.659,730.795L22.125,730.032L23.149,729.215L23.117,728.273L23.804,727.66L24.479,726.435L24.785,724.743L24.764,723.744L25.693,721.086L26.97,720.257L28.279,718.824L28.459,716.914L28.923,715.868L29.039,714.229L28.892,712.842L29.208,711.658L29.937,709.996L30.908,708.653L31.013,707.924L30.432,707.184L31.003,705.862L31.784,705.748L33.811,704.904L34.57,704.302L35.975,702.591L36.375,701.759L36.576,700.163L36.048,698.623L35.056,697.813L34.106,697.801L34.781,696.342L35.732,695.666L36.967,694.161L37.621,692.961L37.558,691.979L38.212,691.271L39.669,688.769L39.416,688.025L40.683,686.975L42.044,685.545L43.786,682.078L42.889,680.613L44.124,679.869L44.915,678.678L45.506,678.324L46.678,675.734L47.279,675.529L48.05,674.154L49.475,672.344L50.267,670.622L51.576,669.544L51.872,668.604L51.597,667.572L51.987,666.32L52.97,664.794L52.579,663.737L53.328,661.692L52.79,661.464L51.565,663.289L50.204,663.989L49.518,665.563L48.462,666.298L47.755,666.218L45.971,668.708L45.116,672.113L44.271,673.442L43.29,674.143L42.635,675.334L42.086,675.597L41.727,674.817L42.54,673.558L43.543,672.595L43.543,671.746L44.599,670.816L45.116,668.708L45.581,667.835L46.974,666.32L48.293,664.655L50.931,662.438L54.816,660.383L57.424,658.522L58.036,657.464L58.163,656.44L58.859,656.096L59.957,654.992L61.751,652.771L64.084,650.365L65.837,649.203L67.6,647.533L69.922,644.399L70.229,643.73L71.432,642.221L72.677,641.206L73.606,640.088L75.644,639.014L76.783,638.645L79.116,637.606L79.708,637.074L80.172,635.748L80.499,634.132L82.325,633.115z">
-                            <title>Dakhla-Oued Ed-Dahab</title>
+                            <a>Dakhla-Oued Ed-Dahab</a>
                         </path>
 
-                        {{-- Tanger --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="235" cy="80" r="4" fill="#38c172" stroke="black" stroke-width="1"/>    
-                        @else
-                            <circle id="danger-site" cx="235" cy="80" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-
-                        {{-- Oujda --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="315" cy="108" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="315" cy="108" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-                        
-                        {{-- Fes --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="252" cy="123" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="252" cy="123" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-                        
-                        {{-- Rabat --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="215" cy="125" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="215" cy="125" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-
-                        {{-- Casa --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="200" cy="135" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="200" cy="135" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-                        
-                        {{-- Kech --}}
-                        {{-- @if (1 == 1)
-                            <circle cx="190" cy="175" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="190" cy="175" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-                        
-                        {{-- Agadir --}}
-                        {{-- @if (1 == 1)         
-                            <circle cx="158" cy="215" r="4" fill="#38c172" stroke="black" stroke-width="1"/>
-                        @else
-                            <circle id="danger-site" cx="158" cy="215" r="4" fill="crimson" stroke="black" stroke-width="1"/>
-                        @endif --}}
-
+                        {{-- Show Site --}}
+                        @foreach ($show_sites as $site)
+                            @switch($site->state)
+                                @case(0)
+                                    <circle cx="{{$site->cx}}" cy="{{$site->cy}}" r="4" fill="#38c172" stroke="black" stroke-width="1" style="cursor: pointer"><title>{{$site->site_name}}</title></circle>
+                                    @break
+                                @case(1)
+                                    <circle cx="{{$site->cx}}" cy="{{$site->cy}}" r="4" fill="#ffed4a" stroke="black" stroke-width="1" style="cursor: pointer"><title>{{$site->site_name}}</title></circle>   
+                                    @break
+                                @case(2)
+                                    <circle cx="{{$site->cx}}" cy="{{$site->cy}}" r="4" fill="crimson" stroke="black" stroke-width="1" style="cursor: pointer"><title>{{$site->site_name}}</title></circle>
+                                    @break
+                                @case(3)
+                                    <circle cx="{{$site->cx}}" cy="{{$site->cy}}" r="4" fill="rgb(151, 4, 230)" stroke="black" stroke-width="1" style="cursor: pointer"><title>{{$site->site_name}}</title></circle>     
+                                    @break
+                                @default
+                            @endswitch
+                        @endforeach
+                                                             
                     </g>
                 </svg>
             </div>
@@ -293,7 +260,7 @@
         
         {{-- Summary of all sites --}}
         <div class="container bg-white border rounded p-4" style="width:60%;border-color: rgba(128, 128, 128, 0.5);border-top-left-radius:0px !important;border-bottom-left-radius:0px !important;">
-            <h6 class="d-flex justify-content-between align-items-center">Sites Summary @if (auth()->user()->hasRole('super_admin'))<button class="btn btn-outline-primary" id="add-new-site"><i class="fa-solid fa-plus"></i> Add New Site</button>@endif</h6>
+            <h6 class="d-flex justify-content-between align-items-center">Sites Summary</h6>
             
             <br>
 
@@ -387,7 +354,7 @@
     </div>
 
     {{-- Add New Site --}}
-    <div class="w-25 p-4 bg-white rounded shadow border" id="addSite-popup" style="display:none;position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+    {{-- <div class="w-25 p-4 bg-white rounded shadow border" id="addSite-popup" style="display:none;position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
         <h5>Add New Site :</h5>
         <br>
         <form action="{{ route('new-site') }}" method="get" id="addSite">
@@ -403,33 +370,22 @@
             <button class="btn btn-primary" form="addSite">Add</button>
             <button class="btn btn-light" id="cancel-add">Cancel</button>
         </div>
-    </div>
-
-    {{-- Delete Site --}}
-    {{-- <div class="w-25 p-4 bg-white rounded shadow border" id="deletSite-popup" style="position: absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
-
-        <h5>Are you sure you want to delete this site <q><b>Hello</b></q></h5>
-        <br>
-        <div class="w-50 float-right d-flex justify-content-around align-items-center">
-            <button wire:click="deleteSite" class="btn btn-danger" id="deleteSite">Delete</button>
-            <button class="btn btn-light" id="cancel-delete">Cancel</button>
-        </div>
     </div> --}}
 
 </div>
 
 <script>
 
-document.getElementById('add-new-site').onclick = () => {
-    document.getElementById('addSite-popup').style.display = 'block';
-    document.getElementById('back').style.opacity = '.1';
-}
+// document.getElementById('add-new-site').onclick = () => {
+//     document.getElementById('addSite-popup').style.display = 'block';
+//     document.getElementById('back').style.opacity = '.1';
+// }
 
-document.getElementById('cancel-add').onclick = () => {
-    document.getElementById('addSite-popup').style.display = 'none';
-    document.getElementById('back').style.opacity = '1';
+// document.getElementById('cancel-add').onclick = () => {
+//     document.getElementById('addSite-popup').style.display = 'none';
+//     document.getElementById('back').style.opacity = '1';
 
-}
+// }
 
 // document.getElementById('delete-site').onclick = () => {
 //     document.getElementById('deleteSite-popup').style.display = 'block';

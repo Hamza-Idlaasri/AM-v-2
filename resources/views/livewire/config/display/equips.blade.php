@@ -2,72 +2,70 @@
 
     <div class="container p-0 w-100 d-flex justify-content-between align-items-center">
         
-        <a href="/config/select-box" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>
+        <a href="/config/add-equip" class="btn btn-success"><i class="fas fa-plus"></i> Add New</a>
 
         @include('inc.searchbar',['route' => 'config-equips'])
 
     </div>
 
+    <br>
+
     <table class="table table-bordered text-center table-hover">
 
         <thead class="bg-light text-dark">
             <tr>
+                <th>Equipement</th>
+                <th>Pins Used</th>
                 <th>Box</th>
-                <th>Pin</th>
-                <th>Input Nbr</th>
-                <th>Check Interval</th>
-                <th>Retry Interval</th>
-                <th>Max Check Attempts</th>
-                <th>Check</th>
-                <th>Notif</th>
+                @if ($site_name == "All")
+                <th>Ville</th>
+                @endif
                 <th>Edit</th>
             </tr>
         </thead>
 
-        <?php $i=0?>
-
-        @forelse ($equips as $equip)
-
-            <?php $i++ ?>
+        @forelse ($all_equips as $equip)
 
             <tr>
-            
+
+                {{-- Equip Name --}}
                 <td>
-                    <a href="{{ route('mb-details', ['id' => $equip->host_object_id]) }}">{{ $equip->box_name }}</a>
+                    {{-- <a href="{{ route('me-details', ['id' => $equip->id]) }}">{{ $equip->equip_name }}</a> --}}
+                    {{ $equip->equip_name }}
                 </td>
 
+                {{-- Pins Nbr--}}
                 <td>
-                    <a href="{{ route('me-details', ['id' => $equip->service_object_id]) }}">{{ $equip->equip_name }}</a>
+                    @forelse ($equip->details as $detail)
+                        <span class="badge badge-light shadow-sm mt-1"><span class="badge" style="background: rgb(209, 235, 209)">{{$detail->input_nbr}}</span> - {{$detail->pin_name}}</span>
+                        <br>
+                    @empty
+                        <p class="text-muted"><i>No pin used</i></p>
+                    @endforelse
                 </td>
 
-                <td>{{ $equip->check_command }}</td>
+                {{-- Box Name --}}
+                <td>
+                    {{-- <a href="{{ route('mb-details', ['id' => $equip->host_object_id]) }}">{{ $equip->box_name }}</a> --}}
+                    {{$equip->box_name}}
+                </td>
 
-                <td>{{ $equip->normal_check_interval }}s</td>
-                
-                <td>{{ $equip->retry_check_interval }}s</td>
-                
-                <td>{{ $equip->max_check_attempts }}</td>
-
-                @if ($equip->has_been_checked)
-                    <td>Yes</td>
-                @else
-                    <td class="text-danger">No</td>
-                @endif
-                
-                @if ($equip->notifications_enabled)
-                    <td>Yes</td>
-                @else
-                    <td class="text-danger">No</td>
+                {{-- Ville --}}
+                @if ($site_name == "All")
+                    <td>
+                        {{$equip->site_name}}
+                    </td>
                 @endif
 
+                {{-- Edit --}}
                 <td>
                     <span class="w-100 d-flex justify-content-around align-items-center">
 
                         {{-- Edit Equip --}}
-                        <a href="{{ route('edit-equip', ['id' => $equip->service_id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
+                        <a href="{{ route('edit-equip', ['id' => $equip->id]) }}" class="btn text-info" style="border: 0"><i class="fas fa-pen"></i></a>
                         
                         {{-- Delete Equip --}}
-                        <a href="{{ route('delete-equip', ['id' => $equip->service_object_id]) }}" class="btn text-danger">
+                        <a href="{{ route('delete-equip', ['id' => $equip->id]) }}" class="btn text-danger">
                             <i class="far fa-trash-alt"></i>
                         </a>
 
@@ -84,16 +82,14 @@
         
     </table>
 
-    {{-- {{$equips->appends(['search' => request()->query('search')])->links('vendor.pagination.bootstrap-4')}} --}}
-
 </div>
 
 <script>
 
-window.addEventListener('load', function() {
-    document.getElementById('config').style.display = 'block';
-    document.getElementById('config-btn').classList.toggle("active-btn");
-    document.getElementById('c-equips').classList.toggle("active-link");
-});
-    
+    window.addEventListener('load', function() {
+        document.getElementById('config').style.display = 'block';
+        document.getElementById('config-btn').classList.toggle("active-btn");
+        document.getElementById('c-equips').classList.toggle("active-link");
+    });
+        
 </script>

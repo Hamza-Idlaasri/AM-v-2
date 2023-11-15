@@ -11,6 +11,9 @@
                 <th>Host</th>
                 <th>Adresse IP</th>
                 <th>Status</th>
+                @if ($site_name == "All")
+                <th>Ville</th>
+                @endif
                 <th>Dernier verification</th>
                 <th style="width: 45%">Description</th>
             </tr>
@@ -19,6 +22,7 @@
         @forelse ($hosts as $host)
         
         <tr>
+            {{-- Host Name --}}
             <td>
                 <a href="{{ route('mh-details', ['id' => $host->host_object_id]) }}">{{ $host->display_name }}</a>
                 
@@ -30,8 +34,10 @@
                 
             </td>
             
+            {{-- IP Address --}}
             <td>{{ $host->address }}</td>
             
+            {{-- Status --}}
             @switch($host->current_state)
             
                 @case(1)
@@ -46,7 +52,15 @@
             
             @endswitch
             
+            {{-- City --}}
+            @if ($site_name == "All")
+            <td>{{ $host->site_name }}</td>
+            @endif
+
+            {{-- Last Check --}}
             <td>{{ $host->last_check }}</td>
+
+            {{-- Description --}}
             <td class="description">{{ $host->output }}</td>
         </tr>
         

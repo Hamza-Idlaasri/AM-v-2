@@ -75,16 +75,17 @@
 }
 
 #mapdiv path {
-    fill: rgb(25, 143, 253);
+    fill: rgb(70, 130, 185);
     stroke: white;
     stroke-width: 1px;
     transition: fill 0.3s;
     transform: scale(0.55);
 }
 
-#mapdiv path:hover {
+
+/* #mapdiv path:hover {
     fill: rgb(18, 103, 182);
-}
+} */
 
 svg {
     width: 100%;

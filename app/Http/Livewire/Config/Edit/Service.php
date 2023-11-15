@@ -21,8 +21,10 @@ class Service extends Component
             ->where('service_id', $this->service_id)
             ->first();
 
+        $service->check_interval = round($service->check_interval * 60);
         $service->retry_interval = round($service->retry_interval * 60);
-        
+
+
         return view('livewire.config.edit.service')
             ->with('service', $service)
             ->extends('layouts.app')

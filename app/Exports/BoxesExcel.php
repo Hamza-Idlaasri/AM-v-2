@@ -31,8 +31,9 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             'Box',
             'Address IP',
             'State',
-            'State Time',
-            // 'End Time',
+            'Start Time',
+            'End Time',
+            'Duration',
             'Description',
         ];
     }
@@ -51,8 +52,9 @@ class BoxesExcel implements FromCollection, ShouldAutoSize, WithHeadings,  WithS
             $boxes->box_name,
             $boxes->address,
             $this->convertState($boxes->state),
-            $boxes->state_time,
-            // $boxes->end_time,
+            $boxes->start_time,
+            $boxes->end_time,
+            $boxes->duration,
             $this->description($boxes->state)
         ];
     }

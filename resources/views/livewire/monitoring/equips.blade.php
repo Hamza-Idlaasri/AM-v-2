@@ -1,6 +1,8 @@
 <div class="container bg-white shadow rounded w-100 my-4 mx-4 px-4 py-2" wire:poll>
 
-    <div class="float-left text-secondary">Monitoring > <a href="/monitoring/equipements">Equipements</a></div>
+    {{-- Link --}}
+    <div class="float-left text-secondary mt-2">Monitoring <i class="fa-solid fa-angle-right fa-xs"></i> <a href="/monitoring/equipements">Equipements</a></div>
+
     {{-- Search-Bar --}}
     @include('inc.searchbar',['route' => 'monitoring.equips'])
 
@@ -20,7 +22,6 @@
                     <th>Ville</th>
                     @endif
                     <th>Dernier verification</th>
-                    {{-- <th>Input Nbr</th> --}}
                     <th style="width: 30%">Description</th>
                 </tr>
             </thead>
@@ -35,8 +36,8 @@
                         @if (array_search($pin,$equip->pins) > 0)
                             <td></td>
                         @endif
-                        {{-- Pin Name --}}
-                        <td> {{$pin->check_command}}
+                        {{-- Pin Number --}}
+                        <td> {{$pin->input_nbr}}
                             @if ($pin->is_flapping)
                                 <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
                                     <i class="fas fa-retweet"></i>
@@ -74,9 +75,6 @@
                         
                         {{-- Dernier verification --}}
                         <td>{{$pin->last_check}}</td>
-    
-                        {{-- Input Nr --}}
-                        {{-- <td>{{$pin->check_command}}</td> --}}
     
                         {{-- Description --}}
                         <td class="description">{{$pin->pin_name}}</td>
@@ -116,7 +114,6 @@
                 <th>Ville</th>
                 @endif
                 <th>Dernier verification</th>
-                {{-- <th>Input Nbr</th> --}}
                 <th style="width: 30%">Description</th>
             </tr>
         </thead>
@@ -131,8 +128,8 @@
                     @if (array_search($pin,$equip->pins) > 0)
                         <td></td>
                     @endif
-                    {{-- Pin Name --}}
-                    <td>{{$pin->check_command}}
+                    {{-- Pin Number --}}
+                    <td>{{$pin->input_nbr}}
                         @if ($pin->is_flapping)
                             <span class="float-right text-danger" title="This equip is flapping" style="cursor: pointer">
                                 <i class="fas fa-retweet"></i>
@@ -170,9 +167,6 @@
 
                     {{-- Dernier verification --}}
                     <td>{{$pin->last_check}}</td>
-
-                    {{-- Input Nr --}}
-                    {{-- <td>{{$pin->check_command}}</td> --}}
 
                     {{-- Description --}}
                     @if ($pin->current_state == 0)

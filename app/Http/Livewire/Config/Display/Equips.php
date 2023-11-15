@@ -3,80 +3,76 @@
 namespace App\Http\Livewire\Config\Display;
 
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
+use App\Models\EquipsDetail;
+use App\Models\EquipsNames;
 use App\Models\UsersSite;
+use Illuminate\Support\Collection;
 
 class Equips extends Component
 {
-    public $search;
- 
+    public $search, $site_name;
+
     protected $queryString = ['search'];
 
     public function render()
     {
-        if($this->search)
-        {
-            $equips = $this->getEquips()
-                ->where('nagios_hosts.display_name','like', '%'.$this->search.'%')
-                ->get();
 
+        $this->site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
+
+        if ($this->site_name == "All") {
+
+            if ($this->search) {
+                // Get Equips Names
+                $equips = EquipsNames::where('equip_name', 'like', '%' . $this->search . '%')->get();
+
+                // Get Equips Details
+                $equips_details = EquipsDetail::where('equip_name', 'like', '%' . $this->search . '%')->get();
+            } else {
+
+                // Get Equips Names
+                $equips = EquipsNames::all();
+
+                // Get Equips Details
+                $equips_details = EquipsDetail::all();
+            }
         } else {
 
-            $equips = $this->getEquips()->get();
+            if ($this->search) {
+                // Get Equips Names
+                $equips = EquipsNames::where('site_name', $this->site_name)->where('equip_name', 'like', '%' . $this->search . '%')->get();
 
+                // Get Equips Details
+                $equips_details = EquipsDetail::where('site_name', $this->site_name)->where('equip_name', 'like', '%' . $this->search . '%')->get();
+            } else {
+
+                // Get Equips Names
+                $equips = EquipsNames::where('site_name', $this->site_name)->get();
+
+                // Get Equips Details
+                $equips_details = EquipsDetail::where('site_name', $this->site_name)->get();
+            }
         }
 
-        if (!empty($equips)){
-            $this->convertRetryTime($equips);
-            $this->fixInputNbr($equips);
+        $all_equips = [];
+
+        foreach ($equips as $equip) {
+
+            $details = [];
+
+            foreach ($equips_details as $detail) {
+
+                if ($equip->equip_name == $detail->equip_name && $equip->box_name == $detail->box_name) {
+
+                    array_push($details, (object) ['pin_name' => $detail->pin_name, 'input_nbr' => $detail->input_nbr]);
+                }
+            }
+
+            array_push($all_equips, (object)['id' => $equip->id, 'equip_name' => $equip->equip_name, 'box_name' => $equip->box_name, 'site_name' => $equip->site_name, 'details' => $details]);
         }
 
         return view('livewire.config.display.equips')
-            ->with('equips', $equips)
+            ->with(['all_equips' => $all_equips, 'site_name' => $this->site_name])
             ->extends('layouts.app')
             ->section('content');
     }
-
-    public function getEquips()
-    {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == "All") {
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.output','nagios_servicestatus.normal_check_interval','nagios_servicestatus.retry_check_interval','nagios_servicestatus.max_check_attempts','nagios_servicestatus.has_been_checked','nagios_servicestatus.notifications_enabled','nagios_servicestatus.check_command')
-                ->orderBy('nagios_hosts.display_name')
-                ->orderBy('nagios_services.display_name');
-        } else {
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->where('nagios_customvariables.varvalue',$site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.display_name as equip_name','nagios_services.service_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.output','nagios_servicestatus.normal_check_interval','nagios_servicestatus.retry_check_interval','nagios_servicestatus.max_check_attempts','nagios_servicestatus.has_been_checked','nagios_servicestatus.notifications_enabled','nagios_servicestatus.check_command')
-                ->orderBy('nagios_hosts.display_name')
-                ->orderBy('nagios_services.display_name');
-        }
-        
-    }
-
-    public function convertRetryTime($equips)
-    {
-        foreach ($equips as $equip) {
-            $equip->retry_check_interval = round($equip->retry_check_interval * 60,2);
-            $equip->normal_check_interval = round($equip->normal_check_interval * 60,2);
-        }
-    }
-
-    
-    public function fixInputNbr($equips)
-    {
-        foreach ($equips as $equip) {
-            $equip->check_command = substr($equip->check_command,7,-2);
-        }
-    }
 }
-

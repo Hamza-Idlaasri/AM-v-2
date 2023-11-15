@@ -31,8 +31,9 @@
                 <th>Equipement</th>
                 <th>Pin</th>
                 <th>Status</th>
-                <th>State Time</th>
-                {{-- <th>Durée</th> --}}
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Durée</th>
                 {{-- <th>End Time</th> --}}
                 <th style="width: 30%">Description</th>
             </tr>
@@ -51,7 +52,7 @@
 
             <td>{{$equip_history->equip_name}}</td>
 
-            <td>{{substr($equip_history->input_nbr,9,-2)}}</td>
+            <td>{{$equip_history->input_nbr}}</td>
             
             @switch($equip_history->state)
                 
@@ -72,11 +73,13 @@
             @endswitch
             
             {{-- State Time --}}
-            <td>{{$equip_history->state_time}}</td>
-            {{-- <td>{{$equip_history->end_time}}</td> --}}
+            <td>{{$equip_history->start_time}}</td>
+
+            {{-- End Time --}}
+            <td>{{$equip_history->end_time}}</td>
 
             {{-- Duration --}}
-            {{-- <td>{{formatSeconds($equip_history->state_time_usec)}}</td> --}}
+            <td>{{ $equip_history->duration }}</td>
 
             {{-- Description --}}
             @if ($equip_history->state == 0)
@@ -89,7 +92,7 @@
         @empty
 
             <tr>
-                <td colspan="6">No result found</td>
+                <td colspan="7">No result found</td>
             </tr>
 
         @endforelse
@@ -102,21 +105,14 @@
 </div>
 
 @php
-    function formatSeconds($seconds) {
+    function humanFormat($duration) {
 
-        $weeks = floor($seconds / 604800);
-        $seconds -= $weeks * 604800;
-        $days = floor($seconds / 86400);
-        $seconds -= $days * 86400;
-        $hours = floor($seconds / 3600);
-        $seconds -= $hours * 3600;
-        $minutes = floor($seconds / 60);
-        $seconds -= $minutes * 60;
+        $days = $duration->days;
+        $hours = $duration->h;
+        $minutes = $duration->i;
+        $seconds = $duration->s;
 
         $output = '';
-        if ($weeks > 0) {
-            $output .= $weeks . ' w, ';
-        }
         if ($days > 0) {
             $output .= $days . ' d, ';
         }
@@ -127,6 +123,7 @@
             $output .= $minutes . ' m, ';
         }
         $output .= $seconds . ' s';
+
         return $output;
     }
 

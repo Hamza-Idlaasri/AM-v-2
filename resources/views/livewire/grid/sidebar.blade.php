@@ -1,5 +1,5 @@
 
-<div class="" id="sidebar">
+<div id="sidebar">
 
     <div class="" id="logo">
         <img src="{{ asset('image/net-logo.png') }}" alt="nm-logo">
@@ -8,7 +8,7 @@
     {{-- Site Name --}}
     <div style="width: 100%;margin-top: -20px;font-size: 14px;font-style: italic;color: black" class="text-center mx-auto mb-3 font-weight-bold">{{$current_site_name}}</div>
 
-    <div id="menu" class="">
+    <div id="menu">
 
         {{-- Overview --}}
         <div class="item-container">
@@ -85,6 +85,8 @@
                 <a href="/config/services" class="sub-item" id="c-services"><i class="fa-solid fa-gear"></i><span class="item-title"> Services</span></a>
                 <a href="/config/boxes" class="sub-item" id="c-boxes"><i class="fa-solid fa-microchip"></i><span class="item-title"> Boxes</span></a>
                 <a href="/config/equipements" class="sub-item" id="c-equips"><i class="fa-solid fa-server"></i><span class="item-title"> Equipemnts</span></a>
+                <a href="/config/pins" class="sub-item" id="c-pins"><i class="fa-solid fa-diagram-predecessor"></i><span class="item-title"> Pins</span></a>
+                {{-- <a href="/config/upload-environment" class="sub-item" id="c-set-envir"><i class="fa-solid fa-industry"></i><span class="item-title"> Environment</span></a> --}}
                 <a href="/config/hostgroups" class="sub-item" id="c-hg"><i class="fa-solid fa-network-wired"></i><span class="item-title"> Hostgroups</span></a>
                 <a href="/config/servicegroups" class="sub-item" id="c-sg"><i class="fa-solid fa-gears"></i><span class="item-title"> Servicegroups</span></a>
                 <a href="/config/boxgroups" class="sub-item" id="c-bg"><i class="fa-solid fa-microchip"></i><span class="item-title">Boxgroups</span></a>
@@ -155,7 +157,7 @@
                     <a href="/sites" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-map"></i> <span class="item-title" style="font-size:12px;">Global Overview</span></a> 
 
                     @foreach ($sites as $site)
-                        <a wire:click="changeSite({{$site->id}})" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> <span class="item-title"> {{$site->site_name}}</span></a> 
+                        <a wire:click="changeSite({{$site->id}})" class="sub-item" style="cursor: pointer"><i class="fa-solid fa-location-dot"></i> <span class="item-title"> {{$site->site_name}}</span></a>
                     @endforeach
 
                 </div>

@@ -27,8 +27,9 @@
                 <th>Host</th>
                 <th>Service</th>
                 <th>Status</th>
-                <th>State Time</th>
-                {{-- <th>End Time</th> --}}
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Duration</th>
                 <th style="width: 40%">Description</th>
             </tr>
         </thead>
@@ -37,10 +38,13 @@
 
         <tr>        
 
+            {{-- Host Name --}}
             <td>{{$service_history->host_name}}</td> 
 
+            {{-- Service Name --}}
             <td>{{$service_history->service_name}}</td>
             
+            {{-- Status --}}
             @switch($service_history->state)
                 
                 @case(0)
@@ -59,15 +63,23 @@
                     
             @endswitch
             
-            <td>{{$service_history->state_time}}</td>
-            {{-- <td>{{$service_history->end_time}}</td> --}}
+            {{-- Start Time --}}
+            <td>{{$service_history->start_time}}</td>
+
+            {{-- End Time --}}
+            <td>{{$service_history->end_time}}</td>
+
+            {{-- Duration --}}
+            <td>{{ $service_history->duration }}</td>
+
+            {{-- Description --}}
             <td class="description">{{$service_history->output}}</td>
         </tr>
  
         @empty
 
             <tr>
-                <td colspan="6">No result found</td>
+                <td colspan="7">No result found</td>
             </tr>
 
         @endforelse

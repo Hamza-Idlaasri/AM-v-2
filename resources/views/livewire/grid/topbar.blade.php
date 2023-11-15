@@ -115,36 +115,36 @@
         <span style="font-size: 26px;opacity: .25;" class="text-secondary">|</span>
         {{-- Equips --}}
         <div class="bg-white d-flex rounded align-items-center p-2" id="summary_equips">
-            <span class="m-1 badge" title="Equipements"><i class="fa-solid fa-server fa-lg"></i></span>
-            <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des equipements : {{ $total_equips }}">
+            <span class="m-1 badge" title="Pins"><i class="fa-solid fa-diagram-predecessor"></i></span>
+            <span class="badge m-1 font-weight-bold" style="cursor: default" title="total des pins : {{ $total_equips }}">
                 @if ($total_equips >= 1000)
                     {{floor($total_equips/1000).'k'}}
                 @else
                     {{ $total_equips }}
                 @endif
             </span>
-            <span class="badge badge-success m-1" style="cursor: default" title="{{ $equips_ok }} {{ Str::plural('equipement',$equips_ok)}} Ok">
+            <span class="badge badge-success m-1" style="cursor: default" title="{{ $equips_ok }} {{ Str::plural('pin',$equips_ok)}} Ok">
                 @if ($equips_ok >= 1000)
                     {{floor($equips_ok/1000).'k'}}
                 @else
                     {{ $equips_ok }}
                 @endif
             </span>
-            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $equips_warning }} {{ Str::plural('equipement',$equips_warning)}} Warning">
+            <span class="badge badge-warning m-1" style="cursor: default" title="{{ $equips_warning }} {{ Str::plural('pin',$equips_warning)}} Warning">
                 @if ($equips_warning >= 1000)
                     {{floor($equips_warning/1000).'k'}}
                 @else
                     {{ $equips_warning }}
                 @endif
             </span>
-            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $equips_critical }} {{ Str::plural('equipement',$equips_critical)}} Critical">
+            <span class="badge badge-danger m-1" style="cursor: default" title="{{ $equips_critical }} {{ Str::plural('pin',$equips_critical)}} Critical">
                 @if ($equips_critical >= 1000)
                     {{floor($equips_critical/1000).'k'}}
                 @else
                     {{ $equips_critical }}
                 @endif
             </span>
-            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $equips_unknown }} {{ Str::plural('equipement',$equips_unknown)}} Unknown">
+            <span class="badge badge-unknown m-1" style="cursor: default" title="{{ $equips_unknown }} {{ Str::plural('pin',$equips_unknown)}} Unknown">
                 @if ($equips_unknown >= 1000)
                     {{floor($equips_unknown/1000).'k'}}
                 @else

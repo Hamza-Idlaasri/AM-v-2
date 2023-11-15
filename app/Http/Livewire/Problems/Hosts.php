@@ -12,11 +12,14 @@ class Hosts extends Component
     use WithPagination;
 
     public $search;
- 
+    public $site_name;
+
     protected $queryString = ['search'];
 
     public function render()
     {
+        $this->site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
+
         if($this->search)
         {
             $hosts =$this->getHosts()
@@ -37,14 +40,14 @@ class Hosts extends Component
 
     public function getHosts()
     {
-        $site_name = UsersSite::where('user_id',auth()->user()->id)->first()->current_site;
-
-        if ($site_name == 'All') {
+        if ($this->site_name == 'All') {
             
             return DB::table('nagios_hosts')
                 ->where('alias','host')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
-                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
+                ->where('nagios_customvariables.varname','SITE')
+                ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output', 'nagios_customvariables.varvalue as site_name')
                 ->where('current_state','<>','0')
                 ->orderBy('display_name');
         }
@@ -55,7 +58,7 @@ class Hosts extends Component
                 ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
                 ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output')
-                ->where('nagios_customvariables.varvalue',$site_name)
+                ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->where('current_state','<>','0')
                 ->orderBy('display_name');
         }
