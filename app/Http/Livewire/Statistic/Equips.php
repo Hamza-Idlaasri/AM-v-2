@@ -6,7 +6,6 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\UsersSite;
 use App\Models\EquipsNames;
-use App\Models\EquipsDetail;
 use Carbon\Carbon;
 
 class Equips extends Component
@@ -43,26 +42,6 @@ class Equips extends Component
             ->extends('layouts.app')
             ->section('content');
     }
-
-    // public function getStateRanges()
-    // {
-    //     $equips_names = $this->EquipsNames();
-
-    //     $equips_ranges = [];
-
-    //     foreach ($equips_names as $equip) {
-
-    //         $checks = $this->getEquipsChecks()->where('nagios_services.service_object_id', $equip->service_object_id)->get();
-
-    //         if(!empty($checks)) {
-    //             array_push($equips_ranges, $checks);
-    //         }
-
-    //         unset($checks);
-    //     }
-
-    //     $this->OrganizeStates($equips_ranges);
-    // }
 
     public function OrganizeStates($equips_ranges)
     {
@@ -127,123 +106,6 @@ class Equips extends Component
         }
 
         return $equips_range_of_states;
-    }
-
-    // public function SortStatus($ranges)
-    // {
-    //     $this->equips_ok = 0;
-    //     $this->equips_warning = 0;
-    //     $this->equips_critical = 0;
-    //     $this->equips_unknown = 0;
-
-    //     foreach ($ranges as $state) {
-
-    //         switch ($state) {
-    //             case 0:
-    //                 $this->equips_ok++;
-    //                 break;
-    //             case 1:
-    //                 $this->equips_warning++;
-    //                 break;
-    //             case 2:
-    //                 $this->equips_critical++;
-    //                 break;
-    //             case 3:
-    //                 $this->equips_unknown++;
-    //                 break;
-    //         }
-    //     }
-    // }
-
-    public function getHistory()
-    {
-        $collection = collect();
-        $last_state = [];
-
-        if ($this->site_name == 'All') {
-
-            $history = DB::table('nagios_services')
-                ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
-                ->join('am.equips_details as ed', function ($join) {
-                    $join->on('nagios_services.display_name', '=', 'ed.pin_name')
-                        ->on('nagios_hosts.display_name', '=', 'ed.box_name');
-                })
-                ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
-                ->join('nagios_statehistory', 'nagios_services.service_object_id', '=', 'nagios_statehistory.object_id')
-                ->select('ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_services.display_name as pin_name', 'nagios_services.service_object_id', 'nagios_statehistory.statehistory_id', 'nagios_statehistory.last_state', 'nagios_statehistory.state', 'nagios_statehistory.state_time', 'nagios_statehistory.state_time_usec', 'nagios_statehistory.output', 'nagios_servicestatus.check_command as input_nbr')
-                ->orderBy('nagios_statehistory.state_time');
-        } else {
-
-            $history = DB::table('nagios_services')
-                ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
-                ->join('am.equips_details as ed', function ($join) {
-                    $join->on('nagios_services.display_name', '=', 'ed.pin_name')
-                        ->on('nagios_hosts.display_name', '=', 'ed.box_name');
-                })
-                ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
-                ->join('nagios_statehistory', 'nagios_services.service_object_id', '=', 'nagios_statehistory.object_id')
-                ->where('ed.site_name', $this->site_name)
-                ->select('ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_services.display_name as pin_name', 'nagios_services.service_object_id', 'nagios_statehistory.statehistory_id', 'nagios_statehistory.last_state', 'nagios_statehistory.state', 'nagios_statehistory.state_time', 'nagios_statehistory.state_time_usec', 'nagios_statehistory.output', 'nagios_servicestatus.check_command as input_nbr')
-                ->orderBy('nagios_statehistory.state_time');
-        }
-
-        // filter by name
-        if ($this->equip_name) {
-            $history = $history->where('ed.equip_name', $this->equip_name);
-        }
-
-        // filter by pin nbr
-        if ($this->pin_nbr) {
-            $history = $history->where('ed.input_nbr', $this->pin_nbr);
-        }
-
-        // filter by Date From
-        if ($this->date_from) {
-            $history = $history->where('nagios_statehistory.state_time', '>=', $this->date_from);
-        }
-
-        // filter by Date To
-        if ($this->date_to) {
-            $history = $history->where('nagios_statehistory.state_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
-
-        $history = $history->chunk(1000, function ($equips_history) use (&$collection) {
-
-            $equips_names = $this->EquipsNames();
-
-            $equips_ranges = [];
-
-            foreach ($equips_names as $equip) {
-
-                $checks = [];
-
-                foreach ($equips_history as $history) {
-                    if ($history->service_object_id == $equip->service_object_id) {
-                        array_push($checks, $history);
-                    }
-                }
-
-                if (!empty($checks)) {
-                    array_push($equips_ranges, $checks);
-                }
-
-                unset($checks);
-            }
-
-
-            $ranges = $this->OrganizeStates($equips_ranges);
-
-            foreach ($ranges as $range) {
-                $collection->push($range);
-            }
-        });
-
-        $equips_current_state = $this->equipsCurrentState();
-
-        foreach ($equips_current_state as $equip) {
-            $collection->prepend($equip->state);
-        }
-        return $this->SortStatus($collection);
     }
 
     public function EquipsNames()
@@ -314,57 +176,6 @@ class Equips extends Component
         }
     }
 
-    // public function equipsCurrentState()
-    // {
-    //     if ($this->site_name == 'All') {
-
-    //         $current_state = DB::table('nagios_services')
-    //             ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
-    //             ->join('am.equips_details as ed', function ($join) {
-    //                 $join->on('nagios_services.display_name', '=', 'ed.pin_name')
-    //                     ->on('nagios_hosts.display_name', '=', 'ed.box_name');
-    //             })
-    //             ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
-    //             ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as state_time', 'nagios_servicestatus.output', 'nagios_servicestatus.check_command as input_nbr', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name', 'ed.input_nbr')
-    //             ->orderBy('last_check');
-    //     } else {
-
-    //         $current_state = DB::table('nagios_services')
-    //             ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
-    //             ->join('am.equips_details as ed', function ($join) {
-    //                 $join->on('nagios_services.display_name', '=', 'ed.pin_name')
-    //                     ->on('nagios_hosts.display_name', '=', 'ed.box_name');
-    //             })
-    //             ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
-    //             ->where('ed.site_name', $this->site_name)
-    //             ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as state_time', 'nagios_servicestatus.output', 'nagios_servicestatus.check_command as input_nbr', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name', 'ed.input_nbr')
-    //             ->orderBy('last_check');
-    //     }
-
-    //     // filter by name
-    //     if ($this->equip_name) {
-    //         $current_state = $current_state->where('ed.equip_name', $this->equip_name);
-    //     }
-
-    //     // filter by pin nbr
-    //     if ($this->pin_nbr) {
-    //         $current_state = $current_state->where('ed.input_nbr', $this->pin_nbr);
-    //     }
-
-    //     // filter by Date From
-    //     if ($this->date_from) {
-    //         $current_state = $current_state->where('nagios_servicestatus.last_check', '>=', $this->date_from);
-    //     }
-
-    //     // filter by Date To
-    //     if ($this->date_to) {
-    //         $current_state = $current_state->where('nagios_servicestatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-    //     }
-
-    //     return $current_state->get();
-    // }
-
-    
     // Last Update
     public function equipsCurrentState()
     {
@@ -377,7 +188,7 @@ class Equips extends Component
                         ->on('nagios_hosts.display_name', '=', 'ed.box_name');
                 })
                 ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
-                ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as start_time', 'nagios_servicestatus.output', 'ed.input_nbr', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as start_time', 'nagios_servicestatus.output', 'nagios_servicestatus.check_command', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name')
                 ->orderBy('last_check');
         } else {
 
@@ -389,7 +200,7 @@ class Equips extends Component
                 })
                 ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
                 ->where('ed.site_name', $this->site_name)
-                ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as start_time', 'nagios_servicestatus.output', 'ed.input_nbr', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name')
+                ->select('nagios_hosts.display_name as box_name', 'nagios_hosts.host_object_id', 'nagios_services.service_object_id', 'nagios_servicestatus.current_state as state', 'nagios_servicestatus.last_check as start_time', 'nagios_servicestatus.output', 'nagios_servicestatus.check_command', 'ed.equip_name', 'ed.site_name', 'ed.pin_name', 'ed.hall_name')
                 ->orderBy('last_check');
         }
 
@@ -400,7 +211,7 @@ class Equips extends Component
 
         // filter by input number
         if ($this->pin_nbr) {
-            $current_state = $current_state->where('ed.input_nbr', $this->pin_nbr);
+            $current_state = $current_state->where('nagios_servicestatus.check_command', 'LIKE', 'bf1010_IN' . $this->pin_nbr . '!H%');
         }
 
         // filter by Date From
@@ -423,7 +234,7 @@ class Equips extends Component
         if ($this->site_name == 'All') {
 
             $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'ed.input_nbr')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
                 ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
                 ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
@@ -435,14 +246,15 @@ class Equips extends Component
                     $join->on('nagios_services.display_name', '=', 'ed.pin_name')
                         ->on('nagios_hosts.display_name', '=', 'ed.box_name');
                 })
+                ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
                 ->orderBy('nagios_statehistory.state_time')
-                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'ed.input_nbr');
+                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command');
 
         } else {
 
             $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'ed.input_nbr')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
                 ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
                 ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
@@ -454,9 +266,10 @@ class Equips extends Component
                     $join->on('nagios_services.display_name', '=', 'ed.pin_name')
                         ->on('nagios_hosts.display_name', '=', 'ed.box_name');
                 })
+                ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
                 ->orderBy('nagios_statehistory.state_time')
-                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'ed.input_nbr')
+                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->where('ed.site_name', $this->site_name);
         }
 
@@ -467,7 +280,7 @@ class Equips extends Component
 
         // filter by input number
         if ($this->pin_nbr) {
-            $history = $history->where('ed.input_nbr', $this->pin_nbr);
+            $history = $history->where('nagios_servicestatus.check_command', 'LIKE', 'bf1010_IN' . $this->pin_nbr . '!H%');
         }
 
         // filter by Date From

@@ -55,8 +55,8 @@ class Hosts extends Component
         {
             return DB::table('nagios_hosts')
                 ->where('alias','host')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->join('nagios_hoststatus','nagios_hosts.host_object_id','=','nagios_hoststatus.host_object_id')
+                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
                 ->where('nagios_customvariables.varvalue',$this->site_name)
                 ->select('nagios_hosts.host_object_id','nagios_hosts.display_name','nagios_hosts.address','nagios_hoststatus.is_flapping','nagios_hoststatus.current_state','nagios_hoststatus.last_check','nagios_hoststatus.output')
                 ->orderBy('display_name');

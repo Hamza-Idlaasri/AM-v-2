@@ -52,7 +52,7 @@
 
             <td>{{$equip_history->equip_name}}</td>
 
-            <td>{{$equip_history->input_nbr}}</td>
+            <td>{{substr($equip_history->check_command,9,-2)}}</td>
             
             @switch($equip_history->state)
                 

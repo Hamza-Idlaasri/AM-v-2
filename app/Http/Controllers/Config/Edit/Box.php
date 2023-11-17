@@ -50,11 +50,15 @@ class Box extends Controller
             ->select('nagios_services.display_name as equip_name')
             ->get();
 
+        if ($request->site == 'specific') {
+            $request->site = $site_name;
+        } 
+            
         // Parent relationship
         if ($request->input('boxes'))
-            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t" . $request->boxName . "\n\talias\t\t\tbox\n\taddress\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site == 'specific' ? $site_name : $request->site . "\n\t_boxType\t\t\t" . $old_box_details->box_type . "\n\tparents\t\t\t" . $request->input('boxes');
+            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t" . $request->boxName . "\n\talias\t\t\tbox\n\taddress\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site . "\n\t_boxType\t\t\t" . $old_box_details->box_type . "\n\tparents\t\t\t" . $request->input('boxes');
         else
-            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t\t\t" . $request->boxName . "\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site == 'specific' ? $site_name : $request->site . "\n\t_boxType\t\t\t" . $old_box_details->box_type;
+            $define_host = "define host {\n\tuse\t\t\t\t\tbox-server\n\thost_name\t\t\t\t" . $request->boxName . "\n\talias\t\t\t\t\tbox\n\taddress\t\t\t\t\t" . $request->addressIP . "\n\t_site\t\t\t" . $request->site . "\n\t_boxType\t\t\t" . $old_box_details->box_type;
 
         // Normal Check Interval
         // Convert Time
