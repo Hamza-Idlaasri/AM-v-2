@@ -83,15 +83,11 @@
                             @enderror
                             <br>
                             <div class="w-50 form-check d-flex justify-content-around">
-                                <div>
-                                    <input type="radio" name="workingState" class="workingState1 form-check-input"
-                                        id="working_state_H" value="H" checked>
-                                    <label for="working_state_H" class="form-check-label"> H</label>
-                                </div>
-                                <div>
-                                    <input type="radio" name="workingState" class="workingState1 form-check-input"
-                                        id="working_state_L" value="L">
-                                    <label for="working_state_L" class="form-check-label"> L</label>
+                                <div class="w-100">
+                                    <select name="workingState[]" class="form-control">
+                                        <option value="H">H</option>
+                                        <option value="L">L</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

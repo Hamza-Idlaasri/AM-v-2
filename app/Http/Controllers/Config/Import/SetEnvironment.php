@@ -18,12 +18,6 @@ class SetEnvironment extends Controller
     public function setEnvironment(Request $request)
     {
 
-        $rules = [];
-
-        // foreach ($request->input('ip_address') as $boxName => $ipAddress) {
-        //     $rules["ip_address.{$boxName}.*"] = 'required|ip|unique:nagios_hosts,address';
-        // }
-
         // TODO: VALIDATE DATA
         $rules = [];
 
@@ -80,8 +74,6 @@ class SetEnvironment extends Controller
         // ]);
 
         $envir = $this->organizeData($request->all());
-
-        dd($request->all());
         
         $site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
 
@@ -182,7 +174,8 @@ class SetEnvironment extends Controller
 
     public function create_pin_files($box_name, $box_type, $pin_name, $input_nbr)
     {
-
+        $box_type = $box_type == "BF1010"? "bf1010" : "bf2300";
+        
         $define_service = "define service {\n\tuse\t\t\tbox-service\n\thost_name\t\t{$box_name}\n\tservice_description\t{$pin_name}\n\tcheck_command\t\t{$box_type}_IN{$input_nbr}!H\n}\n\n";
 
         $file_path = "/usr/local/nagios/etc/objects/boxes/{$box_name}/{$pin_name}.cfg";

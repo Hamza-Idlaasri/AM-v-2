@@ -23,7 +23,7 @@
     window.addEventListener('load', function() {
         document.getElementById('config').style.display = 'block';
         document.getElementById('config-btn').classList.toggle("active-btn");
-        document.getElementById('c-equips').classList.toggle("active-link");
+        document.getElementById('c-pins').classList.toggle("active-link");
     });
         
 </script>

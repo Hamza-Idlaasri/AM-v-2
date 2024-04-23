@@ -248,7 +248,7 @@ class Equips extends Component
                 })
                 ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
+                ->orderByDesc('nagios_statehistory.state_time')
                 ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command');
 
         } else {
@@ -268,7 +268,7 @@ class Equips extends Component
                 })
                 ->join('nagios_servicestatus', 'nagios_services.service_object_id', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
+                ->orderByDesc('nagios_statehistory.state_time')
                 ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->where('ed.site_name', $this->site_name);
         }
@@ -302,38 +302,34 @@ class Equips extends Component
         foreach ($current_state as $element) {
             
             // Get the last state of the element from statehistory table
-            $last_state = $this->getStateHistory($element->service_object_id);
+            $last_historical_state = $history->where('object_id', $element->service_object_id)->first();
 
             // if the element has a historical data
-            if ($last_state) {
+            if ($last_historical_state) {
                 
                 // if the current state is like the last historical state of the element
-                if ($element->state == $last_state->state) {
-                    // Last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
+                if ($element->state == $last_historical_state->state) {
 
                     // set the start and end time
-                    $start_time = Carbon::parse($last_historcal_state->start_time);
+                    $start_time = Carbon::parse($last_historical_state->start_time);
                     $end_time = Carbon::parse($element->start_time);
                     
                     // Calcule duration
                     $duration = $start_time->diff($end_time);
 
                     // Update the end_time of the historical data
-                    $last_historcal_state->end_time = $element->start_time;
+                    $last_historical_state->end_time = $element->start_time;
                     
                     // Update the duration of the last historical state
-                    $last_historcal_state->duration = $duration->format('%H:%i:%s');
+                    $last_historical_state->duration = $duration->format('%H:%i:%s');
 
                 } else {
-                    // Get the last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
 
                     // Give the end_time to the current_state
                     $element->end_time = $element->start_time;
                     
                     // Give the start_time of the current_state the end_time of the historical state
-                    $element->start_time = $last_historcal_state->end_time;
+                    $element->start_time = $last_historical_state->end_time;
 
                     // Calculate the duration
                     $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
@@ -364,14 +360,6 @@ class Equips extends Component
 
         $this->SortStatus($history);
 
-    }
-    
-    public function getStateHistory($object_id) {
-        return DB::table('nagios_statehistory')
-            ->where('object_id', $object_id)
-            ->select('state','state_time')
-            ->orderByDesc('state_time')
-            ->first();
     }
 
     public function getTheFirstCheck($service_object_id) {

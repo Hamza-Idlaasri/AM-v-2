@@ -29,17 +29,13 @@ class Equips extends Component
         if($this->search)
         {   
             $equips_problems = $this->getEquipsProblems()
-                ->where('ed.equip_name','like', '%'.$this->search.'%')
-                ->get();
+                ->where('ed.equip_name','like', '%'.$this->search.'%');
 
         } else {
 
-            $equips_problems = $this->getEquipsProblems()->get();
+            $equips_problems = $this->getEquipsProblems();
 
         }
-
-        if(!empty($equips_problems))
-            $this->fixInputNbr($equips_problems);
 
         $equips_problems = $this->OrganizeData($equips_problems);
 
@@ -53,36 +49,11 @@ class Equips extends Component
     {
         if ($this->site_name == 'All') {
             
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
-                ->where('current_state','<>','0')
-                ->orderBy('nagios_hosts.display_name')
-                ->orderBy('nagios_services.display_name');
-        }
-        else 
-        {
-            return DB::table('nagios_hosts')
-                ->where('alias','box')
-                ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-                ->join('nagios_services','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-                ->join('nagios_servicestatus','nagios_services.service_object_id','=','nagios_servicestatus.service_object_id')
-                ->join('am.equips_details as ed','nagios_services.display_name','=','ed.pin_name')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('nagios_hosts.display_name as box_name','nagios_hosts.host_object_id','nagios_services.service_object_id','nagios_servicestatus.current_state','nagios_servicestatus.is_flapping','nagios_servicestatus.last_check','nagios_servicestatus.output','nagios_servicestatus.check_command','ed.equip_name','ed.site_name','ed.pin_name','ed.hall_name')
-                ->where('current_state','<>','0')
-                ->orderBy('nagios_hosts.display_name')
-                ->orderBy('nagios_services.display_name');
-        }
-    }
+            return  $this->getInputNbr(EquipsDetail::all())->where('current_state','<>','0');
 
-    public function fixInputNbr($equips)
-    {
-        foreach ($equips as $equip) {
-            $equip->check_command = substr($equip->check_command,9,-2);
+        } else {
+
+            return $this->getInputNbr(EquipsDetail::where('site_name', $this->site_name)->get())->where('current_state','<>','0');
         }
     }
 
@@ -94,11 +65,7 @@ class Equips extends Component
             $equips_names = EquipsNames::all();
         } else {
 
-            $equips_names = EquipsNames::join('nagios.nagios_hosts','equips_names.box_name','=','nagios_hosts.display_name')
-                ->join('nagios.nagios_customvariables','nagios.nagios_hosts.host_object_id','=','nagios.nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue',$this->site_name)
-                ->select('equips_names.equip_name','equips_names.box_name','nagios_customvariables.varvalue as site_name')
-                ->get();
+            $equips_names = EquipsNames::where('site_name',$this->site_name)->get();
         }
 
         $equips_data = [];
@@ -133,5 +100,26 @@ class Equips extends Component
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+    }
+
+    public function getInputNbr($equips_details) {
+
+        $pins_names = DB::table('nagios_services')
+            ->join('nagios_hosts', 'nagios_services.host_object_id', '=','nagios_hosts.host_object_id')
+            ->join('nagios_servicestatus', 'nagios_services.service_object_id','=', 'nagios_servicestatus.service_object_id')
+            ->select('nagios_hosts.display_name as box_name', 'nagios_services.display_name as pin_name', 'nagios_servicestatus.check_command','nagios_servicestatus.current_state', 'nagios_servicestatus.last_check')
+            ->get();
+
+        foreach ($equips_details as $equip) {
+            foreach ($pins_names as $pin) {
+                if ($pin->box_name == $equip->box_name && $pin->pin_name == $equip->pin_name) {
+                    $equip->check_command = substr($pin->check_command,9,-2);
+                    $equip->current_state = $pin->current_state;
+                    $equip->last_check = $pin->last_check;
+                }
+            }
+        }
+
+        return $equips_details;
     }
 }

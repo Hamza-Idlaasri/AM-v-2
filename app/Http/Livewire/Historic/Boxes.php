@@ -25,47 +25,13 @@ class Boxes extends Component
     {
         $this->site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
 
-        // $boxes_histories = $this->getHistory();
         $boxes_histories = $this->getBySQL();
-
-        // filter by state
-        // if($this->status != 'all')
-        // {
-        //     foreach ($boxes_histories as $key => $box) {
-        //         if ($box->state == $this->status) {
-        //             continue;
-        //         } else {
-        //             $boxes_histories->forget($key);
-        //         }
-        //     }
-
-        // }    
 
         return view('livewire.historic.boxes')
             ->with(['boxes_histories' => $this->paginate($boxes_histories), 'boxes_names' => $this->getBoxesNames(), 'download' => $boxes_histories, "msg" => $this->description()])
             ->extends('layouts.app')
             ->section('content');
     }
-
-    // public function getStateRanges()
-    // {
-    //     $boxes_names = $this->getBoxes();
-
-    //     $boxes_ranges = [];
-
-    //     foreach ($boxes_names as $box) {
-
-    //         $checks = $this->getBoxesChecks()->where('nagios_hosts.host_object_id', $box->host_object_id)->get();
-
-    //         if(!empty($checks)) {
-    //             array_push($boxes_ranges, $checks);
-    //         }
-
-    //         unset($checks);
-    //     }
-
-    //     return $this->OrganizeStates($boxes_ranges);
-    // }
 
     public function OrganizeStates($boxes_ranges)
     {
@@ -150,53 +116,6 @@ class Boxes extends Component
     {
         return $ranges->sortByDesc('state_time');
     }
-
-    // public function getBoxesChecks()
-    // {
-
-    //     if ($this->site_name == 'All') {
-
-    //         $boxes_histories = DB::table('nagios_hostchecks')
-    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-    //             ->where('alias','box')
-    //             ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.statehistory_id','nagios_hostchecks.state','nagios_hostchecks.state_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
-    //             ->where('is_raw_check','=', 0)
-    //             ->orderBy('nagios_hostchecks.state_time');
-
-    //     } else {
-
-    //         $boxes_histories = DB::table('nagios_hostchecks')
-    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_hostchecks.host_object_id')
-    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-    //             ->where('alias','box')
-    //             ->where('nagios_customvariables.varvalue',$this->site_name)
-    //             ->select('nagios_hosts.display_name as box_name','nagios_hosts.address','nagios_hosts.host_object_id','nagios_hostchecks.statehistory_id','nagios_hostchecks.state','nagios_hostchecks.state_time','nagios_hostchecks.state_time','nagios_hostchecks.output')
-    //             ->where('is_raw_check','=', 0)
-    //             ->orderBy('nagios_hostchecks.state_time');
-
-    //     }   
-
-    //     // filter by name
-    //     if ($this->box_name) {
-    //         $boxes_histories = $boxes_histories->where('nagios_hosts.display_name',$this->box_name);
-    //     }
-
-    //     // filter by Date From
-    //     if ($this->date_from)
-    //     {
-    //         $boxes_histories = $boxes_histories->where('nagios_hostchecks.state_time','>=',$this->date_from);
-    //     }
-
-    //     // filter by Date To
-    //     if ($this->date_to)
-    //     {
-    //         $boxes_histories = $boxes_histories->where('nagios_hostchecks.state_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
-    //     }
-
-    //     $boxes_histories = $boxes_histories->take(20000);
-
-    //     return $boxes_histories;
-    // }
 
     public function getBoxesNames()
     {
@@ -370,7 +289,7 @@ class Boxes extends Component
                 ->join('nagios_hosts', 'nagios_statehistory.object_id', '=', 'nagios_hosts.host_object_id')
                 ->where('nagios_hosts.alias', 'box')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
+                ->orderByDesc('nagios_statehistory.state_time')
                 ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name', 'nagios_hosts.address');
         } else {
 
@@ -386,7 +305,7 @@ class Boxes extends Component
                 ->where('nagios_customvariables.varvalue', $this->site_name)
                 ->where('nagios_hosts.alias', 'box')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
+                ->orderByDesc('nagios_statehistory.state_time')
                 ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_hosts.display_name', 'nagios_hosts.address');
         }
 
@@ -419,40 +338,42 @@ class Boxes extends Component
         foreach ($current_state as $element) {
 
             // Get the last state of the element from statehistory table
-            $last_state = $this->getStateHistory($element->host_object_id);
+            $last_historical_state = $history->where('object_id', $element->host_object_id)->first();
 
             // if the element has a historical data
-            if ($last_state) {
+            if ($last_historical_state) {
 
                 // if the current state is like the last historical state of the element
-                if ($element->state == $last_state->state) {
-                    // Last historical state
-                    $last_historcal_state = $history->where('object_id', $element->host_object_id)->first();
+                if ($element->state == $last_historical_state->state) {
 
                     // set the start and end time
-                    $start_time = Carbon::parse($last_historcal_state->start_time);
+                    $start_time = Carbon::parse($last_historical_state->start_time);
                     $end_time = Carbon::parse($element->start_time);
 
                     // Calcule duration
                     $duration = $start_time->diff($end_time);
 
                     // Update the end_time of the historical data
-                    $last_historcal_state->end_time = $element->start_time;
+                    $last_historical_state->end_time = $element->start_time;
 
                     // Update the duration of the last historical state
-                    $last_historcal_state->duration = $duration->format('%H:%i:%s');
+                    $last_historical_state->duration = $this->getDuration($duration);
                 } else {
-                    // Get the last historical state
-                    $last_historcal_state = $history->where('object_id', $element->host_object_id)->first();
 
                     // Give the end_time to the current_state
                     $element->end_time = $element->start_time;
 
                     // Give the start_time of the current_state the end_time of the historical state
-                    $element->start_time = $last_historcal_state->end_time;
+                    $element->start_time = $last_historical_state->end_time;
+
+                    // set the start and end time
+                    $start_time = Carbon::parse($element->start_time);
+                    $end_time = Carbon::parse($element->end_time);
 
                     // Calculate the duration
-                    $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+                    $duration = $start_time->diff($end_time);
+
+                    $element->duration = $this->getDuration($duration);
 
                     // Push at the top of the $history collection
                     $history->prepend($element);
@@ -468,23 +389,21 @@ class Boxes extends Component
                 // Give the start_time of checking to the current_state element
                 $element->start_time = $first_check->start_time;
 
-                // Calcule the duration
-                $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+                // set the start and end time
+                $start_time = Carbon::parse($element->start_time);
+                $end_time = Carbon::parse($element->end_time);
+
+                // Calculate the duration
+                $duration = $start_time->diff($end_time);
+
+                // Add duration 
+                $element->duration = $this->getDuration($duration);
 
                 $history->prepend($element);
             }
         }
 
         return $history;
-    }
-
-    public function getStateHistory($object_id)
-    {
-        return DB::table('nagios_statehistory')
-            ->where('object_id', $object_id)
-            ->select('state', 'state_time')
-            ->orderByDesc('state_time')
-            ->first();
     }
 
     public function getTheFirstCheck($host_object_id)
@@ -494,5 +413,13 @@ class Boxes extends Component
             ->select('state', 'start_time')
             ->orderBy('start_time')
             ->first();
+    }
+
+    public function getDuration($duration)
+    {
+
+        $h = ($duration->h) + ($duration->d * 24) + ($duration->m * 30 * 24) + ($duration->y * 365 * 24);
+
+        return $h . ':' . $duration->i . ':' . $duration->s;
     }
 }

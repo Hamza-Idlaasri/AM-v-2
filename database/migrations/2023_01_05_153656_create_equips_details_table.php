@@ -20,7 +20,7 @@ class CreateEquipsDetailsTable extends Migration
             $table->string('box_type');
             $table->string('equip_name');
             $table->string('pin_name');
-            $table->integer('input_nbr');
+            // $table->integer('input_nbr');
             $table->string('working_state');
             $table->string('hall_name');
             $table->timestamps();

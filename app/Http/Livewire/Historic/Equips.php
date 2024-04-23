@@ -234,7 +234,7 @@ class Equips extends Component
         $items = $items instanceof Collection ? $items : Collection::make($items);
         return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
-   
+
     public function equipsCurrentState()
     {
         if ($this->site_name == 'All') {
@@ -263,31 +263,30 @@ class Equips extends Component
         }
 
         // filter by name
-        if ($this->equip_name) {
-            $current_state = $current_state->where('ed.equip_name', $this->equip_name);
-        }
+        // if ($this->equip_name) {
+        //     $current_state = $current_state->where('ed.equip_name', $this->equip_name);
+        // }
 
-        // filter by input number
-        if ($this->pin_nbr) {
-            $current_state = $current_state->where('nagios_servicestatus.check_command', 'LIKE', 'bf1010_IN' . $this->pin_nbr . '!H%');
-        }
+        // // filter by input number
+        // if ($this->pin_nbr) {
+        //     $current_state = $current_state->where('nagios_servicestatus.check_command', 'LIKE', 'bf1010_IN' . $this->pin_nbr . '!H%');
+        // }
 
-        // filter by Date From
-        if ($this->date_from) {
-            $current_state = $current_state->where('nagios_servicestatus.last_check', '>=', $this->date_from);
-        }
+        // // filter by Date From
+        // if ($this->date_from) {
+        //     $current_state = $current_state->where('nagios_servicestatus.last_check', '>=', $this->date_from);
+        // }
 
-        // filter by Date To
-        if ($this->date_to) {
-            $current_state = $current_state->where('nagios_servicestatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
+        // // filter by Date To
+        // if ($this->date_to) {
+        //     $current_state = $current_state->where('nagios_servicestatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+        // }
 
-        if ($this->status != 'all') {
-            $current_state = $current_state->where('nagios_servicestatus.current_state', $this->status);
-        }
+        // if ($this->status != 'all') {
+        //     $current_state = $current_state->where('nagios_servicestatus.current_state', $this->status);
+        // }
 
         return $current_state->get();
-
     }
 
     public function getBySQL()
@@ -296,7 +295,7 @@ class Equips extends Component
         if ($this->site_name == 'All') {
 
             $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
                 ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
                 ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
@@ -308,15 +307,14 @@ class Equips extends Component
                     $join->on('nagios_services.display_name', '=', 'ed.pin_name')
                         ->on('nagios_hosts.display_name', '=', 'ed.box_name');
                 })
-                ->join('nagios_servicestatus','nagios_services.service_object_id', '=', 'nagios_servicestatus.service_object_id')
+                ->join('nagios_servicestatus', 'nagios_services.service_object_id', '=', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
-                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_comand');
-
+                ->orderByDesc('nagios_statehistory.state_time')
+                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command');
         } else {
 
             $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name','ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
+                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as pin_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
                 ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
                 ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
@@ -328,35 +326,11 @@ class Equips extends Component
                     $join->on('nagios_services.display_name', '=', 'ed.pin_name')
                         ->on('nagios_hosts.display_name', '=', 'ed.box_name');
                 })
-                ->join('nagios_servicestatus','nagios_services.service_object_id', '=', 'nagios_servicestatus.service_object_id')
+                ->join('nagios_servicestatus', 'nagios_services.service_object_id', '=', 'nagios_servicestatus.service_object_id')
                 ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
+                ->orderByDesc('nagios_statehistory.state_time')
                 ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name', 'ed.site_name', 'ed.equip_name', 'ed.box_name', 'nagios_servicestatus.check_command')
                 ->where('ed.site_name', $this->site_name);
-        }
-
-        // filter by name
-        if ($this->equip_name) {
-            $history = $history->where('ed.equip_name', $this->equip_name);
-        }
-
-        // filter by input number
-        if ($this->pin_nbr) {
-            $history = $history->where('nagios_servicestatus.check_command', 'LIKE', 'bf1010_IN' . $this->pin_nbr . '!H%');
-        }
-
-        // filter by Date From
-        if ($this->date_from) {
-            $history = $history->where('nagios_statehistory.state_time', '>=', $this->date_from);
-        }
-
-        // filter by Date To
-        if ($this->date_to) {
-            $history = $history->where('nagios_statehistory.state_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
-
-        if ($this->status != 'all') {
-            $history = $history->where('nagios_statehistory.state', $this->status);
         }
 
         $history = $history->get();
@@ -366,51 +340,50 @@ class Equips extends Component
 
         // Add Current state to the historical data
         foreach ($current_state as $element) {
-            
+
             // Get the last state of the element from statehistory table
-            $last_state = $this->getStateHistory($element->service_object_id);
+            $last_historical_state = $history->where('object_id', $element->service_object_id)->first();
 
             // if the element has a historical data
-            if ($last_state) {
-                
+            if ($last_historical_state) {
+
                 // if the current state is like the last historical state of the element
-                if ($element->state == $last_state->state) {
-                    // Last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
+                if ($element->state == $last_historical_state->state) {
 
                     // set the start and end time
-                    $start_time = Carbon::parse($last_historcal_state->start_time);
+                    $start_time = Carbon::parse($last_historical_state->start_time);
                     $end_time = Carbon::parse($element->start_time);
-                    
+
                     // Calcule duration
                     $duration = $start_time->diff($end_time);
 
                     // Update the end_time of the historical data
-                    $last_historcal_state->end_time = $element->start_time;
-                    
-                    // Update the duration of the last historical state
-                    $last_historcal_state->duration = $duration->format('%H:%i:%s');
+                    $last_historical_state->end_time = $element->start_time;
 
+                    // Update the duration of the last historical state
+                    $last_historical_state->duration = $this->getDuration($duration);
                 } else {
-                    // Get the last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
 
                     // Give the end_time to the current_state
                     $element->end_time = $element->start_time;
-                    
+
                     // Give the start_time of the current_state the end_time of the historical state
-                    $element->start_time = $last_historcal_state->end_time;
+                    $element->start_time = $last_historical_state->end_time;
+
+                    // set the start and end time
+                    $start_time = Carbon::parse($element->start_time);
+                    $end_time = Carbon::parse($element->end_time);
 
                     // Calculate the duration
-                    $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
-                    
+                    $duration = $start_time->diff($end_time);
+
+                    $element->duration = $this->getDuration($duration);
+
                     // Push at the top of the $history collection
                     $history->prepend($element);
-                    
                 }
-
             } else {
-                
+
                 // Get the first check's start_time
                 $first_check = $this->getTheFirstCheck($element->service_object_id);
 
@@ -420,31 +393,61 @@ class Equips extends Component
                 // Give the start_time of checking to the current_state element
                 $element->start_time = $first_check->start_time;
 
-                // Calcule the duration
-                $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+                // set the start and end time
+                $start_time = Carbon::parse($element->start_time);
+                $end_time = Carbon::parse($element->end_time);
+
+                // Calculate the duration
+                $duration = $start_time->diff($end_time);
+
+                // Add duration 
+                $element->duration = $this->getDuration($duration);
 
                 $history->prepend($element);
             }
-            
+        }
+
+        // filter by name
+        if ($this->equip_name) {
+            $history = $history->where('equip_name', $this->equip_name);
+        }
+
+        // filter by input number
+        if ($this->pin_nbr) {
+            $history = $history->where('check_command', 'bf1010_IN' . $this->pin_nbr . '!H');
+        }
+
+        // filter by Date From
+        if ($this->date_from) {
+            $history = $history->where('start_time', '>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to) {
+            $history = $history->where('end_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+        }
+
+        if ($this->status != 'all') {
+            $history = $history->where('state', $this->status);
         }
 
         return $history;
-
     }
 
-    public function getStateHistory($object_id) {
-        return DB::table('nagios_statehistory')
-            ->where('object_id', $object_id)
-            ->select('state','state_time')
-            ->orderByDesc('state_time')
-            ->first();
-    }
-
-    public function getTheFirstCheck($service_object_id) {
+    public function getTheFirstCheck($service_object_id)
+    {
         return DB::table('nagios_servicechecks')
             ->where('service_object_id', $service_object_id)
-            ->select('state','start_time')
+            ->select('state', 'start_time')
             ->orderBy('start_time')
             ->first();
+    }
+
+    public function getDuration($duration)
+    {
+
+        $h = ($duration->h) + ($duration->d * 24) + ($duration->m * 30 * 24) + ($duration->y * 365 * 24);
+
+        return $h . ':' . $duration->i . ':' . $duration->s;
     }
 }

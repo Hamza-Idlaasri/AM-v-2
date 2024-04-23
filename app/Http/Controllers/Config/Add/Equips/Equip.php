@@ -43,7 +43,7 @@ class Equip extends Controller
             'site_name' => $box->site_name
         ]);
 
-        return redirect()->route('monitoring.equips');
+        return redirect()->route('config-equips');
 
     }
 }

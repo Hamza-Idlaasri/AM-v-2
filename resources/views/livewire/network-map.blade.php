@@ -200,10 +200,10 @@ document.addEventListener('livewire:update', function () {
     })
 </script> --}}
 
-<script>
+{{-- <script>
 
     window.addEventListener('load', function() {
         document.getElementById('network-map').classList.toggle("active");
     });
     
-</script>
+</script> --}}

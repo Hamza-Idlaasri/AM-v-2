@@ -25,47 +25,13 @@ class Services extends Component
     {
         $this->site_name = UsersSite::where('user_id', auth()->user()->id)->first()->current_site;
 
-        // $services_histories = $this->getHistory();
         $services_histories = $this->getBySQL();
-
-        // filter by state
-        // if($this->status != 'all')
-        // {
-        //     foreach ($services_histories as $key => $service) {
-        //         if ($service->state == $this->status) {
-        //             continue;
-        //         } else {
-        //             $services_histories->forget($key);
-        //         }
-        //     }
-
-        // }    
 
         return view('livewire.historic.services')
             ->with(['services_histories' => $this->paginate($services_histories), 'services_names' => $this->getServicesGroups(), 'download' => $services_histories])
             ->extends('layouts.app')
             ->section('content');
     }
-
-    // public function getStateRanges()
-    // {
-    //     $services_names = $this->EquipsNames();
-
-    //     $services_ranges = [];
-
-    //     foreach ($services_names as $service) {
-
-    //         $checks = $this->getServicesChecks()->where('nagios_services.service_object_id', $service->service_object_id)->get();
-
-    //         if(!empty($checks)) {
-    //             array_push($services_ranges, $checks);
-    //         }
-
-    //         unset($checks);
-    //     }
-
-    //     return $this->OrganizeStates($services_ranges);
-    // }
 
     public function OrganizeStates($services_ranges)
     {
@@ -151,52 +117,6 @@ class Services extends Component
         return $ranges->sortByDesc('state_time');
     }
 
-    // public function getServicesChecks()
-    // {
-    //     if ($this->site_name == 'All') {
-
-    //         $services_histories = DB::table('nagios_servicechecks')
-    //             ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-    //             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.state_time','nagios_servicechecks.output')
-    //             ->where('alias','host')
-    //             ->orderBy('nagios_servicechecks.start_time');
-
-    //     } else {
-
-    //         $services_histories = DB::table('nagios_servicechecks')
-    //             ->join('nagios_services','nagios_services.service_object_id','=','nagios_servicechecks.service_object_id')
-    //             ->join('nagios_hosts','nagios_hosts.host_object_id','=','nagios_services.host_object_id')
-    //             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
-    //             ->where('nagios_customvariables.varvalue',$this->site_name)
-    //             ->select('nagios_hosts.display_name as host_name','nagios_hosts.host_object_id','nagios_services.display_name as service_name','nagios_services.service_object_id','nagios_servicechecks.servicecheck_id','nagios_servicechecks.state','nagios_servicechecks.start_time','nagios_servicechecks.state_time','nagios_servicechecks.output')
-    //             ->where('alias','host')
-    //             ->orderBy('nagios_servicechecks.start_time');
-
-    //     }
-
-    //     // filter by name
-    //     if ($this->service_name) {
-    //         $services_histories = $services_histories->where('nagios_services.display_name',$this->service_name);    
-    //     }
-
-    //     // filter by Date From
-    //     if ($this->date_from)
-    //     {
-    //         $services_histories = $services_histories->where('nagios_servicechecks.start_time','>=',$this->date_from);
-    //     }
-
-    //     // filter by Date To
-    //     if ($this->date_to)
-    //     {
-    //         $services_histories = $services_histories->where('nagios_servicechecks.start_time','<=', date('Y-m-d', strtotime($this->date_to. ' + 1 days')));
-    //     }
-
-    //     $services_histories = $services_histories->take(20000);
-
-    //     return $services_histories;
-    // }
-
     public function getServicesNames()
     {
 
@@ -273,88 +193,6 @@ class Services extends Component
         }
     }
 
-    public function getHistory()
-    {
-        $collection = collect();
-        $last_state = [];
-
-        if ($this->site_name == 'All') {
-
-            $history = DB::table('nagios_statehistory')
-                ->join('nagios_services', 'nagios_statehistory.object_id', '=', 'nagios_services.service_object_id')
-                ->join('nagios_hosts', 'nagios_hosts.host_object_id', '=', 'nagios_services.host_object_id')
-                ->select('nagios_hosts.display_name as host_name', 'nagios_hosts.host_object_id', 'nagios_services.display_name as service_name', 'nagios_services.service_object_id', 'nagios_statehistory.statehistory_id', 'nagios_statehistory.last_state', 'nagios_statehistory.state', 'nagios_statehistory.state_time', 'nagios_statehistory.state_time_usec', 'nagios_statehistory.output')
-                ->where('alias', 'host')
-                ->orderBy('nagios_statehistory.state_time');
-        } else {
-
-            $history = DB::table('nagios_statehistory')
-                ->join('nagios_services', 'nagios_statehistory.object_id', '=', 'nagios_services.service_object_id')
-                ->join('nagios_hosts', 'nagios_hosts.host_object_id', '=', 'nagios_services.host_object_id')
-                ->select('nagios_hosts.display_name as host_name', 'nagios_hosts.host_object_id', 'nagios_services.display_name as service_name', 'nagios_services.service_object_id', 'nagios_statehistory.statehistory_id', 'nagios_statehistory.last_state', 'nagios_statehistory.state', 'nagios_statehistory.state_time', 'nagios_statehistory.state_time_usec', 'nagios_statehistory.output')
-                ->where('alias', 'host')
-                ->join('nagios_customvariables', 'nagios_hosts.host_object_id', '=', 'nagios_customvariables.object_id')
-                ->where('nagios_customvariables.varvalue', $this->site_name)
-                ->orderBy('nagios_statehistory.state_time');
-        }
-
-        // filter by name
-        if ($this->service_name) {
-            $history = $history->where('nagios_services.display_name', $this->service_name);
-        }
-
-        // filter by Date From
-        if ($this->date_from) {
-            $history = $history->where('nagios_statehistory.state_time', '>=', $this->date_from);
-        }
-
-        // filter by Date To
-        if ($this->date_to) {
-            $history = $history->where('nagios_statehistory.state_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
-
-        $history = $history->chunk(1000, function ($services_history) use (&$collection) {
-
-            $services_names = $this->getServicesNames();
-
-            $services_ranges = [];
-
-            foreach ($services_names as $service) {
-
-                $checks = [];
-
-                foreach ($services_history as $history) {
-                    if ($history->service_object_id == $service->service_object_id) {
-                        array_push($checks, $history);
-                    }
-                }
-
-                if (!empty($checks)) {
-                    array_push($services_ranges, $checks);
-                }
-
-                unset($checks);
-            }
-
-
-            $ranges = $this->OrganizeStates($services_ranges);
-
-            foreach ($ranges as $range) {
-                $collection->push($range);
-            }
-        });
-
-        $collection = clone $this->OrderRanges($collection);
-
-        $services_current_state = $this->servicesCurrentState();
-
-        foreach ($services_current_state as $service) {
-            $collection->prepend($service);
-        }
-
-        return $collection;
-    }
-
     public function servicesCurrentState()
     {
         if ($this->site_name == 'All') {
@@ -376,88 +214,86 @@ class Services extends Component
                 ->orderBy('last_check');
         }
 
-        // filter by name
-        if ($this->service_name) {
-            $current_state = $current_state->where('nagios_services.display_name', $this->service_name);
-        }
+        // // filter by name
+        // if ($this->service_name) {
+        //     $current_state = $current_state->where('nagios_services.display_name', $this->service_name);
+        // }
 
-        // filter by Date From
-        if ($this->date_from) {
-            $current_state = $current_state->where('nagios_servicestatus.last_check', '>=', $this->date_from);
-        }
+        // // filter by Date From
+        // if ($this->date_from) {
+        //     $current_state = $current_state->where('nagios_servicestatus.last_check', '>=', $this->date_from);
+        // }
 
-        // filter by Date To
-        if ($this->date_to) {
-            $current_state = $current_state->where('nagios_servicestatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
-        
-        // filter by status
-        if ($this->status != 'all') {
-            $current_state = $current_state->where('nagios_servicestatus.current_state', $this->status);
-        }
+        // // filter by Date To
+        // if ($this->date_to) {
+        //     $current_state = $current_state->where('nagios_servicestatus.last_check', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+        // }
+
+        // // filter by status
+        // if ($this->status != 'all') {
+        //     $current_state = $current_state->where('nagios_servicestatus.current_state', $this->status);
+        // }
 
         return $current_state->get();
     }
 
-
     public function getBySQL()
     {
-
         if ($this->site_name == 'All') {
 
-            $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name as service_name')
-                ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
-                ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
-                ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
-                ->selectRaw('@group_number := @group_number + IF(@prev_state = nagios_statehistory.state, 0, 1) AS state_group')
-                ->selectRaw('@prev_state := nagios_statehistory.state')
+            $history = DB::table(DB::raw($this->Query()))
+                ->select([
+                    'nagios_services.service_object_id',
+                    'nagios_statehistory.state',
+                    DB::raw('MIN(nagios_statehistory.output) AS output'),
+                    DB::raw('MIN(nagios_statehistory.state_time) AS start_time'),
+                    DB::raw('MAX(nagios_statehistory.state_time) AS end_time'),
+                    DB::raw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration'),
+                    'nagios_services.display_name AS service_name',
+                    'nagios_hosts.display_name AS host_name',
+                ])
                 ->join('nagios_services', 'nagios_statehistory.object_id', '=', 'nagios_services.service_object_id')
-                ->join('nagios_hosts', 'nagios_hosts.host_object_id', '=', 'nagios_services.host_object_id')
-                ->where('nagios_hosts.alias', 'host')
-                ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
-                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_services.display_name');
+                ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
+                ->groupBy([
+                    'nagios_services.service_object_id',
+                    'nagios_statehistory.state',
+                    'nagios_statehistory.state_group',
+                    'nagios_services.display_name',
+                    'nagios_hosts.display_name'
+                ])
+                ->orderBy('nagios_services.service_object_id')
+                ->orderByDesc('start_time')
+                ->where('nagios_hosts.alias','host')
+                ->get();
         } else {
 
-            $history = DB::table('nagios_statehistory')
-                ->select('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_services.display_name as service_name', 'nagios_hosts.display_name as host_name')
-                ->selectRaw('MIN(nagios_statehistory.state_time) AS start_time')
-                ->selectRaw('MAX(nagios_statehistory.state_time) AS end_time')
-                ->selectRaw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration')
-                ->selectRaw('@group_number := @group_number + IF(@prev_state = nagios_statehistory.state, 0, 1) AS state_group')
-                ->selectRaw('@prev_state := nagios_statehistory.state')
+            $history = DB::table(DB::raw($this->Query()))
+                ->select([
+                    'nagios_services.service_object_id',
+                    'nagios_statehistory.state',
+                    DB::raw('MIN(nagios_statehistory.output) AS output'),
+                    DB::raw('MIN(nagios_statehistory.state_time) AS start_time'),
+                    DB::raw('MAX(nagios_statehistory.state_time) AS end_time'),
+                    DB::raw('TIMEDIFF(MAX(nagios_statehistory.state_time), MIN(nagios_statehistory.state_time)) AS duration'),
+                    'nagios_services.display_name AS service_name',
+                    'nagios_hosts.display_name AS host_name',
+                ])
                 ->join('nagios_services', 'nagios_statehistory.object_id', '=', 'nagios_services.service_object_id')
-                ->join('nagios_hosts', 'nagios_hosts.host_object_id', '=', 'nagios_services.host_object_id')
+                ->join('nagios_hosts', 'nagios_services.host_object_id', '=', 'nagios_hosts.host_object_id')
                 ->join('nagios_customvariables', 'nagios_hosts.host_object_id', '=', 'nagios_customvariables.object_id')
-                ->where('nagios_hosts.alias', 'host')
+                ->groupBy([
+                    'nagios_services.service_object_id',
+                    'nagios_statehistory.state',
+                    'nagios_statehistory.state_group',
+                    'nagios_services.display_name',
+                    'nagios_hosts.display_name'
+                ])
+                ->orderBy('nagios_services.service_object_id')
+                ->orderByDesc('start_time')
+                ->where('nagios_hosts.alias','host')
                 ->where('nagios_customvariables.varvalue', $this->site_name)
-                ->orderBy('nagios_statehistory.object_id')
-                ->orderBy('nagios_statehistory.state_time')
-                ->groupBy('nagios_statehistory.object_id', 'nagios_statehistory.state', 'nagios_statehistory.output', 'nagios_services.display_name', 'nagios_hosts.display_name');
+                ->get();
         }
-
-        // filter by name
-        if ($this->service_name) {
-            $history = $history->where('nagios_services.display_name', $this->service_name);
-        }
-
-        // filter by Date From
-        if ($this->date_from) {
-            $history = $history->where('nagios_statehistory.state_time', '>=', $this->date_from);
-        }
-
-        // filter by Date To
-        if ($this->date_to) {
-            $history = $history->where('nagios_statehistory.state_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
-        }
-
-        // filter by status
-        if ($this->status != 'all') {
-            $history = $history->where('nagios_servicestatus.current_state', $this->status);
-        }
-
-        $history = $history->get();
 
         // Get Current State
         $current_state = $this->servicesCurrentState();
@@ -466,40 +302,42 @@ class Services extends Component
         foreach ($current_state as $element) {
 
             // Get the last state of the element from statehistory table
-            $last_state = $this->getStateHistory($element->service_object_id);
+            $last_historical_state = $history->where('service_object_id', $element->service_object_id)->first();
 
             // if the element has a historical data
-            if ($last_state) {
+            if ($last_historical_state) {
 
                 // if the current state is like the last historical state of the element
-                if ($element->state == $last_state->state) {
-                    // Last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
+                if ($element->state == $last_historical_state->state) {
 
                     // set the start and end time
-                    $start_time = Carbon::parse($last_historcal_state->start_time);
+                    $start_time = Carbon::parse($last_historical_state->start_time);
                     $end_time = Carbon::parse($element->start_time);
 
                     // Calcule duration
                     $duration = $start_time->diff($end_time);
 
                     // Update the end_time of the historical data
-                    $last_historcal_state->end_time = $element->start_time;
+                    $last_historical_state->end_time = $element->start_time;
 
                     // Update the duration of the last historical state
-                    $last_historcal_state->duration = $duration->format('%H:%i:%s');
+                    $last_historical_state->duration = $this->getDuration($duration);
                 } else {
-                    // Get the last historical state
-                    $last_historcal_state = $history->where('object_id', $element->service_object_id)->first();
 
                     // Give the end_time to the current_state
                     $element->end_time = $element->start_time;
 
                     // Give the start_time of the current_state the end_time of the historical state
-                    $element->start_time = $last_historcal_state->end_time;
+                    $element->start_time = $last_historical_state->end_time;
+
+                    // set the start and end time
+                    $start_time = Carbon::parse($element->start_time);
+                    $end_time = Carbon::parse($element->end_time);
 
                     // Calculate the duration
-                    $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+                    $duration = $start_time->diff($end_time);
+
+                    $element->duration = $this->getDuration($duration);
 
                     // Push at the top of the $history collection
                     $history->prepend($element);
@@ -515,23 +353,41 @@ class Services extends Component
                 // Give the start_time of checking to the current_state element
                 $element->start_time = $first_check->start_time;
 
-                // Calcule the duration
-                $element->duration = Carbon::parse($element->start_time)->diff(Carbon::parse($element->end_time))->format('%H:%i:%s');
+                // set the start and end time
+                $start_time = Carbon::parse($element->start_time);
+                $end_time = Carbon::parse($element->end_time);
+
+                // Calculate the duration
+                $duration = $start_time->diff($end_time);
+
+                // Add duration 
+                $element->duration = $this->getDuration($duration);
 
                 $history->prepend($element);
             }
         }
 
-        return $history;
-    }
+        // filter by name
+        if ($this->service_name) {
+            $history = $history->where('service_name', $this->service_name);
+        }
 
-    public function getStateHistory($object_id)
-    {
-        return DB::table('nagios_statehistory')
-            ->where('object_id', $object_id)
-            ->select('state', 'state_time')
-            ->orderByDesc('state_time')
-            ->first();
+        // filter by Date From
+        if ($this->date_from) {
+            $history = $history->where('start_time', '>=', $this->date_from);
+        }
+
+        // filter by Date To
+        if ($this->date_to) {
+            $history = $history->where('end_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+        }
+
+        // filter by status
+        if ($this->status != 'all') {
+            $history = $history->where('state', $this->status);
+        }
+
+        return $history;
     }
 
     public function getTheFirstCheck($service_object_id)
@@ -541,5 +397,29 @@ class Services extends Component
             ->select('state', 'start_time')
             ->orderBy('start_time')
             ->first();
+    }
+
+    public function getDuration($duration)
+    {
+        $h = ($duration->h) + ($duration->d * 24) + ($duration->m * 30 * 24) + ($duration->y * 365 * 24);
+
+        return $h . ':' . $duration->i . ':' . $duration->s;
+    }
+
+    public function Query() {
+        return "(SELECT
+                object_id,
+                state,
+                state_time,
+                output,
+                @group := IF(@prevState = state, @group, @group + 1) AS state_group,
+                @prevState := state
+            FROM
+                nagios_statehistory,
+                (SELECT @group := 0, @prevState := null) AS vars
+            ORDER BY
+                object_id,
+                state_time) AS nagios_statehistory
+        ";
     }
 }

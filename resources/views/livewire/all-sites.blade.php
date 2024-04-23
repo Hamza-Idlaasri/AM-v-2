@@ -235,7 +235,7 @@
                         </path>
 
                         {{-- Show Site --}}
-                        @foreach ($show_sites as $site)
+                        @forelse ($show_sites as $site)
                             @switch($site->state)
                                 @case(0)
                                     <circle cx="{{$site->cx}}" cy="{{$site->cy}}" r="4" fill="#38c172" stroke="black" stroke-width="1" style="cursor: pointer"><title>{{$site->site_name}}</title></circle>
@@ -251,13 +251,15 @@
                                     @break
                                 @default
                             @endswitch
-                        @endforeach
-                                                             
+                        @empty
+                            
+                        @endforelse
+                                        
                     </g>
                 </svg>
             </div>
         </div>
-        
+    
         {{-- Summary of all sites --}}
         <div class="container bg-white border rounded p-4" style="width:60%;border-color: rgba(128, 128, 128, 0.5);border-top-left-radius:0px !important;border-bottom-left-radius:0px !important;">
             <h6 class="d-flex justify-content-between align-items-center">Sites Summary</h6>

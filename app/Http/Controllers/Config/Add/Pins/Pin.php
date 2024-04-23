@@ -69,19 +69,11 @@ class Pin extends Controller
                 'box_type' => $add_to_box->box_type,
                 'equip_name' => $equipName,
                 'pin_name' => $pinName[$i],
-                'input_nbr' => $inputNbr[$i],
                 'working_state' => $workingState[$i],
                 'hall_name' => $hallName[$i],
             ]);
 
         }
-
-        // TODO : POSSIBLE TO ADD NEW PIN UNDER CONDITION IF EQUIP NAME NOT EXIST
-        $add_equip = EquipsNames::create([
-            'site_name' => $this->getSiteName($box_id),
-            'box_name' => $add_to_box->box_name,
-            'equip_name' => $request->equipName
-        ]);
 
         shell_exec('sudo service nagios stop');
         shell_exec('sudo service nagios start');
@@ -98,6 +90,6 @@ class Pin extends Controller
             ->join('nagios_customvariables','nagios_hosts.host_object_id','=','nagios_customvariables.object_id')
             ->where('nagios_customvariables.varname','SITE')
             ->select('nagios_customvariables.varvalue as site_name')
-            ->first();
+            ->first()->site_name;
     }
 }
