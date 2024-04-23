@@ -374,12 +374,32 @@ class Services extends Component
 
         // filter by Date From
         if ($this->date_from) {
-            $history = $history->where('start_time', '>=', $this->date_from);
+            // Convert string date to Carbon instance for comparison
+            $dateFrom = Carbon::createFromFormat('Y-m-d', $this->date_from)->startOfDay();
+            
+            // Filter the collection
+            $history = $history->filter(function($item) use ($dateFrom) {
+                // Convert start_time string to Carbon instance for comparison
+                $startTime = Carbon::parse($item->start_time);
+                
+                // Compare start_time with date_from
+                return $startTime->greaterThanOrEqualTo($dateFrom);
+            });
         }
 
         // filter by Date To
         if ($this->date_to) {
-            $history = $history->where('end_time', '<=', date('Y-m-d', strtotime($this->date_to . ' + 1 days')));
+            // Convert string date to Carbon instance for comparison
+            $dateTo = Carbon::createFromFormat('Y-m-d', $this->date_to)->endOfDay();
+            
+            // Filter the collection
+            $history = $history->filter(function($item) use ($dateTo) {
+                // Convert start_time string to Carbon instance for comparison
+                $startTime = Carbon::parse($item->start_time);
+                
+                // Compare start_time with date_to
+                return $startTime->lessThanOrEqualTo($dateTo);
+            });
         }
 
         // filter by status

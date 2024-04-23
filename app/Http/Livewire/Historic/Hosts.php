@@ -273,6 +273,7 @@ class Hosts extends Component
 
                     // Update the duration of the last historical state
                     $last_historical_state->duration = $this->getDuration($duration);
+                    
                 } else {
 
                     // Give the end_time to the current_state
