@@ -439,11 +439,11 @@ class Equips extends Component
             
             // Filter the collection
             $history = $history->filter(function($item) use ($dateTo) {
-                // Convert start_time string to Carbon instance for comparison
-                $startTime = Carbon::parse($item->start_time);
+                // Convert end_time string to Carbon instance for comparison
+                $endTime = Carbon::parse($item->end_time);
                 
-                // Compare start_time with date_to
-                return $startTime->lessThanOrEqualTo($dateTo);
+                // Compare end_time with date_to
+                return $endTime->lessThanOrEqualTo($dateTo);
             });
         }
 
